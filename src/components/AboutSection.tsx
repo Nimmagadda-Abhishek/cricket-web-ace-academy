@@ -17,7 +17,7 @@ const AboutSection = () => {
         <div 
           className="w-full h-full bg-cover bg-center"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`
+            backgroundImage: `url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`
           }}
         ></div>
       </div>
@@ -77,7 +77,7 @@ const AboutSection = () => {
               <div 
                 className="aspect-square bg-cover bg-center rounded-2xl shadow-2xl"
                 style={{
-                  backgroundImage: `url('https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`
+                  backgroundImage: `url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`
                 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-tr from-cricket-green/80 to-cricket-orange/80 rounded-2xl flex items-center justify-center">
