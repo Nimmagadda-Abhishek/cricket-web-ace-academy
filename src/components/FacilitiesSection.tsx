@@ -86,7 +86,7 @@ const FacilitiesSection = () => {
           </h3>
           <p className="text-white/90 mb-6 max-w-2xl mx-auto">
             Experience our world-class facilities firsthand. Schedule a personal tour and see 
-            why CricketPro Academy is the premier choice for cricket training.
+            why Kalyan Cricket Academy is the premier choice for cricket training.
           </p>
           <button className="bg-white text-cricket-green px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
             Schedule Tour

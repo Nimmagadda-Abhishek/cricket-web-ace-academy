@@ -30,7 +30,7 @@ const Footer = () => {
           {/* Academy Info */}
           <div>
             <h3 className="text-2xl font-bold font-poppins text-cricket-orange mb-4">
-              CricketPro Academy
+              Kalyan Cricket Academy
             </h3>
             <p className="text-gray-300 mb-6">
               Developing cricket excellence through professional coaching, 
@@ -120,7 +120,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <span>✉️</span>
-                <span>info@cricketproacademy.com</span>
+                <span>info@kalyancricketacademy.com</span>
               </div>
               <div className="flex items-start space-x-2">
                 <span>⏰</span>
@@ -136,7 +136,7 @@ const Footer = () => {
         <div className="border-t border-gray-700 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-300 text-sm">
-              © 2024 CricketPro Academy. All rights reserved.
+              © 2024 Kalyan Cricket Academy. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-gray-300 hover:text-cricket-orange text-sm transition-colors">

@@ -42,7 +42,7 @@ const ContactSection = () => {
     },
     {
       title: 'Email',
-      content: 'info@cricketproacademy.com',
+      content: 'info@kalyancricketacademy.com',
       icon: '✉️'
     },
     {
