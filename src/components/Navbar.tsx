@@ -14,7 +14,7 @@ const Navbar = () => {
         { name: 'Home', href: '#home' },
         { name: 'Facilities', href: '/facilities' },
         { name: 'Programs', href: '#programs' },
-        { name: 'Gallery', href: '#gallery' },
+        { name: 'Gallery', href: '/gallery' },
         { name: 'About', href: '#about' },
         { name: 'Contact', href: '/contact' },
       ]
@@ -22,7 +22,7 @@ const Navbar = () => {
         { name: 'Home', href: '/' },
         { name: 'Facilities', href: '/facilities' },
         { name: 'Programs', href: '/programs' },
-        { name: 'Gallery', href: '/#gallery' },
+        { name: 'Gallery', href: '/gallery' },
         { name: 'About', href: '/#about' },
         { name: 'Contact', href: '/contact' },
       ];

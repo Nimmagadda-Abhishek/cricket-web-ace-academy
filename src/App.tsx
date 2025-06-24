@@ -9,6 +9,7 @@ import Programs from "./pages/Programs";
 import ProgramDetails from "./pages/ProgramDetails";
 import Contact from "./pages/Contact";
 import Facilities from "./pages/Facilities";
+import Gallery from "./pages/Gallery";
 import Checkout from "./pages/Checkout";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,9 @@ const App = () => (
           
           {/* Facilities Route */}
           <Route path="/facilities" element={<Facilities />} />
+          
+          {/* Gallery Route */}
+          <Route path="/gallery" element={<Gallery />} />
           
           {/* Contact Route */}
           <Route path="/contact" element={<Contact />} />

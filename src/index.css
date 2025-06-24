@@ -211,6 +211,38 @@
   animation: rotate-slow 20s linear infinite;
 }
 
+.animate-float-delayed {
+  animation: float 4s ease-in-out infinite 2s;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slideInUp {
+  animation: slideInUp 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .hover-lift {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }

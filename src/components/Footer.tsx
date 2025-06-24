@@ -76,12 +76,12 @@ const Footer = () => {
                 </li>
               ))}
               <li>
-                <a
-                  href="#gallery"
+                <Link
+                  to="/gallery"
                   className="text-gray-300 hover:text-cricket-orange transition-colors"
                 >
                   Gallery
-                </a>
+                </Link>
               </li>
               <li>
                 <Link
