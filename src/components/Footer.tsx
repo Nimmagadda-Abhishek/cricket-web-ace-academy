@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const socialLinks = [
@@ -11,16 +12,15 @@ const Footer = () => {
 
   const quickLinks = [
     { name: 'About Us', href: '#about' },
-    { name: 'Programs', href: '#programs' },
-    { name: 'Coaches', href: '#coaches' },
-    { name: 'Facilities', href: '#facilities' },
+    { name: 'Programs', href: '/programs' },
+    { name: 'Facilities', href: '/facilities' },
   ];
 
   const programs = [
-    { name: 'Junior Cricket', href: '#programs' },
-    { name: 'Youth Development', href: '#programs' },
-    { name: 'Adult Programs', href: '#programs' },
-    { name: 'Elite Training', href: '#programs' },
+    { name: 'Group Training', href: '#programs' },
+    { name: 'Personalized Training', href: '#programs' },
+    { name: 'One-on-One Elite Coaching', href: '#programs' },
+    { name: 'Corporate Cricket Program', href: '#programs' },
   ];
 
   return (
@@ -58,12 +58,21 @@ const Footer = () => {
             <ul className="space-y-2">
               {quickLinks.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href={link.href}
-                    className="text-gray-300 hover:text-cricket-orange transition-colors"
-                  >
-                    {link.name}
-                  </a>
+                  {link.href.startsWith('/') ? (
+                    <Link
+                      to={link.href}
+                      className="text-gray-300 hover:text-cricket-orange transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="text-gray-300 hover:text-cricket-orange transition-colors"
+                    >
+                      {link.name}
+                    </a>
+                  )}
                 </li>
               ))}
               <li>
@@ -75,12 +84,12 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a
-                  href="#contact"
+                <Link
+                  to="/contact"
                   className="text-gray-300 hover:text-cricket-orange transition-colors"
                 >
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -112,11 +121,11 @@ const Footer = () => {
             <div className="space-y-3 text-gray-300">
               <div className="flex items-start space-x-2">
                 <span>📍</span>
-                <span>123 Cricket Lane, Sports District, City 12345</span>
+                <span>Kukatpally, Hyderabad, Telangana 500072</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span>📞</span>
-                <span>+1 (555) 123-4567</span>
+                <span>+91 9876543210</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span>✉️</span>
@@ -125,8 +134,8 @@ const Footer = () => {
               <div className="flex items-start space-x-2">
                 <span>⏰</span>
                 <div>
-                  <div>Mon-Fri: 6AM-10PM</div>
-                  <div>Sat-Sun: 8AM-8PM</div>
+                  <div>Mon-Fri: 11AM-11PM</div>
+                  <div>Sat-Sun: 11AM-1AM</div>
                 </div>
               </div>
             </div>

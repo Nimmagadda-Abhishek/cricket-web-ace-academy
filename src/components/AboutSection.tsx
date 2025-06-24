@@ -11,10 +11,10 @@ const AboutSection = () => {
   ];
 
   const features = [
-    { title: 'Expert Coaching', description: 'Learn from certified professionals with international experience', icon: '🎯' },
-    { title: 'Modern Facilities', description: 'Train with state-of-the-art equipment and facilities', icon: '🏟️' },
-    { title: 'Personalized Training', description: 'Customized programs tailored to your skill level and goals', icon: '⚡' },
-    { title: 'Match Opportunities', description: 'Regular tournaments and matches to showcase your skills', icon: '🏏' }
+    { title: 'High-Performance Training', description: '15 nets with Turf, Astro-Turf, Cement & Matting surfaces for diverse training conditions', icon: '🏏' },
+    { title: 'Video Analysis', description: 'Advanced video analysis setup for performance tracking & technique improvement', icon: '📹' },
+    { title: 'International Exposure', description: 'Official collaborations with clubs in Sri Lanka & Nepal for international opportunities', icon: '🌍' },
+    { title: 'HCA League Teams', description: 'Participation in One-Day, Two-Day & Three-Day HCA League matches', icon: '🏆' }
   ];
 
   return (
@@ -34,8 +34,9 @@ const AboutSection = () => {
           </h2>
           <div className="w-24 h-1 bg-cricket-orange mx-auto mb-6 rounded-full animate-shimmer"></div>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed animate-slideUp">
-            For over 15 years, we've been nurturing cricket talent and transforming 
-            passionate individuals into skilled players through comprehensive training programs.
+            KCA is more than just a coaching center; it fosters a community of students, coaches, and parents working together to develop skilled cricketers. 
+            The academy aims to identify talented individuals passionate about cricket and offers them the necessary support and guidance to excel at various levels, 
+            including state, national, and international competitions.
           </p>
         </div>
 
@@ -47,7 +48,7 @@ const AboutSection = () => {
               <div className="space-y-4">
                 <div className="image-overlay rounded-xl overflow-hidden card-hover">
                   <img
-                    src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                    src="https://kalyancricketacademy.in/wp-content/uploads/2025/03/Untitled-design-28-1024x576.png"
                     alt="Cricket Training"
                     className="w-full h-48 object-cover image-zoom hover-brightness"
                   />
@@ -156,7 +157,7 @@ const AboutSection = () => {
           <div className="animate-slideInRight">
             <div className="image-overlay rounded-2xl overflow-hidden hover-shadow-lg">
               <img
-                src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                src="https://kalyancricketacademy.in/wp-content/uploads/2025/03/cricket-1-1024x682-1.webp"
                 alt="Cricket Training Session"
                 className="w-full h-96 object-cover image-zoom"
               />

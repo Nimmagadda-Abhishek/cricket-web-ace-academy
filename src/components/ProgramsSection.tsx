@@ -2,58 +2,76 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const ProgramsSection = () => {
+  const navigate = useNavigate();
+  
   const programs = [
     {
-      title: 'Junior Cricket (6-12 years)',
-      description: 'Fun-based learning with focus on basic skills, hand-eye coordination, and team spirit through engaging activities.',
-      features: ['Basic batting & bowling', 'Fielding fundamentals', 'Team games & drills', 'Safety first approach'],
-      price: '₹6,500/month',
-      duration: '2 hours/week',
-      icon: '🏏',
-      color: 'from-blue-400 to-blue-600',
-      image: 'https://images.unsplash.com/photo-1517022812141-23620dba5c23?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      title: 'Group Training',
+      description: 'Perfect for beginners and team building. Develop fundamental skills in a supportive group environment.',
+      level: 'Beginner to Intermediate',
+      ageGroup: 'All Ages',
+      icon: '👥',
+      color: 'bg-gradient-to-br from-blue-500 to-blue-600',
+      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/Kalyan-Cricket-Academy-%E2%80%83-1024x576.jpg',
+      coach: 'Coach Vikram',
+      experience: '10+ Years',
+      schedule: 'Mon, Wed, Fri',
+      time: '4:00 PM - 6:00 PM',
+      highlights: ['Team Building', 'Basic Skills', 'Match Practice', 'Fitness Training']
     },
     {
-      title: 'Youth Development (13-17 years)',
-      description: 'Comprehensive training focusing on technique refinement, competitive play, and character development.',
-      features: ['Advanced techniques', 'Match strategies', 'Fitness training', 'Mental conditioning'],
-      price: '₹10,000/month',
-      duration: '4 hours/week',
-      icon: '⚡',
-      color: 'from-cricket-orange to-cricket-gold',
-      image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-    },
-    {
-      title: 'Adult Programs (18+ years)',
-      description: 'Professional coaching for adults looking to improve their game, stay fit, and enjoy competitive cricket.',
-      features: ['Skill development', 'Match preparation', 'Fitness coaching', 'League preparation'],
-      price: '₹12,500/month',
-      duration: '5 hours/week',
+      title: 'Personal Training',
+      description: 'One-on-one coaching for rapid skill improvement. Customized training plans for individual goals.',
+      level: 'Intermediate',
+      ageGroup: '12+ Years',
       icon: '🎯',
-      color: 'from-green-400 to-green-600',
-      image: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      color: 'bg-gradient-to-br from-orange-500 to-red-500',
+      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/cricket-1-1024x682-1.webp',
+      coach: 'Coach Priya',
+      experience: '12+ Years',
+      schedule: 'Tue, Thu, Sat',
+      time: '5:00 PM - 7:00 PM',
+      highlights: ['Individual Focus', 'Video Analysis', 'Technique Refinement', 'Performance Tracking']
     },
     {
-      title: 'Elite Training',
-      description: 'High-performance program for aspiring professional players with personalized coaching and advanced analytics.',
-      features: ['1-on-1 coaching', 'Video analysis', 'Sports psychology', 'Tournament prep'],
-      price: '₹25,000/month',
-      duration: '10 hours/week',
-      icon: '👑',
-      color: 'from-purple-400 to-purple-600',
-      image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      title: 'Elite Coaching',
+      description: 'Advanced training for serious players. Professional-level coaching for competitive cricket.',
+      level: 'Advanced',
+      ageGroup: '14+ Years',
+      icon: '🏆',
+      color: 'bg-gradient-to-br from-purple-500 to-indigo-600',
+      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/Untitled-design-28-1024x576.png',
+      coach: 'Coach Rajesh',
+      experience: '15+ Years',
+      schedule: 'Mon-Fri',
+      time: '6:00 AM - 9:00 AM',
+      highlights: ['Elite Training', 'Tournament Prep', 'Mental Coaching', 'Career Guidance']
+    },
+    {
+      title: 'Corporate Program',
+      description: 'Team building through cricket. Perfect for corporate groups and office teams.',
+      level: 'All Levels',
+      ageGroup: '22+ Years',
+      icon: '🏢',
+      color: 'bg-gradient-to-br from-green-500 to-emerald-600',
+      image: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      coach: 'Coach Arjun',
+      experience: '8+ Years',
+      schedule: 'Weekends',
+      time: '9:00 AM - 12:00 PM',
+      highlights: ['Team Building', 'Corporate Events', 'Fitness Focus', 'Leadership Skills']
     }
   ];
 
   return (
-    <section id="programs" className="py-20 bg-white relative overflow-hidden">
+    <section id="programs" className="py-20 bg-gray-50 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-20 left-20 w-32 h-32 bg-cricket-orange rounded-full animate-pulse-slow"></div>
         <div className="absolute bottom-20 right-20 w-24 h-24 bg-cricket-green rounded-full animate-float"></div>
-        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-cricket-gold rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
       </div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -63,8 +81,7 @@ const ProgramsSection = () => {
           </h2>
           <div className="w-24 h-1 bg-cricket-orange mx-auto mb-6 rounded-full"></div>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            Choose from our comprehensive range of cricket programs designed for all ages and skill levels,
-            each crafted to unlock your full potential on the field.
+            Choose from our comprehensive range of cricket programs designed for all ages and skill levels
           </p>
         </div>
 
@@ -72,88 +89,76 @@ const ProgramsSection = () => {
           {programs.map((program, index) => (
             <Card 
               key={index} 
-              className={`group card-hover gradient-card border-0 shadow-xl overflow-hidden bg-white relative animate-bounceIn stagger-${index + 1}`}
+              className={`group card-hover border-0 shadow-xl overflow-hidden bg-white relative animate-bounceIn stagger-${index + 1} hover:shadow-2xl transition-all duration-500`}
             >
-              {/* Background Image with Enhanced Effects */}
-              <div className="image-overlay absolute inset-0 overflow-hidden">
+              {/* Program Image */}
+              <div className="relative h-48 overflow-hidden">
                 <img
                   src={program.image}
                   alt={program.title}
-                  className="w-full h-full object-cover opacity-10 group-hover:opacity-20 image-zoom transition-all duration-500"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-              </div>
-              
-              {/* Gradient Border Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-cricket-orange/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <CardHeader className="relative z-10 text-center pb-4">
-                {/* Enhanced Icon with Multiple Animations */}
-                <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r ${program.color} text-white text-3xl mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg animate-zoomIn animate-heartbeat`}>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                
+                {/* Program Icon */}
+                <div className={`absolute top-4 right-4 w-12 h-12 ${program.color} rounded-full flex items-center justify-center text-white text-xl shadow-lg`}>
                   {program.icon}
                 </div>
-                
-                {/* Animated Title */}
-                <CardTitle className="text-xl font-poppins text-cricket-green mb-3 group-hover:text-cricket-orange transition-colors duration-300 animate-slideUp">
+              </div>
+
+              <CardContent className="p-6">
+                {/* Program Title */}
+                <h3 className="text-xl font-bold text-cricket-green mb-2 group-hover:text-cricket-orange transition-colors duration-300">
                   {program.title}
-                </CardTitle>
+                </h3>
                 
-                {/* Description with Animation */}
-                <p className="text-gray-600 text-sm leading-relaxed animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+                {/* Description */}
+                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                   {program.description}
                 </p>
-              </CardHeader>
-              
-              <CardContent className="relative z-10 space-y-6">
-                {/* Enhanced Features List */}
-                <div className="space-y-3">
-                  {program.features.map((feature, idx) => (
-                    <div 
-                      key={idx} 
-                      className={`flex items-center space-x-3 group/item animate-slideInLeft stagger-${idx + 1}`}
-                    >
-                      <div className="w-5 h-5 bg-cricket-orange rounded-full flex items-center justify-center group-hover/item:scale-110 transition-transform duration-200 animate-bounceIn">
-                        <span className="text-white text-xs font-bold">✓</span>
+
+                {/* Program Details */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Level:</span>
+                    <span className="font-medium text-cricket-green">{program.level}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Age Group:</span>
+                    <span className="font-medium text-cricket-green">{program.ageGroup}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Coach:</span>
+                    <span className="font-medium text-cricket-green">{program.coach}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Schedule:</span>
+                    <span className="font-medium text-cricket-green">{program.schedule}</span>
+                  </div>
+                </div>
+
+                {/* Highlights */}
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">Program Highlights:</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {program.highlights.map((highlight, idx) => (
+                      <div key={idx} className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-cricket-orange rounded-full"></div>
+                        <span className="text-xs text-gray-600">{highlight}</span>
                       </div>
-                      <span className="text-gray-700 text-sm group-hover/item:text-cricket-green transition-colors duration-200">
-                        {feature}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Enhanced Pricing Section */}
-                <div className="pt-4 border-t border-gray-100">
-                  <div className="flex justify-between items-center mb-2 animate-slideInRight">
-                    <span className="text-gray-500 text-sm">Duration:</span>
-                    <span className="font-medium text-cricket-green animate-shimmer">{program.duration}</span>
+                    ))}
                   </div>
-                  <div className="flex justify-between items-center mb-6 animate-slideInRight" style={{ animationDelay: '0.1s' }}>
-                    <span className="text-gray-500 text-sm">Price:</span>
-                    <span className="text-2xl font-bold text-cricket-orange animate-shimmer">{program.price}</span>
-                  </div>
-                  
-                  {/* Enhanced Button */}
-                  <Button 
-                    type="button"
-                    onClick={() => {
-                      console.log(`Viewing details for ${program.title}`);
-                      window.location.href = `/programs/${index + 1}`;
-                    }}
-                    className="w-full bg-gradient-to-r from-cricket-green to-cricket-orange hover:from-cricket-orange hover:to-cricket-green text-white font-semibold py-3 rounded-full transform transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ripple-effect animate-bounceIn"
-                    style={{ animationDelay: '0.3s' }}
-                  >
-                    🔍 View Details
-                  </Button>
                 </div>
+
+                {/* Action Button */}
+                <Button 
+                  type="button"
+                  onClick={() => navigate('/programs')}
+                  className="w-full bg-cricket-green hover:bg-cricket-orange text-white font-semibold py-3 rounded-lg transform transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+                >
+                  Get Started
+                </Button>
               </CardContent>
-              
-              {/* Floating Decorative Elements */}
-              <div className="absolute top-2 right-2 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
-                <div className="text-lg animate-float">{program.icon}</div>
-              </div>
-              <div className="absolute bottom-2 left-2 opacity-10 group-hover:opacity-30 transition-opacity duration-300">
-                <div className="w-8 h-8 bg-gradient-to-br from-cricket-orange/30 to-cricket-gold/30 rounded-full animate-pulse-slow"></div>
-              </div>
             </Card>
           ))}
         </div>
@@ -161,15 +166,11 @@ const ProgramsSection = () => {
         {/* Call to Action */}
         <div className="mt-16 text-center animate-fadeInUp">
           <div className="bg-gradient-to-r from-cricket-green to-cricket-orange rounded-2xl p-8 text-white shadow-2xl">
-            <h3 className="text-3xl font-bold font-poppins mb-4">Not Sure Which Program to Choose?</h3>
+            <h3 className="text-3xl font-bold font-poppins mb-4">Ready to Start Your Cricket Journey?</h3>
             <p className="text-xl mb-6 opacity-90">Book a free consultation with our expert coaches to find the perfect program for your goals.</p>
             <Button 
               type="button"
-              onClick={() => {
-                console.log("Book Free Consultation clicked");
-                document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                alert("Please fill out the contact form to book your free consultation!");
-              }}
+              onClick={() => navigate('/contact')}
               className="bg-white text-cricket-green hover:bg-gray-100 px-8 py-3 font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
             >
               📞 Book Free Consultation

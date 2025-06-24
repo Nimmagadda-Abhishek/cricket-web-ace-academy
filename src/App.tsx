@@ -7,8 +7,8 @@ import NotFound from "./pages/NotFound";
 import AdminPanel from "./components/admin/AdminPanel";
 import Programs from "./pages/Programs";
 import ProgramDetails from "./pages/ProgramDetails";
-import Coaches from "./pages/Coaches";
-import CoachProfile from "./pages/CoachProfile";
+import Contact from "./pages/Contact";
+import Facilities from "./pages/Facilities";
 import Checkout from "./pages/Checkout";
 
 const queryClient = new QueryClient();
@@ -25,9 +25,11 @@ const App = () => (
           <Route path="/programs" element={<Programs />} />
           <Route path="/programs/:id" element={<ProgramDetails />} />
           
-          {/* Coach Routes */}
-          <Route path="/coaches" element={<Coaches />} />
-          <Route path="/coaches/:id" element={<CoachProfile />} />
+          {/* Facilities Route */}
+          <Route path="/facilities" element={<Facilities />} />
+          
+          {/* Contact Route */}
+          <Route path="/contact" element={<Contact />} />
           
           {/* Checkout Route */}
           <Route path="/checkout/:id" element={<Checkout />} />

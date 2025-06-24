@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const ContactSection = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -198,10 +200,7 @@ const ContactSection = () => {
                 </p>
                 <Button 
                   type="button"
-                  onClick={() => {
-                    console.log("Book Free Trial clicked");
-                    alert("Thank you for your interest! Please fill out the contact form to book your free trial session.");
-                  }}
+                  onClick={() => navigate('/contact')}
                   className="bg-white text-cricket-green hover:bg-gray-100"
                 >
                   Book Free Trial

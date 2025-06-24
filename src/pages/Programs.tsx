@@ -1,411 +1,329 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
-import { programsApi } from '@/services/api';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BadgeIndianRupeeIcon, SearchIcon, FilterIcon } from 'lucide-react';
 
-interface Program {
-  _id: string;
-  title: string;
-  description: string;
-  ageGroup: string;
-  duration: string;
-  price: number;
-  features: string[];
-  icon: string;
-  color: string;
-  image: string;
-  level: string;
-  category: string;
-  coach: {
-    name: string;
-    specialization: string[];
-    rating: {
-      average: number;
-    };
-  };
-  discount?: {
-    type: string;
-    value: number;
-    validUntil: string;
-    description: string;
-  };
-}
-
-const Programs: React.FC = () => {
+const Programs = () => {
   const navigate = useNavigate();
-  const [programs, setPrograms] = useState<Program[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [levelFilter, setLevelFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('default');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  useEffect(() => {
-    const fetchPrograms = async () => {
-      try {
-        setLoading(true);
-        const response = await programsApi.getPrograms();
-        setPrograms(response.data.programs);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load programs');
-        console.error('Error fetching programs:', err);
-      } finally {
-        setLoading(false);
+  const programs = [
+    {
+      id: '1',
+      title: 'Group Training',
+      category: 'group',
+      description: 'Ideal for players looking to build strong fundamentals. Develops skills, teamwork, and match awareness through structured group sessions.',
+      ageGroup: 'All ages',
+      level: 'Beginner to Intermediate',
+      icon: '🏆',
+      color: 'from-blue-400 to-blue-600',
+      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/Kalyan-Cricket-Academy-%E2%80%83-1024x576.jpg',
+      features: [
+        '5 Days a Week - Balanced skill & fitness sessions',
+        'Skill Drills (2 Days) - Batting, bowling & game strategy',
+        'Team building activities',
+        'Match simulations'
+      ],
+      schedule: {
+        days: ['Monday', 'Wednesday', 'Friday'],
+        time: '4:00 PM - 6:00 PM',
+        venue: 'Main Practice Ground'
+      },
+      coach: {
+        name: 'Coach Vikram',
+        experience: '10 years'
       }
-    };
-
-    fetchPrograms();
-  }, []);
-
-  const calculateDiscount = (price: number, discount?: { type: string; value: number }) => {
-    if (!discount) return price;
-    
-    if (discount.type === 'percentage') {
-      return price - (price * (discount.value / 100));
-    } else if (discount.type === 'fixed') {
-      return price - discount.value;
+    },
+    {
+      id: '2',
+      title: 'Personalized Training',
+      category: 'individual',
+      description: 'Designed for players who want individualized guidance. Enhances technique, confidence & match performance through one-on-one attention.',
+      ageGroup: '12+ years',
+      level: 'Intermediate',
+      icon: '🎯',
+      color: 'from-orange-400 to-orange-600',
+      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/cricket-1-1024x682-1.webp',
+      features: [
+        'Skill Refinement - Master batting, bowling & strategy',
+        'Video Analysis - Expert review to fine-tune techniques',
+        'Individual attention from coaches',
+        'Customized training plans'
+      ],
+      schedule: {
+        days: ['Tuesday', 'Thursday', 'Saturday'],
+        time: '5:00 PM - 7:00 PM',
+        venue: 'Individual Training Nets'
+      },
+      coach: {
+        name: 'Coach Priya',
+        experience: '12 years'
+      }
+    },
+    {
+      id: '3',
+      title: 'One-on-One Elite Coaching',
+      category: 'elite',
+      description: 'Tailored coaching to refine techniques & game awareness. Master coach guidance for advanced skill development and professional preparation.',
+      ageGroup: '14+ years',
+      level: 'Advanced',
+      icon: '🥇',
+      color: 'from-purple-400 to-purple-600',
+      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/Untitled-design-28-1024x576.png',
+      features: [
+        'Specialized Training - Batting, bowling & fielding with turf practice',
+        'Video Analysis & Feedback - Track progress & improve techniques',
+        'Elite coach mentorship',
+        'Tournament preparation'
+      ],
+      schedule: {
+        days: ['Monday', 'Wednesday', 'Friday', 'Sunday'],
+        time: '6:00 AM - 9:00 AM',
+        venue: 'Elite Training Center'
+      },
+      coach: {
+        name: 'Coach Rajesh',
+        experience: '15 years'
+      }
+    },
+    {
+      id: '4',
+      title: 'Corporate Cricket Program',
+      category: 'corporate',
+      description: 'Designed for corporate teams to improve cricket skills & team dynamics. Blends fitness, strategy & leadership in a fun, engaging format.',
+      ageGroup: '22+ years',
+      level: 'All Levels',
+      icon: '🏢',
+      color: 'from-green-400 to-green-600',
+      image: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      features: [
+        'Skill Training - Improve batting, bowling & fielding',
+        'Fitness & Strength - Build endurance & prevent injuries',
+        'Team building exercises',
+        'Corporate tournaments'
+      ],
+      schedule: {
+        days: ['Saturday', 'Sunday'],
+        time: '9:00 AM - 12:00 PM',
+        venue: 'Corporate Training Ground'
+      },
+      coach: {
+        name: 'Coach Arjun',
+        experience: '8 years'
+      }
     }
-    
-    return price;
+  ];
+
+  const categories = [
+    { id: 'all', name: 'All Programs', icon: '🏏' },
+    { id: 'group', name: 'Group Training', icon: '👥' },
+    { id: 'individual', name: 'Individual', icon: '🎯' },
+    { id: 'elite', name: 'Elite', icon: '🥇' },
+    { id: 'corporate', name: 'Corporate', icon: '🏢' }
+  ];
+
+  const filteredPrograms = selectedCategory === 'all' 
+    ? programs 
+    : programs.filter(program => program.category === selectedCategory);
+
+  const handleEnrollNow = (programId: string) => {
+    navigate('/contact');
   };
-
-  const handleProgramClick = (programId: string) => {
-    navigate(`/programs/${programId}`);
-  };
-
-  const filteredPrograms = programs
-    .filter(program => {
-      // Search filter
-      if (searchTerm && !program.title.toLowerCase().includes(searchTerm.toLowerCase()) && 
-          !program.description.toLowerCase().includes(searchTerm.toLowerCase())) {
-        return false;
-      }
-      
-      // Category filter
-      if (categoryFilter !== 'all' && program.category !== categoryFilter) {
-        return false;
-      }
-      
-      // Level filter
-      if (levelFilter !== 'all' && program.level !== levelFilter) {
-        return false;
-      }
-      
-      return true;
-    })
-    .sort((a, b) => {
-      // Sort options
-      switch (sortBy) {
-        case 'price-low':
-          return calculateDiscount(a.price, a.discount) - calculateDiscount(b.price, b.discount);
-        case 'price-high':
-          return calculateDiscount(b.price, b.discount) - calculateDiscount(a.price, a.discount);
-        case 'name-asc':
-          return a.title.localeCompare(b.title);
-        case 'name-desc':
-          return b.title.localeCompare(a.title);
-        default:
-          return 0;
-      }
-    });
-
-  if (loading) {
-    return (
-      <div>
-        <Navbar />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="mb-8">
-            <Skeleton className="h-12 w-1/3 mb-4" />
-            <Skeleton className="h-6 w-2/3 mb-8" />
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Skeleton key={i} className="h-96 w-full rounded-lg" />
-            ))}
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div>
-        <Navbar />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-8 rounded-lg">
-            <h2 className="text-2xl font-bold mb-4">Error Loading Programs</h2>
-            <p className="mb-6">{error}</p>
-            <Button onClick={() => window.location.reload()}>
-              Try Again
-            </Button>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div>
       <Navbar />
-      
-      <div className="bg-gradient-to-b from-cricket-green/10 to-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold font-poppins heading-gradient mb-4">
-              Cricket Training Programs
-            </h1>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-              Explore our comprehensive range of cricket programs designed for all ages and skill levels,
-              each crafted to unlock your full potential on the field.
-            </p>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+        {/* Hero Section */}
+        <section className="relative py-20 bg-gradient-to-r from-cricket-green to-cricket-orange overflow-hidden">
+          <div className="absolute inset-0 bg-black/20"></div>
           
-          {/* Filters */}
-          <div className="mb-12 bg-white p-6 rounded-lg shadow-md">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="relative">
-                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <Input
-                  placeholder="Search programs..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              
-              <div>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="junior">Junior</SelectItem>
-                    <SelectItem value="youth">Youth</SelectItem>
-                    <SelectItem value="adult">Adult</SelectItem>
-                    <SelectItem value="elite">Elite</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Select value={levelFilter} onValueChange={setLevelFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Levels</SelectItem>
-                    <SelectItem value="beginner">Beginner</SelectItem>
-                    <SelectItem value="intermediate">Intermediate</SelectItem>
-                    <SelectItem value="advanced">Advanced</SelectItem>
-                    <SelectItem value="mixed">Mixed</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sort By" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="default">Default</SelectItem>
-                    <SelectItem value="price-low">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high">Price: High to Low</SelectItem>
-                    <SelectItem value="name-asc">Name: A to Z</SelectItem>
-                    <SelectItem value="name-desc">Name: Z to A</SelectItem>
-                  </SelectContent>
-                </Select>
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div>
+              <h1 className="text-5xl md:text-7xl font-bold font-poppins text-white mb-6">
+                Our Training
+                <span className="block text-white">Programs</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
+                Choose from our comprehensive range of cricket training programs designed to elevate your game at every level
+              </p>
+              <div className="flex justify-center">
+                <div className="bg-white/10 backdrop-blur-md rounded-full px-6 py-3 border border-white/20">
+                  <span className="text-white font-semibold">🎯 Find Your Perfect Program</span>
+                </div>
               </div>
             </div>
-            
-            {(searchTerm || categoryFilter !== 'all' || levelFilter !== 'all') && (
-              <div className="mt-4 flex items-center">
-                <FilterIcon className="h-4 w-4 text-cricket-orange mr-2" />
-                <span className="text-sm text-gray-600">
-                  Showing {filteredPrograms.length} of {programs.length} programs
-                </span>
-                
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="ml-4 text-sm"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setCategoryFilter('all');
-                    setLevelFilter('all');
-                    setSortBy('default');
-                  }}
+          </div>
+        </section>
+
+        {/* Category Filter */}
+        <section className="py-12 bg-white shadow-sm sticky top-0 z-40">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-wrap justify-center gap-4">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`flex items-center space-x-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 ${
+                    selectedCategory === category.id
+                      ? 'bg-cricket-orange text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
                 >
-                  Clear Filters
-                </Button>
-              </div>
-            )}
-          </div>
-          
-          {/* Programs Grid */}
-          {filteredPrograms.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <h3 className="text-2xl font-semibold text-gray-700 mb-2">No Programs Found</h3>
-              <p className="text-gray-600 mb-6">Try adjusting your search or filter criteria</p>
-              <Button 
-                onClick={() => {
-                  setSearchTerm('');
-                  setCategoryFilter('all');
-                  setLevelFilter('all');
-                  setSortBy('default');
-                }}
-              >
-                View All Programs
-              </Button>
+                  <span className="text-xl">{category.icon}</span>
+                  <span>{category.name}</span>
+                </button>
+              ))}
             </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredPrograms.map((program) => {
-                const discountedPrice = calculateDiscount(program.price, program.discount);
-                const hasDiscount = discountedPrice < program.price;
-                
-                return (
-                  <Card 
-                    key={program._id} 
-                    className="group card-hover gradient-card border-0 shadow-xl overflow-hidden bg-white relative animate-bounceIn cursor-pointer"
-                    onClick={() => handleProgramClick(program._id)}
-                  >
-                    {/* Background Image with Enhanced Effects */}
-                    <div className="image-overlay absolute inset-0 overflow-hidden">
-                      <img
-                        src={program.image}
-                        alt={program.title}
-                        className="w-full h-full object-cover opacity-10 group-hover:opacity-20 image-zoom transition-all duration-500"
-                      />
-                    </div>
-                    
-                    {/* Gradient Border Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-cricket-orange/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <CardHeader className="relative z-10 text-center pb-4">
-                      {/* Enhanced Icon with Multiple Animations */}
-                      <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r ${program.color || 'from-cricket-orange to-cricket-gold'} text-white text-3xl mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg animate-zoomIn animate-heartbeat`}>
-                        {program.icon}
+          </div>
+        </section>
+
+        {/* Programs Grid */}
+        <section className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-2 gap-8">
+              {filteredPrograms.map((program, index) => (
+                <Card 
+                  key={program.id} 
+                  className={`group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 bg-gradient-to-br ${program.color} text-white`}
+                >
+                  {/* Background Image */}
+                  <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500">
+                    <img
+                      src={program.image}
+                      alt={program.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative z-10">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <div className="text-4xl">{program.icon}</div>
+                        <div>
+                          <CardTitle className="text-2xl font-bold font-poppins text-white mb-2">
+                            {program.title}
+                          </CardTitle>
+                          <div className="flex flex-wrap gap-2">
+                            <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                              {program.level}
+                            </Badge>
+                            <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                              {program.ageGroup}
+                            </Badge>
+                          </div>
+                        </div>
                       </div>
-                      
-                      {/* Animated Title */}
-                      <CardTitle className="text-xl font-poppins text-cricket-green mb-3 group-hover:text-cricket-orange transition-colors duration-300 animate-slideUp">
-                        {program.title}
-                      </CardTitle>
-                      
-                      {/* Description with Animation */}
-                      <p className="text-gray-600 text-sm leading-relaxed animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
-                        {program.description.length > 120 
-                          ? `${program.description.substring(0, 120)}...` 
-                          : program.description}
-                      </p>
+                      <p className="text-white/90 leading-relaxed">{program.description}</p>
                     </CardHeader>
-                    
-                    <CardContent className="relative z-10 space-y-6">
-                      {/* Enhanced Features List */}
-                      <div className="space-y-3">
-                        {program.features.slice(0, 3).map((feature, idx) => (
-                          <div 
-                            key={idx} 
-                            className={`flex items-center space-x-3 group/item animate-slideInLeft stagger-${idx + 1}`}
-                          >
-                            <div className="w-5 h-5 bg-cricket-orange rounded-full flex items-center justify-center group-hover/item:scale-110 transition-transform duration-200 animate-bounceIn">
-                              <span className="text-white text-xs font-bold">✓</span>
-                            </div>
-                            <span className="text-gray-700 text-sm group-hover/item:text-cricket-green transition-colors duration-200">
-                              {feature}
-                            </span>
+
+                    <CardContent className="space-y-6">
+                      {/* Schedule Info */}
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                        <h4 className="font-semibold text-white mb-3 flex items-center">
+                          <span className="mr-2">📅</span> Schedule
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4 text-sm text-white/90">
+                          <div>
+                            <span className="font-medium">Days:</span>
+                            <div>{program.schedule.days.join(', ')}</div>
                           </div>
-                        ))}
-                        
-                        {program.features.length > 3 && (
-                          <div className="text-center text-sm text-cricket-orange">
-                            +{program.features.length - 3} more features
+                          <div>
+                            <span className="font-medium">Time:</span>
+                            <div>{program.schedule.time}</div>
                           </div>
-                        )}
+                          <div className="col-span-2">
+                            <span className="font-medium">Venue:</span>
+                            <div>{program.schedule.venue}</div>
+                          </div>
+                        </div>
                       </div>
-                      
-                      {/* Enhanced Pricing Section */}
-                      <div className="pt-4 border-t border-gray-100">
-                        <div className="flex justify-between items-center mb-2 animate-slideInRight">
-                          <span className="text-gray-500 text-sm">Duration:</span>
-                          <span className="font-medium text-cricket-green animate-shimmer">{program.duration}</span>
+
+                      {/* Coach Info */}
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                        <h4 className="font-semibold text-white mb-3 flex items-center">
+                          <span className="mr-2">👨‍🏫</span> Coach
+                        </h4>
+                        <div className="text-sm text-white/90">
+                          <div className="font-medium">{program.coach.name}</div>
+                          <div>{program.coach.experience} experience</div>
                         </div>
-                        <div className="flex justify-between items-center mb-2 animate-slideInRight">
-                          <span className="text-gray-500 text-sm">Age Group:</span>
-                          <span className="font-medium text-cricket-green animate-shimmer">{program.ageGroup}</span>
+                      </div>
+
+                      {/* Features List */}
+                      <div>
+                        <h4 className="font-semibold text-white mb-3 flex items-center">
+                          <span className="mr-2">🎯</span> What You'll Learn
+                        </h4>
+                        <div className="space-y-2">
+                          {program.features.map((feature, idx) => (
+                            <div key={idx} className="flex items-start space-x-2 text-white/90 text-sm">
+                              <span className="text-yellow-300 mt-1">✓</span>
+                              <span>{feature}</span>
+                            </div>
+                          ))}
                         </div>
-                        <div className="flex justify-between items-center mb-6 animate-slideInRight" style={{ animationDelay: '0.1s' }}>
-                          <span className="text-gray-500 text-sm">Price:</span>
-                          <div className="flex items-center">
-                            <BadgeIndianRupeeIcon className="h-4 w-4 mr-1 text-cricket-orange" />
-                            {hasDiscount ? (
-                              <div className="flex flex-col items-end">
-                                <span className="text-sm line-through text-gray-400">₹{program.price.toLocaleString()}</span>
-                                <span className="text-xl font-bold text-cricket-orange animate-shimmer">
-                                  ₹{discountedPrice.toLocaleString()}
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-xl font-bold text-cricket-orange animate-shimmer">
-                                ₹{program.price.toLocaleString()}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {/* Enhanced Button */}
-                        <Button 
-                          type="button"
-                          className="w-full bg-gradient-to-r from-cricket-green to-cricket-orange hover:from-cricket-orange hover:to-cricket-green text-white font-semibold py-3 rounded-full transform transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ripple-effect animate-bounceIn"
-                          style={{ animationDelay: '0.3s' }}
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex space-x-3 pt-4">
+                        <Button
+                          onClick={() => handleEnrollNow(program.id)}
+                          className="flex-1 bg-white text-cricket-green hover:bg-gray-100 font-semibold py-3 rounded-full transition-all duration-300 transform hover:scale-105"
                         >
-                          View Details
+                          🚀 Enroll Now
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="px-6 border-white/30 text-white hover:bg-white/10 rounded-full transition-all duration-300"
+                          onClick={() => navigate('/contact')}
+                        >
+                          📞 Contact
                         </Button>
                       </div>
                     </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
-          
-          {/* Call to Action */}
-          <div className="mt-16 text-center animate-fadeInUp">
-            <div className="bg-gradient-to-r from-cricket-green to-cricket-orange rounded-2xl p-8 text-white shadow-2xl">
-              <h3 className="text-3xl font-bold font-poppins mb-4">Not Sure Which Program to Choose?</h3>
-              <p className="text-xl mb-6 opacity-90">Book a free consultation with our expert coaches to find the perfect program for your goals.</p>
-              <Button 
-                type="button"
-                onClick={() => navigate('/contact')}
-                className="bg-white text-cricket-green hover:bg-gray-100 px-8 py-3 font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
-              >
-                📞 Book Free Consultation
-              </Button>
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* Call to Action */}
+        <section className="py-20 bg-gradient-to-r from-cricket-green to-cricket-orange">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div>
+              <h2 className="text-4xl font-bold font-poppins text-white mb-6">
+                Ready to Start Your Cricket Journey?
+              </h2>
+              <p className="text-xl text-white/90 mb-8">
+                Join hundreds of successful students who have transformed their game with our expert coaching
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  size="lg"
+                  className="bg-white text-cricket-green hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
+                  onClick={() => navigate('/contact')}
+                >
+                  📞 Book Free Consultation
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-white text-white hover:bg-white hover:text-cricket-green px-8 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
+                  onClick={() => navigate('/')}
+                >
+                  🏠 Back to Home
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-      
       <Footer />
     </div>
   );

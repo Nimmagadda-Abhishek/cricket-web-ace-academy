@@ -354,13 +354,7 @@ const ProgramDetails: React.FC = () => {
                     </div>
                   </div>
                   
-                  <Button 
-                    variant="outline" 
-                    className="mt-2"
-                    onClick={() => navigate(`/coaches/${program.coach._id}`)}
-                  >
-                    View Coach Profile
-                  </Button>
+
                 </TabsContent>
               </Tabs>
               

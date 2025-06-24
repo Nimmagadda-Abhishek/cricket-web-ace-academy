@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facilities Page Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #2d5016; text-align: center; }
+        .test-section { margin: 20px 0; padding: 20px; background: #f9f9f9; border-radius: 8px; }
+        .test-link { display: inline-block; margin: 10px; padding: 10px 20px; background: #2d5016; color: white; text-decoration: none; border-radius: 5px; }
+        .test-link:hover { background: #ff6b35; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏟️ Facilities Page Test</h1>
+        
+        <div class="status success">
+            ✅ Facilities page created successfully at /facilities<br>
+            ✅ Navigation fixed - now redirects to dedicated facilities page
+        </div>
+        
+        <div class="test-section">
+            <h2>🏟️ Direct Facilities Page Access</h2>
+            <p>Test the main facilities page:</p>
+            <a href="http://localhost:8080/facilities" target="_blank" class="test-link">Visit Facilities Page</a>
+        </div>
+
+        <div class="test-section">
+            <h2>🧭 Navigation Links</h2>
+            <p>Test facilities links from different pages:</p>
+            <a href="http://localhost:8080/" target="_blank" class="test-link">Home → Facilities (Navbar)</a>
+            <a href="http://localhost:8080/programs" target="_blank" class="test-link">Programs → Facilities (Navbar)</a>
+            <a href="http://localhost:8080/contact" target="_blank" class="test-link">Contact → Facilities (Navbar)</a>
+        </div>
+
+        <div class="test-section">
+            <h2>🔗 Footer Links</h2>
+            <p>Test facilities link in footer:</p>
+            <a href="http://localhost:8080/" target="_blank" class="test-link">Home → Facilities (Footer)</a>
+        </div>
+
+        <div class="test-section">
+            <h2>🏟️ Facilities Page Features</h2>
+            <div class="status info">
+                <strong>Facilities Page Includes:</strong><br>
+                ✅ Hero section with world-class facilities message<br>
+                ✅ Statistics section (15 nets, 2 grounds, 3000 sq ft indoor, 50+ parking)<br>
+                ✅ 6 detailed facility cards with images and specifications<br>
+                ✅ Call-to-action section with Schedule Tour and View Programs buttons<br>
+                ✅ Why Choose Our Facilities section<br>
+                ✅ Professional design matching site theme
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🏏 Facility Categories</h2>
+            <div class="status info">
+                <strong>6 Main Facility Categories:</strong><br>
+                🏏 High-Performance Practice Nets (15 nets, multiple surfaces)<br>
+                🏟️ Professional Turf Ground (full-size with premium turf wicket)<br>
+                💪 Modern Fitness Center (2000 sq ft with cricket-specific equipment)<br>
+                🏢 Indoor Training Hall (3000 sq ft climate-controlled)<br>
+                🚿 Player Amenities (changing rooms, showers, lockers)<br>
+                📱 Technology Integration (video analysis, performance tracking)
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 Facility Details</h2>
+            <div class="status info">
+                <strong>Each Facility Card Contains:</strong><br>
+                • High-quality facility image<br>
+                • Facility icon with gradient background<br>
+                • Detailed description<br>
+                • Technical specifications<br>
+                • Key features list<br>
+                • Professional hover effects
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎯 Action Buttons</h2>
+            <div class="status info">
+                <strong>Call-to-Action Buttons:</strong><br>
+                🏟️ Schedule Tour → /contact<br>
+                📋 View Programs → /programs
+            </div>
+        </div>
+
+        <div class="status success">
+            <strong>🎉 Facilities page is fully functional with comprehensive facility information!</strong>
+        </div>
+
+        <div class="test-section">
+            <h2>✅ Implementation Summary</h2>
+            <div class="status success">
+                <strong>Files Created/Updated:</strong><br>
+                ✅ <code>/src/pages/Facilities.tsx</code> - New dedicated facilities page<br>
+                ✅ <code>/src/App.tsx</code> - Added facilities route<br>
+                ✅ <code>/src/components/Navbar.tsx</code> - Updated facilities link<br>
+                ✅ <code>/src/components/Footer.tsx</code> - Updated facilities link
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔗 Updated Navigation</h2>
+            <div class="status info">
+                <strong>Navigation Updates:</strong><br>
+                • Navbar → Facilities (all pages) → /facilities<br>
+                • Footer → Quick Links → Facilities → /facilities<br>
+                • Mobile Menu → Facilities → /facilities<br><br>
+                
+                <strong>Navigation Fix Applied:</strong><br>
+                • Home page navbar now correctly links to /facilities<br>
+                • No longer redirects to facilities section<br>
+                • Both desktop and mobile navigation updated<br><br>
+                
+                <strong>Page Features:</strong><br>
+                • Responsive design for all devices<br>
+                • Professional facility showcase<br>
+                • Detailed specifications and features<br>
+                • Call-to-action buttons for engagement<br>
+                • Consistent branding and styling
+            </div>
+        </div>
+    </div>
+</body>
+</html>

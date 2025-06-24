@@ -1,17 +1,71 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+  
+  // Slideshow images - cricket and coaching related
+  const slides = [
+    {
+      url: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+      alt: 'Cricket stadium with players'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+      alt: 'Cricket coaching session'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+      alt: 'Cricket player batting'
+    }
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Auto-advance slideshow
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+
   return (
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Background Image with Overlay */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center parallax-bg"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`
-        }}
-      ></div>
+      {/* Background Slideshow */}
+      <div className="absolute inset-0 slideshow-container">
+        {slides.map((slide, index) => (
+          <div
+            key={index}
+            className={`slide bg-cover bg-center parallax-bg ${
+              index === currentSlide ? 'active' : ''
+            }`}
+            style={{
+              backgroundImage: `url('${slide.url}')`
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Slideshow Indicators */}
+      <div className="slideshow-indicators">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            className={`indicator ${index === currentSlide ? 'active' : ''}`}
+            onClick={() => goToSlide(index)}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+      
       <div className="absolute inset-0 gradient-hero opacity-90"></div>
       <div className="absolute inset-0 bg-black/30"></div>
       
@@ -35,38 +89,35 @@ const HeroSection = () => {
           </div>
           
           <h1 className="text-5xl md:text-8xl font-bold font-poppins text-white mb-6 text-shadow">
-            Master the Art of
-            <span className="block gradient-text">Cricket</span>
+            Kalyan Cricket
+            <span className="block gradient-text">Academy</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
-            Transform your passion into perfection with professional coaching, 
-            world-class facilities, and personalized training programs designed for champions.
+            Structured training for long-term growth with hands-on coaching, match simulations & real-game exposure. 
+            Focus on skill-building, teamwork & performance excellence.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
             <Button 
               size="lg" 
               type="button"
-              onClick={() => {
-                console.log("Start Your Journey clicked");
-                document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' });
-              }}
+              onClick={() => navigate('/contact')}
               className="bg-cricket-orange hover:bg-cricket-orange/90 text-white px-10 py-6 text-lg font-semibold rounded-full hover-glow ripple-effect transform transition-all duration-300 hover:scale-105"
             >
-              🚀 Start Your Journey
+              🚀 Book A Demo
             </Button>
             <Button 
               size="lg" 
               type="button"
               variant="outline" 
               onClick={() => {
-                console.log("Watch Demo clicked");
-                alert("Demo video will play here");
+                console.log("View Programs clicked");
+                document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' });
               }}
               className="border-2 border-white text-white hover:bg-white hover:text-cricket-green px-10 py-6 text-lg font-semibold rounded-full glass-effect transform transition-all duration-300 hover:scale-105"
             >
-              📹 Watch Demo
+              📋 View Programs
             </Button>
           </div>
 

@@ -5,32 +5,32 @@ import { Card, CardContent } from '@/components/ui/card';
 const TestimonialsSection = () => {
   const testimonials = [
     {
-      name: 'Alex Rodriguez',
-      role: 'State Team Player',
-      content: 'Kalyan Cricket Academy transformed my game completely. The coaching staff helped me develop both technically and mentally. Now I\'m playing at state level!',
+      name: 'Rajnikanth Reddy',
+      role: 'Parent',
+      content: 'Joined my kid in Kalyan Cricket Academy for a month while we were on vacation in India. Have to say the facility and coaching is really good. The coaches were very helpful in identifying any flaws with technique and correct them to improve his shot making, bowling and fielding. Would highly recommend it if you are looking for a cricket academy.',
       rating: 5,
       image: '🏏'
     },
     {
-      name: 'Emma Thompson',
-      role: 'Junior Player',
-      content: 'I joined as a complete beginner and now I\'m captain of my school team. The coaches here make learning fun and challenging at the same time.',
+      name: 'D. Sai Jayanth',
+      role: 'Student',
+      content: 'KCA is one of the best cricket academy in Hyderabad. I have visited the place, coaches are really good, they focus on each and every player and teach discipline along with the game. If you have a good talent and wants to do more in cricket, you must join Kalyan cricket academy go visit the place and see for yourself.',
       rating: 5,
       image: '⭐'
     },
     {
-      name: 'James Wilson',
-      role: 'Club Captain',
-      content: 'The facilities here are incredible. The indoor nets with video analysis helped me identify and fix technical issues I never knew I had.',
+      name: 'Nishkala Donthireddy',
+      role: 'Student',
+      content: 'The academy boasts a team of experienced coaches who have played at the highest levels of the game. The academy\'s infrastructure is top-notch, with well-maintained pitches, practice nets, and fitness areas. The coaching experience at this Cricket Academy is exceptional, Whether am beginner the coaching here is top level.',
       rating: 5,
       image: '🎯'
     },
     {
-      name: 'Sarah Mitchell',
-      role: 'Parent',
-      content: 'My daughter has been training here for 2 years. Not only has her cricket improved, but so has her confidence and leadership skills.',
+      name: 'Academy Student',
+      role: 'Elite Program',
+      content: 'KCA is more than just a coaching center; it fosters a community of students, coaches, and parents working together to develop skilled cricketers. The academy aims to identify talented individuals passionate about cricket and offers them the necessary support and guidance to excel at various levels.',
       rating: 5,
-      image: '👨‍👩‍👧'
+      image: '🏆'
     }
   ];
 

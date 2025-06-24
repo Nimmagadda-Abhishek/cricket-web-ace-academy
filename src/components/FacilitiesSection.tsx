@@ -1,44 +1,65 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
 
 const FacilitiesSection = () => {
+  const navigate = useNavigate();
+  
   const facilities = [
     {
-      title: 'Indoor Training Nets',
-      description: 'Climate-controlled indoor nets with professional bowling machines and video analysis systems.',
-      features: ['6 professional nets', 'Video analysis', 'Bowling machines', 'Climate controlled'],
+      title: 'High-Performance Practice Nets',
+      description: '15 nets with Turf, Astro-Turf, Cement & Matting surfaces. Train in diverse conditions to improve batting, bowling & adaptability.',
+      features: ['15 professional nets', 'Multiple surface types', 'Turf & Astro-Turf', 'Cement & Matting surfaces'],
+      icon: '🏏'
+    },
+    {
+      title: 'All-Weather Indoor Cricket Nets',
+      description: 'Indoor practice for uninterrupted training, rain or shine. Perfect for skill refinement, technical drills & high-intensity sessions.',
+      features: ['Weather-proof training', 'Technical drill focus', 'High-intensity sessions', 'Year-round availability'],
       icon: '🏠'
     },
     {
-      title: 'Outdoor Practice Grounds',
-      description: 'Full-size grass wickets and practice areas for match simulation and skill development.',
-      features: ['3 grass wickets', 'Practice pitches', 'Boundary ropes', 'Flood lighting'],
-      icon: '🌱'
+      title: 'Floodlit Nets & Ground',
+      description: 'Evening & night practice with professional floodlit setup. Enhances visibility, reflexes & adaptability to different lighting conditions.',
+      features: ['Professional floodlights', 'Evening & night practice', 'Enhanced visibility training', 'Reflex improvement'],
+      icon: '💡'
     },
     {
-      title: 'Fitness Center',
-      description: 'Modern gym equipped with cricket-specific training equipment and recovery facilities.',
-      features: ['Modern equipment', 'Cricket-specific training', 'Recovery room', 'Physiotherapy'],
+      title: 'Full-Fledged Match Ground',
+      description: 'International-standard ground for matches & professional training. Ideal for team games, simulations & skill enhancement.',
+      features: ['International standards', 'Match simulations', 'Team games', 'Professional training'],
+      icon: '🏟️'
+    },
+    {
+      title: 'Strength & Conditioning Center',
+      description: 'Cricket-specific training with state-of-the-art fitness equipment. Expert coaches for strength, endurance & agility development.',
+      features: ['State-of-the-art equipment', 'Cricket-specific training', 'Strength & endurance', 'Agility development'],
       icon: '💪'
     },
     {
-      title: 'Sports Science Lab',
-      description: 'Advanced biomechanical analysis and performance monitoring equipment.',
-      features: ['Motion capture', 'Performance analysis', 'Biomechanics', 'Speed guns'],
-      icon: '🔬'
+      title: 'Advanced Video Analysis',
+      description: 'Dedicated setup for performance tracking & technique improvement. Personalized feedback for refining gameplay.',
+      features: ['Performance tracking', 'Technique analysis', 'Personalized feedback', 'Gameplay refinement'],
+      icon: '📹'
     },
     {
-      title: 'Meeting Rooms',
-      description: 'Modern classrooms for theoretical sessions, strategy discussions, and mental training.',
-      features: ['Smart boards', 'Video analysis', 'Strategy sessions', 'Mental training'],
-      icon: '📚'
+      title: 'HCA League Club Teams',
+      description: 'Participation in One-Day, Two-Day & Three-Day HCA League matches. Build match temperament with top-level competition.',
+      features: ['HCA League participation', 'Multiple match formats', 'Competitive exposure', 'Match temperament building'],
+      icon: '🏆'
     },
     {
-      title: 'Pro Shop',
-      description: 'Fully stocked cricket equipment store with latest gear and custom fitting services.',
-      features: ['Latest equipment', 'Custom fitting', 'Repairs service', 'Expert advice'],
-      icon: '🛍️'
+      title: 'International Exposure & Tie-Ups',
+      description: 'Official collaborations with clubs in State and Sri Lanka & Nepal. Exclusive opportunities to train & play with international teams.',
+      features: ['International collaborations', 'Sri Lanka & Nepal tie-ups', 'Exclusive opportunities', 'International exposure'],
+      icon: '🌍'
+    },
+    {
+      title: 'Nutrition & Recovery Program',
+      description: 'Sports nutrition plans for peak performance & endurance. Physiotherapy, ice baths & injury prevention programs.',
+      features: ['Sports nutrition plans', 'Physiotherapy services', 'Ice bath facilities', 'Injury prevention'],
+      icon: '🥗'
     }
   ];
 
@@ -90,11 +111,7 @@ const FacilitiesSection = () => {
           </p>
           <button 
             type="button"
-            onClick={() => {
-              console.log("Schedule Tour clicked");
-              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-              alert("Please fill out the contact form to schedule a facility tour!");
-            }}
+            onClick={() => navigate('/contact')}
             className="bg-white text-cricket-green px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
           >
             Schedule Tour

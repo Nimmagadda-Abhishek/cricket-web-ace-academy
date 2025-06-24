@@ -137,24 +137,6 @@ export const api = {
       apiRequest<null>(`/programs/${id}`, 'DELETE'),
   },
   
-  // Coaches endpoints
-  coaches: {
-    getAll: () => 
-      apiRequest<{ coaches: any[] }>('/coaches', 'GET'),
-    
-    getById: (id: string) => 
-      apiRequest<{ coach: any }>(`/coaches/${id}`, 'GET'),
-    
-    create: (coachData: any) => 
-      apiRequest<{ coach: any }>('/coaches', 'POST', coachData),
-    
-    update: (id: string, coachData: any) => 
-      apiRequest<{ coach: any }>(`/coaches/${id}`, 'PUT', coachData),
-    
-    delete: (id: string) => 
-      apiRequest<null>(`/coaches/${id}`, 'DELETE'),
-  },
-  
   // Contacts endpoints
   contacts: {
     create: (contactData: any) => 

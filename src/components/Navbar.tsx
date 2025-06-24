@@ -12,18 +12,19 @@ const Navbar = () => {
   const navigation = isHomePage
     ? [
         { name: 'Home', href: '#home' },
-        { name: 'About', href: '#about' },
+        { name: 'Facilities', href: '/facilities' },
         { name: 'Programs', href: '#programs' },
-        { name: 'Coaches', href: '#coaches' },
-        { name: 'Facilities', href: '#facilities' },
         { name: 'Gallery', href: '#gallery' },
-        { name: 'Contact', href: '#contact' },
+        { name: 'About', href: '#about' },
+        { name: 'Contact', href: '/contact' },
       ]
     : [
         { name: 'Home', href: '/' },
+        { name: 'Facilities', href: '/facilities' },
         { name: 'Programs', href: '/programs' },
-        { name: 'Coaches', href: '/coaches' },
-        { name: 'Contact', href: '/#contact' },
+        { name: 'Gallery', href: '/#gallery' },
+        { name: 'About', href: '/#about' },
+        { name: 'Contact', href: '/contact' },
       ];
 
   return (
@@ -40,16 +41,10 @@ const Navbar = () => {
           
           <div className="hidden md:flex items-center space-x-8">
             {navigation.map((item, index) => (
-              isHomePage || item.href.startsWith('/') ? (
+              item.href.startsWith('/') ? (
                 <Link
                   key={item.name}
-                  to={item.href.startsWith('/') ? item.href : '/'}
-                  onClick={(e) => {
-                    if (item.href.startsWith('#')) {
-                      e.preventDefault();
-                      document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
+                  to={item.href}
                   className={`text-gray-700 hover:text-cricket-orange transition-all duration-300 font-medium relative group animate-slideInRight stagger-${index + 1}`}
                 >
                   {item.name}
@@ -59,6 +54,12 @@ const Navbar = () => {
                 <a
                   key={item.name}
                   href={item.href}
+                  onClick={(e) => {
+                    if (item.href.startsWith('#')) {
+                      e.preventDefault();
+                      document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                   className={`text-gray-700 hover:text-cricket-orange transition-all duration-300 font-medium relative group animate-slideInRight stagger-${index + 1}`}
                 >
                   {item.name}
@@ -99,18 +100,12 @@ const Navbar = () => {
         <div className="md:hidden animate-slideDown">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
             {navigation.map((item, index) => (
-              isHomePage || item.href.startsWith('/') ? (
+              item.href.startsWith('/') ? (
                 <Link
                   key={item.name}
-                  to={item.href.startsWith('/') ? item.href : '/'}
+                  to={item.href}
                   className={`block px-3 py-2 text-gray-700 hover:text-cricket-orange hover:bg-cricket-orange/10 transition-all duration-300 rounded-lg animate-slideInLeft stagger-${index + 1}`}
-                  onClick={(e) => {
-                    setIsMenuOpen(false);
-                    if (item.href.startsWith('#')) {
-                      e.preventDefault();
-                      document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
@@ -119,7 +114,13 @@ const Navbar = () => {
                   key={item.name}
                   href={item.href}
                   className={`block px-3 py-2 text-gray-700 hover:text-cricket-orange hover:bg-cricket-orange/10 transition-all duration-300 rounded-lg animate-slideInLeft stagger-${index + 1}`}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => {
+                    setIsMenuOpen(false);
+                    if (item.href.startsWith('#')) {
+                      e.preventDefault();
+                      document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                 >
                   {item.name}
                 </a>
