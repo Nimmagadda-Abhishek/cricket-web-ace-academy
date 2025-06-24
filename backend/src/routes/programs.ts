@@ -38,7 +38,7 @@ router.use(protect);
 router.get('/',
   checkPermission('programs.view'),
   logActivity('view_programs', 'programs'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const {
         category,
@@ -66,7 +66,7 @@ router.get('/',
         query.status = status;
       }
 
-      if (search) {
+      if (search && typeof search === 'string') {
         query.$or = [
           { title: { $regex: search, $options: 'i' } },
           { description: { $regex: search, $options: 'i' } },
@@ -81,7 +81,7 @@ router.get('/',
 
       // Execute query with population
       const programs = await Program.find(query)
-        .populate('coach', 'name email specialization rating')
+        .populate('coach', 'name email specialization')
         .sort({ [sortBy as string]: sortOrder === 'desc' ? -1 : 1 })
         .skip(skip)
         .limit(limitNum);
@@ -118,10 +118,10 @@ router.get('/',
 router.get('/:id',
   checkPermission('programs.view'),
   logActivity('view_program', 'program'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const program = await Program.findById(req.params.id)
-        .populate('coach', 'name email phone specialization rating bio');
+        .populate('coach', 'name email specialization experience rating');
 
       if (!program) {
         return res.status(404).json({
@@ -130,22 +130,18 @@ router.get('/:id',
         });
       }
 
-      // Get enrolled students count and recent enrollments
-      const [studentsCount, recentStudents] = await Promise.all([
-        Student.countDocuments({ program: program._id, isActive: true }),
-        Student.find({ program: program._id, isActive: true })
-          .select('name email joinDate status')
-          .sort({ joinDate: -1 })
-          .limit(5)
-      ]);
+      // Get enrolled students count
+      const enrolledStudents = await Student.countDocuments({
+        program: program._id,
+        isActive: true
+      });
 
       res.json({
         status: 'success',
         data: {
           program: {
             ...program.toObject(),
-            studentsCount,
-            recentStudents
+            enrolledStudents
           }
         }
       });
@@ -164,7 +160,7 @@ router.get('/:id',
 router.post('/',
   checkPermission('programs.create'),
   logActivity('create_program', 'program'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const {
         title,
@@ -184,35 +180,25 @@ router.post('/',
         icon,
         image,
         prerequisites,
-        certificationProvided
+        certificationProvided,
+        discount
       } = req.body;
 
       // Validate required fields
-      if (!title || !description || !ageGroup || !duration || !price || !maxStudents || !level || !category) {
+      if (!title || !description || !ageGroup || !duration || !price || !maxStudents || !features) {
         return res.status(400).json({
           status: 'fail',
-          message: 'Please provide all required fields'
+          message: 'Please provide all required fields: title, description, ageGroup, duration, price, maxStudents, and features'
         });
       }
 
-      // Check if program title already exists
+      // Check if title already exists
       const existingProgram = await Program.findOne({ title });
       if (existingProgram) {
         return res.status(400).json({
           status: 'fail',
           message: 'A program with this title already exists'
         });
-      }
-
-      // Validate coach if provided
-      if (coach) {
-        const coachExists = await Coach.findById(coach);
-        if (!coachExists) {
-          return res.status(400).json({
-            status: 'fail',
-            message: 'Selected coach does not exist'
-          });
-        }
       }
 
       // Create program
@@ -223,38 +209,30 @@ router.post('/',
         duration,
         price,
         maxStudents,
-        features: features || [],
+        currentStudents: 0,
+        features,
         coach,
         schedule: schedule || { days: [], time: '', venue: '' },
-        equipment,
-        level,
-        category,
+        equipment: equipment || { provided: [], required: [] },
+        level: level || 'beginner',
+        category: category || 'junior',
         startDate: startDate || new Date(),
         endDate,
         icon: icon || '🏏',
         image,
         prerequisites: prerequisites || [],
-        certificationProvided: certificationProvided || false
+        certificationProvided: certificationProvided || false,
+        discount
       });
 
       await program.save();
-
-      // Update coach's programs array if assigned
-      if (coach) {
-        await Coach.findByIdAndUpdate(coach, {
-          $addToSet: { programs: program._id }
-        });
-      }
-
-      // Populate coach details for response
-      await program.populate('coach', 'name email specialization');
 
       res.status(201).json({
         status: 'success',
         message: 'Program created successfully',
         data: { program }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating program:', error);
       
       if (error.name === 'ValidationError') {
@@ -279,7 +257,7 @@ router.post('/',
 router.put('/:id',
   checkPermission('programs.edit'),
   logActivity('update_program', 'program'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const programId = req.params.id;
       const updates = req.body;
@@ -291,31 +269,6 @@ router.put('/:id',
           status: 'fail',
           message: 'Program not found'
         });
-      }
-
-      // If coach is being changed
-      if (updates.coach && updates.coach !== program.coach?.toString()) {
-        // Remove program from old coach
-        if (program.coach) {
-          await Coach.findByIdAndUpdate(program.coach, {
-            $pull: { programs: program._id }
-          });
-        }
-
-        // Add program to new coach
-        if (updates.coach) {
-          const newCoach = await Coach.findById(updates.coach);
-          if (!newCoach) {
-            return res.status(400).json({
-              status: 'fail',
-              message: 'Selected coach does not exist'
-            });
-          }
-          
-          await Coach.findByIdAndUpdate(updates.coach, {
-            $addToSet: { programs: program._id }
-          });
-        }
       }
 
       // Update program
@@ -333,7 +286,7 @@ router.put('/:id',
         message: 'Program updated successfully',
         data: { program: updatedProgram }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating program:', error);
       
       if (error.name === 'ValidationError') {
@@ -358,7 +311,7 @@ router.put('/:id',
 router.delete('/:id',
   checkPermission('programs.delete'),
   logActivity('delete_program', 'program'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const program = await Program.findById(req.params.id);
       if (!program) {
@@ -369,7 +322,7 @@ router.delete('/:id',
       }
 
       // Check if program has enrolled students
-      const enrolledStudents = await Student.countDocuments({ 
+      const enrolledStudents = await Student.countDocuments({
         program: program._id, 
         isActive: true 
       });
@@ -412,7 +365,7 @@ router.delete('/:id',
 router.get('/stats/overview',
   checkPermission('programs.view'),
   logActivity('view_program_stats', 'programs'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const [
         totalPrograms,
@@ -530,7 +483,7 @@ router.get('/available/enrollment',
 router.post('/:id/duplicate',
   checkPermission('programs.create'),
   logActivity('duplicate_program', 'program'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const originalProgram = await Program.findById(req.params.id);
       if (!originalProgram) {
@@ -542,15 +495,14 @@ router.post('/:id/duplicate',
 
       // Create duplicate with modified title
       const duplicateData = originalProgram.toObject();
-      delete duplicateData._id;
-      delete duplicateData.createdAt;
-      delete duplicateData.updatedAt;
+      // Remove fields that should not be duplicated
+      const { _id, createdAt, updatedAt, ...programData } = duplicateData;
       
-      duplicateData.title = `${duplicateData.title} (Copy)`;
-      duplicateData.currentStudents = 0;
-      duplicateData.status = 'active';
+      programData.title = `${programData.title} (Copy)`;
+      programData.currentStudents = 0;
+      programData.status = 'active';
 
-      const duplicatedProgram = new Program(duplicateData);
+      const duplicatedProgram = new Program(programData);
       await duplicatedProgram.save();
 
       res.status(201).json({

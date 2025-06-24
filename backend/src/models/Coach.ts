@@ -1,7 +1,8 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 import validator from 'validator';
 
-export interface ICoach extends Document {
+// Define the document interface
+interface ICoachDocument extends Document {
   name: string;
   email: string;
   phone: string;
@@ -54,7 +55,21 @@ export interface ICoach extends Document {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  
+  // Instance methods
+  addReview(studentId: string, rating: number, comment?: string): Promise<ICoachDocument>;
+  getAverageRating(): number;
+  isAvailableOn(day: string, timeSlot?: { start: string; end: string }): boolean;
+  canTakeMorePrograms(maxPrograms?: number): boolean;
 }
+
+// Define the model interface with static methods
+interface ICoachModel extends Model<ICoachDocument> {
+  // Static methods are defined in the schema, no need to redeclare here
+}
+
+// Export the combined interface for external use
+export interface ICoach extends ICoachDocument {}
 
 const CoachSchema: Schema = new Schema({
   name: {
@@ -80,7 +95,7 @@ const CoachSchema: Schema = new Schema({
     trim: true,
     validate: {
       validator: function(v: string) {
-        return /^[\+]?[1-9][\d]{0,15}$/.test(v);
+        return /^[\+]?[1-9][\d\-\s]{0,20}$/.test(v); // International phone format with optional hyphens and spaces
       },
       message: 'Please provide a valid phone number'
     }
@@ -221,7 +236,7 @@ const CoachSchema: Schema = new Schema({
       required: [true, 'Emergency contact is required'],
       validate: {
         validator: function(v: string) {
-          return /^[\+]?[1-9][\d]{0,15}$/.test(v);
+          return /^[\+]?[1-9][\d\-\s]{0,20}$/.test(v); // International phone format with optional hyphens and spaces
         },
         message: 'Please provide a valid emergency contact number'
       }
@@ -342,7 +357,7 @@ CoachSchema.index({ 'rating.average': -1 });
 CoachSchema.index({ name: 'text', bio: 'text' });
 
 // Virtual for age
-CoachSchema.virtual('age').get(function() {
+CoachSchema.virtual('age').get(function(this: ICoachDocument) {
   if (!this.contactInfo?.dateOfBirth) return null;
   const today = new Date();
   const birthDate = new Date(this.contactInfo.dateOfBirth);
@@ -355,12 +370,12 @@ CoachSchema.virtual('age').get(function() {
 });
 
 // Virtual for programs count
-CoachSchema.virtual('programsCount').get(function() {
+CoachSchema.virtual('programsCount').get(function(this: ICoachDocument) {
   return this.programs ? this.programs.length : 0;
 });
 
 // Pre-save middleware
-CoachSchema.pre('save', function(next) {
+CoachSchema.pre('save', function(this: ICoachDocument, next) {
   // Calculate average rating
   if (this.rating.reviews && this.rating.reviews.length > 0) {
     const totalRating = this.rating.reviews.reduce((sum, review) => sum + review.rating, 0);
@@ -377,47 +392,52 @@ CoachSchema.pre('save', function(next) {
 });
 
 // Instance methods
-CoachSchema.methods.addReview = function(studentId: string, rating: number, comment?: string) {
+CoachSchema.methods.addReview = function(this: ICoachDocument, studentId: string, rating: number, comment?: string) {
   // Check if student already reviewed
   const existingReview = this.rating.reviews.find(
-    (review: any) => review.studentId.toString() === studentId
+    (review) => review.studentId.toString() === studentId
   );
   
   if (existingReview) {
     existingReview.rating = rating;
-    existingReview.comment = comment;
+    if (comment !== undefined) {
+      existingReview.comment = comment;
+    }
     existingReview.date = new Date();
   } else {
-    this.rating.reviews.push({
-      studentId,
+    const reviewData: any = {
+      studentId: new mongoose.Types.ObjectId(studentId),
       rating,
-      comment,
       date: new Date()
-    });
+    };
+    if (comment !== undefined) {
+      reviewData.comment = comment;
+    }
+    this.rating.reviews.push(reviewData);
   }
   
   return this.save();
 };
 
-CoachSchema.methods.getAverageRating = function() {
+CoachSchema.methods.getAverageRating = function(this: ICoachDocument) {
   if (this.rating.reviews.length === 0) return 0;
-  const total = this.rating.reviews.reduce((sum: number, review: any) => sum + review.rating, 0);
+  const total = this.rating.reviews.reduce((sum: number, review) => sum + review.rating, 0);
   return Number((total / this.rating.reviews.length).toFixed(1));
 };
 
-CoachSchema.methods.isAvailableOn = function(day: string, timeSlot?: { start: string; end: string }) {
+CoachSchema.methods.isAvailableOn = function(this: ICoachDocument, day: string, timeSlot?: { start: string; end: string }) {
   const dayLower = day.toLowerCase();
   const isAvailableDay = this.availability.days.includes(dayLower);
   
   if (!timeSlot) return isAvailableDay;
   
   // Check if time slot is available
-  return isAvailableDay && this.availability.timeSlots.some((slot: any) => {
+  return isAvailableDay && this.availability.timeSlots.some((slot) => {
     return slot.start <= timeSlot.start && slot.end >= timeSlot.end;
   });
 };
 
-CoachSchema.methods.canTakeMorePrograms = function(maxPrograms = 5) {
+CoachSchema.methods.canTakeMorePrograms = function(this: ICoachDocument, maxPrograms = 5) {
   return this.programs.length < maxPrograms && this.employment.status === 'active';
 };
 
@@ -454,4 +474,4 @@ CoachSchema.statics.getTopRated = function(limit = 5) {
   .limit(limit);
 };
 
-export default mongoose.model<ICoach>('Coach', CoachSchema);
+export default mongoose.model<ICoachDocument, ICoachModel>('Coach', CoachSchema);

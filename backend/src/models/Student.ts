@@ -1,7 +1,19 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 import validator from 'validator';
 
-export interface IStudent extends Document {
+// Define payment history interface
+interface PaymentRecord {
+  month: string;
+  year: number;
+  amount: number;
+  paidDate: Date;
+  status: 'paid' | 'pending' | 'overdue';
+  paymentMethod?: 'cash' | 'card' | 'upi' | 'bank_transfer';
+  transactionId?: string;
+}
+
+// Define the document interface
+interface IStudentDocument extends Document {
   name: string;
   email: string;
   phone: string;
@@ -23,15 +35,7 @@ export interface IStudent extends Document {
     emergencyMedicalInfo?: string;
     bloodGroup?: string;
   };
-  paymentHistory: {
-    month: string;
-    year: number;
-    amount: number;
-    paidDate: Date;
-    status: 'paid' | 'pending' | 'overdue';
-    paymentMethod?: 'cash' | 'card' | 'upi' | 'bank_transfer';
-    transactionId?: string;
-  }[];
+  paymentHistory: PaymentRecord[];
   performance?: {
     skillLevel: 'beginner' | 'intermediate' | 'advanced';
     attendanceRate: number;
@@ -46,7 +50,20 @@ export interface IStudent extends Document {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  
+  // Instance methods
+  getFullPaymentHistory(): PaymentRecord[];
+  calculateTotalPaid(): number;
+  getOverduePayments(): PaymentRecord[];
 }
+
+// Define the model interface with static methods
+interface IStudentModel extends Model<IStudentDocument> {
+  // Static methods are defined in the schema, no need to redeclare here
+}
+
+// Export the combined interface for external use
+export interface IStudent extends IStudentDocument {}
 
 const StudentSchema: Schema = new Schema({
   name: {
@@ -72,7 +89,7 @@ const StudentSchema: Schema = new Schema({
     trim: true,
     validate: {
       validator: function(v: string) {
-        return /^[\+]?[1-9][\d]{0,15}$/.test(v); // International phone format
+        return /^[\+]?[1-9][\d\-\s]{0,20}$/.test(v); // International phone format with optional hyphens and spaces
       },
       message: 'Please provide a valid phone number'
     }
@@ -148,7 +165,7 @@ const StudentSchema: Schema = new Schema({
       required: [true, 'Emergency contact phone is required'],
       validate: {
         validator: function(v: string) {
-          return /^[\+]?[1-9][\d]{0,15}$/.test(v);
+          return /^[\+]?[1-9][\d\-\s]{0,20}$/.test(v); // International phone format with optional hyphens and spaces
         },
         message: 'Please provide a valid emergency contact phone number'
       }
@@ -263,7 +280,7 @@ StudentSchema.virtual('programName', {
 });
 
 // Pre-save middleware
-StudentSchema.pre('save', async function(next) {
+StudentSchema.pre('save', async function(this: IStudentDocument, next) {
   // Convert email to lowercase
   if (this.email) {
     this.email = this.email.toLowerCase();
@@ -272,7 +289,7 @@ StudentSchema.pre('save', async function(next) {
   // Update status based on payment history
   if (this.paymentHistory && this.paymentHistory.length > 0) {
     const latestPayments = this.paymentHistory
-      .filter(payment => payment.status === 'overdue')
+      .filter((payment: PaymentRecord) => payment.status === 'overdue')
       .length;
     
     if (latestPayments > 2 && this.status === 'active') {
@@ -284,36 +301,36 @@ StudentSchema.pre('save', async function(next) {
 });
 
 // Instance methods
-StudentSchema.methods.getFullPaymentHistory = function() {
-  return this.paymentHistory.sort((a, b) => 
+StudentSchema.methods.getFullPaymentHistory = function(this: IStudentDocument): PaymentRecord[] {
+  return this.paymentHistory.sort((a: PaymentRecord, b: PaymentRecord) => 
     new Date(b.paidDate).getTime() - new Date(a.paidDate).getTime()
   );
 };
 
-StudentSchema.methods.calculateTotalPaid = function() {
+StudentSchema.methods.calculateTotalPaid = function(this: IStudentDocument): number {
   return this.paymentHistory
-    .filter(payment => payment.status === 'paid')
-    .reduce((total, payment) => total + payment.amount, 0);
+    .filter((payment: PaymentRecord) => payment.status === 'paid')
+    .reduce((total: number, payment: PaymentRecord) => total + payment.amount, 0);
 };
 
-StudentSchema.methods.getOverduePayments = function() {
-  return this.paymentHistory.filter(payment => payment.status === 'overdue');
+StudentSchema.methods.getOverduePayments = function(this: IStudentDocument): PaymentRecord[] {
+  return this.paymentHistory.filter((payment: PaymentRecord) => payment.status === 'overdue');
 };
 
 // Static methods
-StudentSchema.statics.findByProgram = function(programId: string) {
+StudentSchema.statics.findByProgram = function(programId: string): Promise<IStudentDocument[]> {
   return this.find({ program: programId, isActive: true });
 };
 
-StudentSchema.statics.getActiveStudentsCount = function() {
+StudentSchema.statics.getActiveStudentsCount = function(): Promise<number> {
   return this.countDocuments({ status: 'active', isActive: true });
 };
 
-StudentSchema.statics.getTotalRevenue = function() {
+StudentSchema.statics.getTotalRevenue = function(): Promise<any> {
   return this.aggregate([
     { $match: { status: 'active', isActive: true } },
     { $group: { _id: null, totalRevenue: { $sum: '$fees' } } }
   ]);
 };
 
-export default mongoose.model<IStudent>('Student', StudentSchema);
+export default mongoose.model<IStudentDocument, IStudentModel>('Student', StudentSchema);

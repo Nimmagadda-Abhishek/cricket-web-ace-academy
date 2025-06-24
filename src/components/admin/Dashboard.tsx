@@ -29,20 +29,39 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   ];
 
   const handleQuickAction = (action: string) => {
+    console.log(`Quick action clicked: ${action}`);
+    
     switch (action) {
       case 'Add New Student':
-        onNavigate?.('students');
+        console.log('Navigating to students page');
+        if (onNavigate) {
+          onNavigate('students');
+        } else {
+          alert('Navigation function not available');
+        }
         break;
       case 'Schedule Training':
-        onNavigate?.('programs');
+        console.log('Navigating to programs page');
+        if (onNavigate) {
+          onNavigate('programs');
+        } else {
+          alert('Navigation function not available');
+        }
         break;
       case 'Send Newsletter':
-        onNavigate?.('contacts');
+        console.log('Navigating to contacts page');
+        if (onNavigate) {
+          onNavigate('contacts');
+        } else {
+          alert('Navigation function not available');
+        }
         break;
       case 'Generate Report':
+        console.log('Report generation clicked');
         alert('Report generation feature coming soon!');
         break;
       default:
+        console.log('Unknown action');
         break;
     }
   };
@@ -199,6 +218,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             ].map((item, index) => (
               <button
                 key={index}
+                type="button"
                 onClick={() => handleQuickAction(item.action)}
                 className={`p-4 rounded-lg text-white ${item.color} hover:opacity-90 transition-all duration-200 hover:scale-105 text-center animate-bounceIn stagger-${index + 1} cursor-pointer`}
               >

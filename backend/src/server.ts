@@ -63,7 +63,7 @@ const limiter = rateLimit({
   // Skip rate limiting for certain IPs (e.g., internal services)
   skip: (req) => {
     const skipIPs = process.env.RATE_LIMIT_SKIP_IPS?.split(',') || [];
-    return skipIPs.includes(req.ip);
+    return skipIPs.includes(req.ip || '');
   }
 });
 
@@ -88,6 +88,8 @@ const corsOptions = {
       process.env.FRONTEND_URL || 'http://localhost:3000',
       'http://localhost:3000',
       'http://localhost:3001',
+      'http://localhost:8080',
+      'http://127.0.0.1:8080',
       'https://cricket-academy.com', // Add your production domain
     ];
     
@@ -97,6 +99,7 @@ const corsOptions = {
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.log(`CORS blocked origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -181,7 +184,7 @@ app.use('/api/*', (req, res) => {
 });
 
 // Global error handling middleware
-app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction): express.Response | void => {
   console.error('Global error handler:', error);
 
   // Mongoose validation error
@@ -197,9 +200,15 @@ app.use((error: any, req: express.Request, res: express.Response, next: express.
   // Mongoose duplicate key error
   if (error.code === 11000) {
     const field = Object.keys(error.keyValue)[0];
+    if (field) {
+      return res.status(400).json({
+        status: 'fail',
+        message: `${field?.charAt(0).toUpperCase() + field?.slice(1)} already exists`
+      });
+    }
     return res.status(400).json({
       status: 'fail',
-      message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`
+      message: 'Duplicate key error'
     });
   }
 
@@ -235,7 +244,7 @@ app.use((error: any, req: express.Request, res: express.Response, next: express.
   }
 
   // Default error response
-  res.status(error.statusCode || 500).json({
+  return res.status(error.statusCode || 500).json({
     status: 'error',
     message: error.message || 'Something went wrong',
     ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
@@ -306,17 +315,14 @@ const startServer = async () => {
 
       const bind = typeof PORT === 'string' ? 'Pipe ' + PORT : 'Port ' + PORT;
 
-      switch (error.code) {
-        case 'EACCES':
-          console.error(`${bind} requires elevated privileges`);
-          process.exit(1);
-          break;
-        case 'EADDRINUSE':
-          console.error(`${bind} is already in use`);
-          process.exit(1);
-          break;
-        default:
-          throw error;
+      if (error.code === 'EACCES') {
+        console.error(`${bind} requires elevated privileges`);
+        process.exit(1);
+      } else if (error.code === 'EADDRINUSE') {
+        console.error(`${bind} is already in use`);
+        process.exit(1);
+      } else {
+        throw error;
       }
     });
 

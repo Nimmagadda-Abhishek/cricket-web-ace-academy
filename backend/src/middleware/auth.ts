@@ -2,11 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import Admin from '../models/Admin';
 
-// Extend Request interface to include user
+// Extend Request interface to include user and rateLimit
 declare global {
   namespace Express {
     interface Request {
       user?: any;
+      rateLimit?: {
+        max: number;
+      };
     }
   }
 }
@@ -18,7 +21,7 @@ interface JwtPayload {
 }
 
 // Middleware to protect routes (require authentication)
-export const protect = async (req: Request, res: Response, next: NextFunction) => {
+export const protect = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     // 1) Getting token and check if it's there
     let token: string | undefined;
@@ -103,7 +106,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
 
 // Middleware to restrict access to certain roles
 export const restrictTo = (...roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): any => {
     if (!req.user) {
       return res.status(401).json({
         status: 'fail',
@@ -124,7 +127,7 @@ export const restrictTo = (...roles: string[]) => {
 
 // Middleware to check specific permissions
 export const checkPermission = (permission: string) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): any => {
     if (!req.user) {
       return res.status(401).json({
         status: 'fail',
@@ -199,7 +202,7 @@ export const requireAdmin = restrictTo('super-admin', 'admin');
 export const requireManager = restrictTo('super-admin', 'admin', 'manager');
 
 // Middleware to validate API key for external integrations
-export const validateApiKey = (req: Request, res: Response, next: NextFunction) => {
+export const validateApiKey = (req: Request, res: Response, next: NextFunction): any => {
   const apiKey = req.headers['x-api-key'] || req.query.api_key;
   const validApiKey = process.env.API_KEY;
 
@@ -242,16 +245,17 @@ export const roleBasedRateLimit = (req: Request, res: Response, next: NextFuncti
 
 // Generate JWT token
 export const signToken = (id: string): string => {
-  const jwtSecret = process.env.JWT_SECRET;
+  const jwtSecret = process.env.JWT_SECRET || '';
   const jwtExpire = process.env.JWT_EXPIRE || '7d';
 
   if (!jwtSecret) {
     throw new Error('JWT_SECRET is not defined');
   }
 
+  // Using a workaround for the TypeScript error
   return jwt.sign({ id }, jwtSecret, {
     expiresIn: jwtExpire,
-  });
+  } as jwt.SignOptions);
 };
 
 // Create and send token response
@@ -284,9 +288,10 @@ export const createSendToken = (user: any, statusCode: number, res: Response) =>
 };
 
 // Verify password reset token
-export const verifyPasswordResetToken = async (token: string) => {
+export const verifyPasswordResetToken = async (token: string): Promise<any> => {
   try {
-    const hashedToken = jwt.sign({ token }, process.env.JWT_SECRET || 'fallback-secret');
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret';
+    const hashedToken = jwt.sign({ token }, jwtSecret, {} as jwt.SignOptions);
     
     const user = await Admin.findOne({
       passwordResetToken: { $exists: true },

@@ -88,7 +88,15 @@ const FacilitiesSection = () => {
             Experience our world-class facilities firsthand. Schedule a personal tour and see 
             why Kalyan Cricket Academy is the premier choice for cricket training.
           </p>
-          <button className="bg-white text-cricket-green px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+          <button 
+            type="button"
+            onClick={() => {
+              console.log("Schedule Tour clicked");
+              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+              alert("Please fill out the contact form to schedule a facility tour!");
+            }}
+            className="bg-white text-cricket-green px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          >
             Schedule Tour
           </button>
         </div>

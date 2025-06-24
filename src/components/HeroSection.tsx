@@ -47,13 +47,23 @@ const HeroSection = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
             <Button 
               size="lg" 
+              type="button"
+              onClick={() => {
+                console.log("Start Your Journey clicked");
+                document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' });
+              }}
               className="bg-cricket-orange hover:bg-cricket-orange/90 text-white px-10 py-6 text-lg font-semibold rounded-full hover-glow ripple-effect transform transition-all duration-300 hover:scale-105"
             >
               🚀 Start Your Journey
             </Button>
             <Button 
               size="lg" 
+              type="button"
               variant="outline" 
+              onClick={() => {
+                console.log("Watch Demo clicked");
+                alert("Demo video will play here");
+              }}
               className="border-2 border-white text-white hover:bg-white hover:text-cricket-green px-10 py-6 text-lg font-semibold rounded-full glass-effect transform transition-all duration-300 hover:scale-105"
             >
               📹 Watch Demo

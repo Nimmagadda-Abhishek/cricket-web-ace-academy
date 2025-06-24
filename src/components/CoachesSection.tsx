@@ -104,7 +104,14 @@ const CoachesSection = () => {
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-gray-100">
-                    <button className="w-full py-2 px-4 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full font-medium text-sm hover:from-cricket-orange hover:to-cricket-green transition-all duration-300 transform hover:scale-105">
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        console.log(`Viewing profile for ${coach.name}`);
+                        window.location.href = `/coaches/${index + 1}`;
+                      }}
+                      className="w-full py-2 px-4 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full font-medium text-sm hover:from-cricket-orange hover:to-cricket-green transition-all duration-300 transform hover:scale-105"
+                    >
                       View Profile
                     </button>
                   </div>

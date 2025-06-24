@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/register',
   protect,
   restrictTo('super-admin'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const {
         name,
@@ -54,10 +54,26 @@ router.post('/register',
       });
 
       // Log activity
-      await req.user.logActivity('create_admin', 'admin', newAdmin._id, req);
+      const user = await Admin.findById(req.user._id);
+      if (user) {
+        const logEntry = {
+          action: 'create_admin',
+          resource: 'admin',
+          resourceId: newAdmin._id?.toString(),
+          timestamp: new Date(),
+          ip: req.ip || undefined,
+          userAgent: req.get('User-Agent') || undefined
+        };
+        
+        user.activityLog.push(logEntry as any);
+        if (user.activityLog.length > 100) {
+          user.activityLog = user.activityLog.slice(-100);
+        }
+        await user.save();
+      }
 
       // Remove password from response
-      newAdmin.password = undefined;
+      (newAdmin as any).password = undefined;
 
       res.status(201).json({
         status: 'success',
@@ -66,7 +82,7 @@ router.post('/register',
           admin: newAdmin
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
       
       if (error.name === 'ValidationError') {
@@ -77,18 +93,20 @@ router.post('/register',
           errors
         });
       }
-
-      res.status(500).json({
+      
+      return res.status(500).json({
         status: 'error',
         message: 'Registration failed',
         error: process.env.NODE_ENV === 'development' ? error : undefined
       });
+
+
     }
   }
 );
 
 // Login
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res): Promise<any> => {
   try {
     const { email, password } = req.body;
 
@@ -131,7 +149,10 @@ router.post('/login', async (req, res) => {
     
     if (!isPasswordCorrect) {
       // Increment login attempts
-      await admin.incLoginAttempts();
+      await admin.updateOne({
+        $inc: { loginAttempts: 1 },
+        ...(admin.loginAttempts + 1 >= 5 ? { $set: { lockUntil: new Date(Date.now() + 2 * 60 * 60 * 1000) } } : {})
+      });
       
       return res.status(401).json({
         status: 'fail',
@@ -141,20 +162,35 @@ router.post('/login', async (req, res) => {
 
     // Reset login attempts on successful login
     if (admin.loginAttempts > 0) {
-      await admin.resetLoginAttempts();
+      await admin.updateOne({
+        $unset: { loginAttempts: 1, lockUntil: 1 }
+      });
     }
 
     // Update last login
-    await admin.updateLastLogin();
+    admin.lastLogin = new Date();
+    await admin.save();
 
     // Log activity
-    await admin.logActivity('login', 'auth', undefined, req);
+    const logEntry = {
+      action: 'login',
+      resource: 'auth',
+      timestamp: new Date(),
+      ip: req.ip || undefined,
+      userAgent: req.get('User-Agent') || undefined
+    };
+    
+    admin.activityLog.push(logEntry as any);
+    if (admin.activityLog.length > 100) {
+      admin.activityLog = admin.activityLog.slice(-100);
+    }
+    await admin.save();
 
     // Create and send token
     createSendToken(admin, 200, res);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: 'Login failed',
       error: process.env.NODE_ENV === 'development' ? error : undefined
@@ -166,7 +202,22 @@ router.post('/login', async (req, res) => {
 router.post('/logout', protect, async (req, res) => {
   try {
     // Log activity
-    await req.user.logActivity('logout', 'auth', undefined, req);
+    const user = await Admin.findById(req.user._id);
+    if (user) {
+      const logEntry = {
+        action: 'logout',
+        resource: 'auth',
+        timestamp: new Date(),
+        ip: req.ip || undefined,
+        userAgent: req.get('User-Agent') || undefined
+      };
+      
+      user.activityLog.push(logEntry as any);
+      if (user.activityLog.length > 100) {
+        user.activityLog = user.activityLog.slice(-100);
+      }
+      await user.save();
+    }
 
     res.cookie('jwt', 'loggedout', {
       expires: new Date(Date.now() + 10 * 1000),
@@ -187,7 +238,7 @@ router.post('/logout', protect, async (req, res) => {
 });
 
 // Get current user
-router.get('/me', protect, async (req, res) => {
+router.get('/me', protect, async (req, res): Promise<any> => {
   try {
     const admin = await Admin.findById(req.user._id);
     
@@ -202,9 +253,9 @@ router.get('/me', protect, async (req, res) => {
       status: 'success',
       data: { admin }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Get current user error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: 'Failed to get user information'
     });
@@ -212,7 +263,7 @@ router.get('/me', protect, async (req, res) => {
 });
 
 // Update current user profile
-router.put('/me', protect, async (req, res) => {
+router.put('/me', protect, async (req, res): Promise<any> => {
   try {
     const {
       name,
@@ -237,14 +288,30 @@ router.put('/me', protect, async (req, res) => {
     );
 
     // Log activity
-    await req.user.logActivity('update_profile', 'admin', req.user._id, req);
+    const user = await Admin.findById(req.user._id);
+    if (user) {
+      const logEntry = {
+        action: 'update_profile',
+        resource: 'admin',
+        resourceId: req.user._id?.toString(),
+        timestamp: new Date(),
+        ip: req.ip || undefined,
+        userAgent: req.get('User-Agent') || undefined
+      };
+      
+      user.activityLog.push(logEntry as any);
+      if (user.activityLog.length > 100) {
+        user.activityLog = user.activityLog.slice(-100);
+      }
+      await user.save();
+    }
 
     res.status(200).json({
       status: 'success',
       message: 'Profile updated successfully',
       data: { admin: updatedAdmin }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Update profile error:', error);
     
     if (error.name === 'ValidationError') {
@@ -256,7 +323,7 @@ router.put('/me', protect, async (req, res) => {
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: 'Failed to update profile'
     });
@@ -264,7 +331,7 @@ router.put('/me', protect, async (req, res) => {
 });
 
 // Change password
-router.put('/change-password', protect, async (req, res) => {
+router.put('/change-password', protect, async (req, res): Promise<any> => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
@@ -308,13 +375,25 @@ router.put('/change-password', protect, async (req, res) => {
     await admin.save();
 
     // Log activity
-    await admin.logActivity('change_password', 'auth', undefined, req);
+    const logEntry = {
+      action: 'change_password',
+      resource: 'auth',
+      timestamp: new Date(),
+      ip: req.ip || undefined,
+      userAgent: req.get('User-Agent') || undefined
+    };
+    
+    admin.activityLog.push(logEntry as any);
+    if (admin.activityLog.length > 100) {
+      admin.activityLog = admin.activityLog.slice(-100);
+    }
+    await admin.save();
 
     res.status(200).json({
       status: 'success',
       message: 'Password changed successfully'
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Change password error:', error);
     
     if (error.name === 'ValidationError') {
@@ -326,7 +405,7 @@ router.put('/change-password', protect, async (req, res) => {
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: 'Failed to change password'
     });
@@ -334,7 +413,7 @@ router.put('/change-password', protect, async (req, res) => {
 });
 
 // Forgot password
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', async (req, res): Promise<any> => {
   try {
     const { email } = req.body;
 
@@ -370,7 +449,19 @@ router.post('/forgot-password', async (req, res) => {
     console.log(`Password reset token for ${email}: ${resetToken}`);
 
     // Log activity
-    await admin.logActivity('request_password_reset', 'auth', undefined, req);
+    const logEntry = {
+      action: 'request_password_reset',
+      resource: 'auth',
+      timestamp: new Date(),
+      ip: req.ip || undefined,
+      userAgent: req.get('User-Agent') || undefined
+    };
+    
+    admin.activityLog.push(logEntry as any);
+    if (admin.activityLog.length > 100) {
+      admin.activityLog = admin.activityLog.slice(-100);
+    }
+    await admin.save();
 
     res.status(200).json({
       status: 'success',
@@ -378,9 +469,9 @@ router.post('/forgot-password', async (req, res) => {
       // In development, include the token (remove in production)
       ...(process.env.NODE_ENV === 'development' && { resetToken })
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Forgot password error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: 'Failed to process password reset request'
     });
@@ -388,7 +479,7 @@ router.post('/forgot-password', async (req, res) => {
 });
 
 // Reset password
-router.post('/reset-password/:token', async (req, res) => {
+router.post('/reset-password/:token', async (req, res): Promise<any> => {
   try {
     const { token } = req.params;
     const { password, confirmPassword } = req.body;
@@ -431,21 +522,33 @@ router.post('/reset-password/:token', async (req, res) => {
 
     // Update password
     admin.password = password;
-    admin.passwordResetToken = undefined;
-    admin.passwordResetExpires = undefined;
+    (admin as any).passwordResetToken = undefined;
+    (admin as any).passwordResetExpires = undefined;
     admin.passwordChangedAt = new Date();
     await admin.save();
 
     // Log activity
-    await admin.logActivity('reset_password', 'auth', undefined, req);
+    const logEntry = {
+      action: 'reset_password',
+      resource: 'auth',
+      timestamp: new Date(),
+      ip: req.ip || undefined,
+      userAgent: req.get('User-Agent') || undefined
+    };
+    
+    admin.activityLog.push(logEntry as any);
+    if (admin.activityLog.length > 100) {
+      admin.activityLog = admin.activityLog.slice(-100);
+    }
+    await admin.save();
 
     res.status(200).json({
       status: 'success',
       message: 'Password reset successful. You can now login with your new password.'
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Reset password error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: 'Failed to reset password'
     });
@@ -456,7 +559,7 @@ router.post('/reset-password/:token', async (req, res) => {
 router.get('/admins',
   protect,
   restrictTo('super-admin', 'admin'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const {
         role,
@@ -524,7 +627,7 @@ router.get('/admins',
 router.put('/admins/:id',
   protect,
   restrictTo('super-admin'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const adminId = req.params.id;
       const updates = req.body;
@@ -548,7 +651,23 @@ router.put('/admins/:id',
       }
 
       // Log activity
-      await req.user.logActivity('update_admin', 'admin', adminId, req);
+      const user = await Admin.findById(req.user._id);
+      if (user) {
+        const logEntry = {
+          action: 'update_admin',
+          resource: 'admin',
+          resourceId: adminId,
+          timestamp: new Date(),
+          ip: req.ip || undefined,
+          userAgent: req.get('User-Agent') || undefined
+        };
+        
+        user.activityLog.push(logEntry as any);
+        if (user.activityLog.length > 100) {
+          user.activityLog = user.activityLog.slice(-100);
+        }
+        await user.save();
+      }
 
       res.json({
         status: 'success',
@@ -569,7 +688,7 @@ router.put('/admins/:id',
 router.put('/admins/:id/deactivate',
   protect,
   restrictTo('super-admin'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const adminId = req.params.id;
 

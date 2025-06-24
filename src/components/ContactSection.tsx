@@ -150,7 +150,11 @@ const ContactSection = () => {
                   />
                 </div>
 
-                <Button type="submit" className="w-full bg-cricket-orange hover:bg-cricket-orange/90">
+                <Button 
+                  type="submit" 
+                  onClick={() => console.log("Send Message form submitted")}
+                  className="w-full bg-cricket-orange hover:bg-cricket-orange/90"
+                >
                   Send Message
                 </Button>
               </form>
@@ -192,7 +196,14 @@ const ContactSection = () => {
                 <p className="text-white/90 mb-4">
                   Book your free trial session today and experience the difference!
                 </p>
-                <Button className="bg-white text-cricket-green hover:bg-gray-100">
+                <Button 
+                  type="button"
+                  onClick={() => {
+                    console.log("Book Free Trial clicked");
+                    alert("Thank you for your interest! Please fill out the contact form to book your free trial session.");
+                  }}
+                  className="bg-white text-cricket-green hover:bg-gray-100"
+                >
                   Book Free Trial
                 </Button>
               </CardContent>

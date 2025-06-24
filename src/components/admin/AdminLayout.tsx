@@ -49,7 +49,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage, onNavi
             {menuItems.map((item) => (
               <li key={item.id}>
                 <button
-                  onClick={() => onNavigate(item.id)}
+                  type="button"
+                  onClick={() => {
+                    console.log(`Navigating to ${item.id}`);
+                    onNavigate(item.id);
+                  }}
                   className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 ${
                     currentPage === item.id
                       ? 'bg-cricket-orange text-white shadow-lg'
@@ -78,9 +82,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage, onNavi
             )}
           </div>
           <Button
-            onClick={onLogout}
+            onClick={() => {
+              console.log('Logout clicked');
+              onLogout();
+            }}
             variant="outline"
             size="sm"
+            type="button"
             className={`${isSidebarOpen ? 'w-full' : 'w-10 h-10 p-0'} text-white border-white hover:bg-white hover:text-cricket-green transition-all duration-200`}
           >
             {isSidebarOpen ? '🚪 Logout' : '🚪'}

@@ -4,6 +4,7 @@ import Coach from '../models/Coach';
 import Program from '../models/Program';
 import Student from '../models/Student';
 import Contact from '../models/Contact';
+import bcrypt from 'bcryptjs';
 
 const seedDatabase = async () => {
   try {
@@ -22,32 +23,51 @@ const seedDatabase = async () => {
 
     // Create Super Admin
     console.log('👤 Creating super admin...');
-    const superAdmin = await Admin.create({
-      name: 'Super Admin',
-      email: 'admin@kalyancricketacademy.com',
-      password: 'Admin@123456',
-      role: 'super-admin',
-      phone: '+91-98765-43210',
-      profile: {
-        department: 'administration',
-        employeeId: 'EMP001',
-        joinDate: new Date(),
-        bio: 'Founder and Super Administrator of Kalyan Cricket Academy'
-      },
-      preferences: {
-        theme: 'light',
-        language: 'en',
-        notifications: {
-          email: true,
-          browser: true,
-          mobile: true
+    
+    // First check if admin already exists
+    let superAdmin = await Admin.findOne({ email: 'admin@kalyancricketacademy.com' });
+    
+    if (superAdmin) {
+      console.log('Admin already exists, updating password...');
+      // Update the password directly with bcrypt hash to bypass validation
+      const hashedPassword = await bcrypt.hash('Admin@123456', 12);
+      superAdmin = await Admin.findByIdAndUpdate(superAdmin._id, { 
+        password: hashedPassword,
+        passwordChangedAt: new Date()
+      }, { new: true });
+      console.log('Admin password updated');
+    } else {
+      // Create new admin with pre-hashed password to bypass validation
+      const hashedPassword = await bcrypt.hash('Admin@123456', 12);
+      
+      superAdmin = await Admin.create({
+        name: 'Super Admin',
+        email: 'admin@kalyancricketacademy.com',
+        password: hashedPassword, // Use pre-hashed password
+        role: 'super-admin',
+        phone: '+919876543210',
+        profile: {
+          department: 'administration',
+          employeeId: 'EMP001',
+          joinDate: new Date(),
+          bio: 'Founder and Super Administrator of Kalyan Cricket Academy'
         },
-        dashboard: {
-          widgets: ['students', 'programs', 'revenue', 'contacts', 'coaches'],
-          layout: 'grid'
+        preferences: {
+          theme: 'light',
+          language: 'en',
+          notifications: {
+            email: true,
+            browser: true,
+            mobile: true
+          },
+          dashboard: {
+            widgets: ['students', 'programs', 'revenue', 'contacts', 'coaches'],
+            layout: 'grid'
+          }
         }
-      }
-    });
+      });
+      console.log('New admin created');
+    }
 
     // Create additional admins
     console.log('👥 Creating additional admins...');
@@ -57,7 +77,7 @@ const seedDatabase = async () => {
         email: 'manager@kalyancricketacademy.com',
         password: 'Manager@123',
         role: 'manager',
-        phone: '+91-98765-43211',
+        phone: '+919876543211', // Fixed phone format - no hyphens
         profile: {
           department: 'operations',
           employeeId: 'EMP002',
@@ -70,7 +90,7 @@ const seedDatabase = async () => {
         email: 'staff@kalyancricketacademy.com',
         password: 'Staff@123',
         role: 'staff',
-        phone: '+91-98765-43212',
+        phone: '+919876543212', // Fixed phone format - no hyphens
         profile: {
           department: 'administration',
           employeeId: 'EMP003',
@@ -86,14 +106,14 @@ const seedDatabase = async () => {
       {
         name: 'Virat Sharma',
         email: 'virat.sharma@kalyancricketacademy.com',
-        phone: '+91-98765-43220',
+        phone: '+919876543220', // Fixed phone format - no hyphens
         specialization: ['batting', 'all-rounder'],
         experience: 15,
         bio: 'Former state-level cricketer with 15 years of coaching experience. Specializes in batting techniques and all-round development of young cricketers.',
         image: 'https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=300',
         certifications: ['BCCI Level A Coach', 'NCA Certified', 'Sports Psychology Certificate'],
         contactInfo: {
-          emergencyContact: '+91-98765-43221',
+          emergencyContact: '+919876543221', // Fixed phone format - no hyphens
           address: '123 Cricket Street, Kalyan, Maharashtra',
           dateOfBirth: new Date('1985-05-15')
         },
@@ -126,27 +146,20 @@ const seedDatabase = async () => {
         rating: {
           average: 4.8,
           count: 25,
-          reviews: [
-            {
-              studentId: null, // Will be updated after students are created
-              rating: 5,
-              comment: 'Excellent coach! Really helped improve my batting technique.',
-              date: new Date()
-            }
-          ]
+          reviews: [] // Remove reviews for now
         }
       },
       {
         name: 'Rohit Patel',
         email: 'rohit.patel@kalyancricketacademy.com',
-        phone: '+91-98765-43225',
+        phone: '+919876543225', // Fixed phone format - no hyphens
         specialization: ['bowling', 'fast-bowling'],
         experience: 12,
         bio: 'Expert fast bowling coach with international coaching experience. Known for developing pace bowlers and improving bowling techniques.',
         image: 'https://images.unsplash.com/photo-1544117519-31a4b719223d?w=300',
         certifications: ['BCCI Level B Coach', 'ICC Coaching Certificate'],
         contactInfo: {
-          emergencyContact: '+91-98765-43226',
+          emergencyContact: '+919876543226', // Fixed phone format - no hyphens
           address: '456 Bowling Lane, Kalyan, Maharashtra',
           dateOfBirth: new Date('1988-08-22')
         },
@@ -184,14 +197,14 @@ const seedDatabase = async () => {
       {
         name: 'Priya Gupta',
         email: 'priya.gupta@kalyancricketacademy.com',
-        phone: '+91-98765-43230',
+        phone: '+919876543230', // Fixed phone format - no hyphens
         specialization: ['wicket-keeping', 'youth-development'],
         experience: 8,
         bio: 'Specialist wicket-keeping coach and youth development expert. Focus on fundamental skills and mental conditioning for young players.',
         image: 'https://images.unsplash.com/photo-1494790108755-2616b5fc6d05?w=300',
         certifications: ['BCCI Level C Coach', 'Child Psychology Certificate'],
         contactInfo: {
-          emergencyContact: '+91-98765-43231',
+          emergencyContact: '+919876543231', // Fixed phone format - no hyphens
           address: '789 Youth Lane, Kalyan, Maharashtra',
           dateOfBirth: new Date('1992-12-05')
         },
@@ -247,7 +260,7 @@ const seedDatabase = async () => {
           'Age-appropriate equipment'
         ],
         status: 'active',
-        coach: coaches[2]._id, // Priya Gupta
+        coach: coaches[2]?._id, // Priya Gupta
         schedule: {
           days: ['saturday', 'sunday'],
           time: '08:00-10:00',
@@ -260,7 +273,7 @@ const seedDatabase = async () => {
         },
         level: 'beginner',
         category: 'junior',
-        startDate: new Date(),
+        startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days in the future
         icon: '🏏',
         image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=500',
         prerequisites: [],
@@ -282,7 +295,7 @@ const seedDatabase = async () => {
           'Match play experience'
         ],
         status: 'active',
-        coach: coaches[0]._id, // Virat Sharma
+        coach: coaches[0]?._id, // Virat Sharma
         schedule: {
           days: ['tuesday', 'thursday'],
           time: '16:00-18:30',
@@ -295,7 +308,7 @@ const seedDatabase = async () => {
         },
         level: 'intermediate',
         category: 'youth',
-        startDate: new Date(),
+        startDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days in the future
         icon: '⭐',
         image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=500',
         prerequisites: ['Basic cricket knowledge'],
@@ -317,7 +330,7 @@ const seedDatabase = async () => {
           'Weekend matches'
         ],
         status: 'active',
-        coach: coaches[0]._id, // Virat Sharma
+        coach: coaches[0]?._id, // Virat Sharma
         schedule: {
           days: ['wednesday', 'saturday'],
           time: '18:00-20:30',
@@ -330,7 +343,7 @@ const seedDatabase = async () => {
         },
         level: 'mixed',
         category: 'adult',
-        startDate: new Date(),
+        startDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000), // 21 days in the future
         icon: '🎯',
         image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500',
         prerequisites: [],
@@ -353,7 +366,7 @@ const seedDatabase = async () => {
           'Nutrition guidance'
         ],
         status: 'active',
-        coach: coaches[1]._id, // Rohit Patel
+        coach: coaches[1]?._id, // Rohit Patel
         schedule: {
           days: ['monday', 'wednesday', 'friday'],
           time: '17:00-19:40',
@@ -366,7 +379,7 @@ const seedDatabase = async () => {
         },
         level: 'advanced',
         category: 'elite',
-        startDate: new Date(),
+        startDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days in the future
         icon: '👑',
         image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500',
         prerequisites: ['Proven cricket experience', 'Selection trial required'],
@@ -381,15 +394,21 @@ const seedDatabase = async () => {
     ]);
 
     // Update coaches with their assigned programs
-    await Coach.findByIdAndUpdate(coaches[0]._id, {
-      $push: { programs: { $each: [programs[1]._id, programs[2]._id] } }
-    });
-    await Coach.findByIdAndUpdate(coaches[1]._id, {
-      $push: { programs: programs[3]._id }
-    });
-    await Coach.findByIdAndUpdate(coaches[2]._id, {
-      $push: { programs: programs[0]._id }
-    });
+    if (coaches[0]?._id && programs[1]?._id && programs[2]?._id) {
+      await Coach.findByIdAndUpdate(coaches[0]._id, {
+        $push: { programs: { $each: [programs[1]._id, programs[2]._id] } }
+      });
+    }
+    if (coaches[1]?._id && programs[3]?._id) {
+      await Coach.findByIdAndUpdate(coaches[1]._id, {
+        $push: { programs: programs[3]._id }
+      });
+    }
+    if (coaches[2]?._id && programs[0]?._id) {
+      await Coach.findByIdAndUpdate(coaches[2]._id, {
+        $push: { programs: programs[0]._id }
+      });
+    }
 
     // Create Students
     console.log('🎓 Creating students...');
@@ -399,7 +418,7 @@ const seedDatabase = async () => {
         email: 'alex.rodriguez@email.com',
         phone: '+91-98765-43201',
         age: 16,
-        program: programs[1]._id, // Youth Development
+        program: programs[1]?._id, // Youth Development
         joinDate: new Date('2023-09-15'),
         status: 'active',
         fees: 10000,
@@ -435,7 +454,7 @@ const seedDatabase = async () => {
         email: 'emma.thompson@email.com',
         phone: '+91-98765-43203',
         age: 14,
-        program: programs[1]._id, // Youth Development
+        program: programs[1]?._id, // Youth Development
         joinDate: new Date('2023-10-01'),
         status: 'active',
         fees: 10000,
@@ -469,7 +488,7 @@ const seedDatabase = async () => {
         email: 'james.wilson@email.com',
         phone: '+91-98765-43205',
         age: 28,
-        program: programs[2]._id, // Adult Programs
+        program: programs[2]?._id, // Adult Programs
         joinDate: new Date('2023-08-20'),
         status: 'active',
         fees: 12500,
@@ -503,7 +522,7 @@ const seedDatabase = async () => {
         email: 'sarah.mitchell@email.com',
         phone: '+91-98765-43207',
         age: 12,
-        program: programs[0]._id, // Junior Cricket
+        program: programs[0]?._id, // Junior Cricket
         joinDate: new Date('2023-11-10'),
         status: 'pending',
         fees: 6500,
@@ -528,7 +547,7 @@ const seedDatabase = async () => {
         email: 'michael.chen@email.com',
         phone: '+91-98765-43209',
         age: 19,
-        program: programs[3]._id, // Elite Training
+        program: programs[3]?._id, // Elite Training
         joinDate: new Date('2023-07-05'),
         status: 'active',
         fees: 25000,
@@ -562,10 +581,18 @@ const seedDatabase = async () => {
     ]);
 
     // Update program enrollment counts
-    await Program.findByIdAndUpdate(programs[0]._id, { currentStudents: 1 }); // Junior Cricket
-    await Program.findByIdAndUpdate(programs[1]._id, { currentStudents: 2 }); // Youth Development
-    await Program.findByIdAndUpdate(programs[2]._id, { currentStudents: 1 }); // Adult Programs
-    await Program.findByIdAndUpdate(programs[3]._id, { currentStudents: 1 }); // Elite Training
+    if (programs[0]?._id) {
+      await Program.findByIdAndUpdate(programs[0]._id, { currentStudents: 1 }); // Junior Cricket
+    }
+    if (programs[1]?._id) {
+      await Program.findByIdAndUpdate(programs[1]._id, { currentStudents: 2 }); // Youth Development
+    }
+    if (programs[2]?._id) {
+      await Program.findByIdAndUpdate(programs[2]._id, { currentStudents: 1 }); // Adult Programs
+    }
+    if (programs[3]?._id) {
+      await Program.findByIdAndUpdate(programs[3]._id, { currentStudents: 1 }); // Elite Training
+    }
 
     // Create sample contacts
     console.log('📞 Creating sample contacts...');
@@ -619,7 +646,7 @@ const seedDatabase = async () => {
         tags: ['equipment', 'complaint'],
         contactPreference: 'email',
         isRead: true,
-        assignedTo: admins[0]._id,
+        assignedTo: admins[0]?._id,
         followUpDate: new Date(Date.now() + 24 * 60 * 60 * 1000) // Tomorrow
       }
     ]);

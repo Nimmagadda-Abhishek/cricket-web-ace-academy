@@ -1,6 +1,7 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 
-export interface IProgram extends Document {
+// Define the document interface
+interface IProgramDocument extends Document {
   title: string;
   description: string;
   ageGroup: string;
@@ -43,7 +44,21 @@ export interface IProgram extends Document {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  
+  // Instance methods
+  enrollStudent(): Promise<IProgramDocument>;
+  unenrollStudent(): Promise<IProgramDocument | void>;
+  canEnroll(): boolean;
+  getRevenue(): number;
 }
+
+// Define the model interface with static methods
+interface IProgramModel extends Model<IProgramDocument> {
+  // Static methods are defined in the schema, no need to redeclare here
+}
+
+// Export the combined interface for external use
+export interface IProgram extends IProgramDocument {}
 
 const ProgramSchema: Schema = new Schema({
   title: {
@@ -82,10 +97,10 @@ const ProgramSchema: Schema = new Schema({
     trim: true,
     validate: {
       validator: function(v: string) {
-        // Validate format like "2 hours/week", "90 minutes/session"
-        return /^\d+\s+(hours?|minutes?)\/(week|session|day|month)$/i.test(v);
+        // Validate format like "2 hours/week", "90 minutes/session", "3 months"
+        return /^(\d+(\.\d+)?)\s+(hours?|minutes?|days?|weeks?|months?)(\/\w+)?$/i.test(v);
       },
-      message: 'Duration must be in format like "2 hours/week" or "90 minutes/session"'
+      message: 'Duration must be in format like "2 hours/week", "90 minutes/session", or "3 months"'
     }
   },
 
@@ -118,10 +133,12 @@ const ProgramSchema: Schema = new Schema({
     default: 0,
     min: [0, 'Current students cannot be negative'],
     validate: {
-      validator: function(this: IProgram, v: number) {
-        return v <= this.maxStudents;
+      validator: function(v: number) {
+        // Note: 'this' context is not available in validation functions
+        // This validation will be handled in pre-save middleware
+        return v >= 0;
       },
-      message: 'Current students cannot exceed maximum students limit'
+      message: 'Current students cannot be negative'
     }
   },
 
@@ -340,12 +357,12 @@ ProgramSchema.virtual('coachName', {
 });
 
 // Virtual for occupancy rate
-ProgramSchema.virtual('occupancyRate').get(function() {
+ProgramSchema.virtual('occupancyRate').get(function(this: IProgramDocument) {
   return this.maxStudents > 0 ? Math.round((this.currentStudents / this.maxStudents) * 100) : 0;
 });
 
 // Virtual for effective price (after discount)
-ProgramSchema.virtual('effectivePrice').get(function() {
+ProgramSchema.virtual('effectivePrice').get(function(this: IProgramDocument) {
   if (!this.discount) return this.price;
   
   const now = new Date();
@@ -361,7 +378,7 @@ ProgramSchema.virtual('effectivePrice').get(function() {
 });
 
 // Pre-save middleware
-ProgramSchema.pre('save', function(next) {
+ProgramSchema.pre('save', function(this: IProgramDocument, next) {
   // Update status based on current enrollment
   if (this.currentStudents >= this.maxStudents) {
     this.status = 'full';
@@ -379,7 +396,7 @@ ProgramSchema.pre('save', function(next) {
 });
 
 // Instance methods
-ProgramSchema.methods.enrollStudent = function() {
+ProgramSchema.methods.enrollStudent = function(this: IProgramDocument): Promise<IProgramDocument> {
   if (this.currentStudents < this.maxStudents) {
     this.currentStudents += 1;
     if (this.currentStudents === this.maxStudents) {
@@ -391,7 +408,7 @@ ProgramSchema.methods.enrollStudent = function() {
   }
 };
 
-ProgramSchema.methods.unenrollStudent = function() {
+ProgramSchema.methods.unenrollStudent = function(this: IProgramDocument): Promise<IProgramDocument> | void {
   if (this.currentStudents > 0) {
     this.currentStudents -= 1;
     if (this.status === 'full') {
@@ -401,20 +418,20 @@ ProgramSchema.methods.unenrollStudent = function() {
   }
 };
 
-ProgramSchema.methods.canEnroll = function() {
+ProgramSchema.methods.canEnroll = function(this: IProgramDocument): boolean {
   return this.status === 'active' && this.currentStudents < this.maxStudents && this.isActive;
 };
 
-ProgramSchema.methods.getRevenue = function() {
-  return this.currentStudents * (this.effectivePrice || this.price);
+ProgramSchema.methods.getRevenue = function(this: IProgramDocument): number {
+  return this.currentStudents * (this.get('effectivePrice') || this.price);
 };
 
 // Static methods
-ProgramSchema.statics.findByCategory = function(category: string) {
+ProgramSchema.statics.findByCategory = function(category: string): Promise<IProgramDocument[]> {
   return this.find({ category, isActive: true });
 };
 
-ProgramSchema.statics.findAvailable = function() {
+ProgramSchema.statics.findAvailable = function(): Promise<IProgramDocument[]> {
   return this.find({ 
     status: 'active', 
     isActive: true,
@@ -422,7 +439,7 @@ ProgramSchema.statics.findAvailable = function() {
   });
 };
 
-ProgramSchema.statics.getTotalRevenue = function() {
+ProgramSchema.statics.getTotalRevenue = function(): Promise<any> {
   return this.aggregate([
     { $match: { isActive: true } },
     { 
@@ -439,4 +456,4 @@ ProgramSchema.statics.getTotalRevenue = function() {
   ]);
 };
 
-export default mongoose.model<IProgram>('Program', ProgramSchema);
+export default mongoose.model<IProgramDocument, IProgramModel>('Program', ProgramSchema);

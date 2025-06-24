@@ -1,8 +1,9 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import validator from 'validator';
 
-export interface IAdmin extends Document {
+// Define a type for the document instance
+interface IAdminDocument extends Document {
   name: string;
   email: string;
   password: string;
@@ -49,13 +50,22 @@ export interface IAdmin extends Document {
     ip?: string;
     userAgent?: string;
   }[];
-  createdAt: Date;
-  updatedAt: Date;
+  isNew: boolean;
   comparePassword(candidatePassword: string): Promise<boolean>;
   createPasswordResetToken(): string;
   changedPasswordAfter(JWTTimestamp: number): boolean;
   isLocked(): boolean;
 }
+
+// Define the interface for the model's static methods
+interface IAdminModel extends Model<IAdminDocument> {
+  findByRole(role: string): Promise<IAdminDocument[]>;
+  findActive(): Promise<IAdminDocument[]>;
+  findRecentlyActive(days?: number): Promise<IAdminDocument[]>;
+}
+
+// Export the combined interface
+export interface IAdmin extends IAdminDocument {}
 
 const AdminSchema: Schema = new Schema({
   name: {
@@ -83,7 +93,7 @@ const AdminSchema: Schema = new Schema({
     validate: {
       validator: function(password: string) {
         // Password must contain at least one uppercase, lowercase, number, and special character
-        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(password);
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&].*$/.test(password);
       },
       message: 'Password must contain at least one uppercase letter, lowercase letter, number, and special character'
     }
@@ -164,7 +174,7 @@ const AdminSchema: Schema = new Schema({
     trim: true,
     validate: {
       validator: function(v: string) {
-        return !v || /^[\+]?[1-9][\d]{0,15}$/.test(v);
+        return !v || /^[\+]?[1-9][\d\-\s]{0,20}$/.test(v); // International phone format with optional hyphens and spaces
       },
       message: 'Please provide a valid phone number'
     }
@@ -303,12 +313,12 @@ AdminSchema.index({ lastLogin: -1 });
 AdminSchema.index({ 'profile.employeeId': 1 });
 
 // Virtual for account locked status
-AdminSchema.virtual('isLocked').get(function() {
-  return !!(this.lockUntil && this.lockUntil > Date.now());
+AdminSchema.virtual('accountLocked').get(function(this: IAdminDocument) {
+  return !!(this.lockUntil && new Date(this.lockUntil as Date) > new Date());
 });
 
 // Virtual for full permissions based on role
-AdminSchema.virtual('fullPermissions').get(function() {
+AdminSchema.virtual('fullPermissions').get(function(this: IAdminDocument) {
   const rolePermissions: { [key: string]: string[] } = {
     'super-admin': [
       'students.view', 'students.create', 'students.edit', 'students.delete', 'students.export',
@@ -343,17 +353,20 @@ AdminSchema.virtual('fullPermissions').get(function() {
     ]
   };
 
-  const basePermissions = rolePermissions[this.role] || [];
-  return [...new Set([...basePermissions, ...this.permissions])];
+  const role = this.role as 'super-admin' | 'admin' | 'manager' | 'staff';
+  const basePermissions = rolePermissions[role] || [];
+  const userPermissions = this.permissions as string[] || [];
+  return [...new Set([...basePermissions, ...userPermissions])];
 });
 
 // Pre-save middleware for password hashing
-AdminSchema.pre('save', async function(next) {
+AdminSchema.pre('save', async function(this: IAdminDocument, next) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
 
   // Hash the password with cost of 12
-  this.password = await bcrypt.hash(this.password, 12);
+  const password = this.password as string;
+  this.password = await bcrypt.hash(password, 12);
 
   // Update passwordChangedAt
   this.passwordChangedAt = new Date();
@@ -362,19 +375,29 @@ AdminSchema.pre('save', async function(next) {
 });
 
 // Pre-save middleware for setting default dashboard widgets
-AdminSchema.pre('save', function(next) {
-  if (this.isNew && !this.preferences.dashboard.widgets.length) {
+AdminSchema.pre('save', function(this: IAdminDocument, next) {
+  const preferences = this.preferences as any;
+  if (this.isNew && (!preferences?.dashboard?.widgets || !preferences?.dashboard?.widgets.length)) {
     // Set default widgets based on role
-    switch (this.role) {
+    const role = this.role as string;
+    if (!preferences) {
+      (this as any).preferences = {
+        dashboard: { widgets: [] }
+      };
+    } else if (!preferences.dashboard) {
+      preferences.dashboard = { widgets: [] };
+    }
+    
+    switch (role) {
       case 'super-admin':
       case 'admin':
-        this.preferences.dashboard.widgets = ['students', 'programs', 'revenue', 'contacts', 'coaches'];
+        preferences.dashboard.widgets = ['students', 'programs', 'revenue', 'contacts', 'coaches'];
         break;
       case 'manager':
-        this.preferences.dashboard.widgets = ['students', 'programs', 'revenue', 'contacts'];
+        preferences.dashboard.widgets = ['students', 'programs', 'revenue', 'contacts'];
         break;
       case 'staff':
-        this.preferences.dashboard.widgets = ['students', 'programs', 'contacts'];
+        preferences.dashboard.widgets = ['students', 'programs', 'contacts'];
         break;
     }
   }
@@ -382,11 +405,11 @@ AdminSchema.pre('save', function(next) {
 });
 
 // Instance methods
-AdminSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
+AdminSchema.methods.comparePassword = async function(this: IAdminDocument, candidatePassword: string): Promise<boolean> {
+  return bcrypt.compare(candidatePassword, this.password as string);
 };
 
-AdminSchema.methods.createPasswordResetToken = function(): string {
+AdminSchema.methods.createPasswordResetToken = function(this: IAdminDocument): string {
   const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   
   this.passwordResetToken = bcrypt.hashSync(resetToken, 10);
@@ -395,16 +418,16 @@ AdminSchema.methods.createPasswordResetToken = function(): string {
   return resetToken;
 };
 
-AdminSchema.methods.changedPasswordAfter = function(JWTTimestamp: number): boolean {
+AdminSchema.methods.changedPasswordAfter = function(this: IAdminDocument, JWTTimestamp: number): boolean {
   if (this.passwordChangedAt) {
-    const changedTimestamp = parseInt((this.passwordChangedAt.getTime() / 1000).toString(), 10);
+    const changedTimestamp = parseInt(((this.passwordChangedAt as Date).getTime() / 1000).toString(), 10);
     return JWTTimestamp < changedTimestamp;
   }
   return false;
 };
 
-AdminSchema.methods.isLocked = function(): boolean {
-  return !!(this.lockUntil && this.lockUntil > new Date());
+AdminSchema.methods.isLocked = function(this: IAdminDocument): boolean {
+  return !!(this.lockUntil && new Date(this.lockUntil as Date) > new Date());
 };
 
 AdminSchema.methods.incLoginAttempts = function() {
@@ -480,4 +503,4 @@ AdminSchema.statics.findRecentlyActive = function(days = 7) {
   });
 };
 
-export default mongoose.model<IAdmin>('Admin', AdminSchema);
+export default mongoose.model<IAdminDocument, IAdminModel>('Admin', AdminSchema);

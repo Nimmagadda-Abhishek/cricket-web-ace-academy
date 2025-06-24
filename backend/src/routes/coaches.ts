@@ -7,7 +7,7 @@ import { protect, checkPermission, logActivity } from '../middleware/auth';
 const router = express.Router();
 
 // Public route - get all active coaches (for website)
-router.get('/public', async (req, res) => {
+router.get('/public', async (req, res): Promise<any> => {
   try {
     const coaches = await Coach.find({ 
       isActive: true,
@@ -36,7 +36,7 @@ router.use(protect);
 router.get('/',
   checkPermission('coaches.view'),
   logActivity('view_coaches', 'coaches'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const {
         specialization,
@@ -59,7 +59,7 @@ router.get('/',
         query['employment.status'] = status;
       }
 
-      if (search) {
+      if (search && typeof search === 'string') {
         query.$or = [
           { name: { $regex: search, $options: 'i' } },
           { email: { $regex: search, $options: 'i' } },
@@ -111,7 +111,7 @@ router.get('/',
 router.get('/:id',
   checkPermission('coaches.view'),
   logActivity('view_coach', 'coach'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const coach = await Coach.findById(req.params.id)
         .populate('programs', 'title currentStudents maxStudents category price');
@@ -159,7 +159,7 @@ router.get('/:id',
 router.post('/',
   checkPermission('coaches.create'),
   logActivity('create_coach', 'coach'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const {
         name,
@@ -224,7 +224,7 @@ router.post('/',
         message: 'Coach created successfully',
         data: { coach }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating coach:', error);
       
       if (error.name === 'ValidationError') {
@@ -249,7 +249,7 @@ router.post('/',
 router.put('/:id',
   checkPermission('coaches.edit'),
   logActivity('update_coach', 'coach'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const coachId = req.params.id;
       const updates = req.body;
@@ -278,7 +278,7 @@ router.put('/:id',
         message: 'Coach updated successfully',
         data: { coach: updatedCoach }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating coach:', error);
       
       if (error.name === 'ValidationError') {
@@ -303,7 +303,7 @@ router.put('/:id',
 router.delete('/:id',
   checkPermission('coaches.delete'),
   logActivity('delete_coach', 'coach'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const coach = await Coach.findById(req.params.id);
       if (!coach) {
@@ -350,7 +350,7 @@ router.delete('/:id',
 router.get('/stats/overview',
   checkPermission('coaches.view'),
   logActivity('view_coach_stats', 'coaches'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const [
         totalCoaches,
@@ -425,7 +425,7 @@ router.get('/stats/overview',
 // Get available coaches for program assignment
 router.get('/available/assignment',
   checkPermission('coaches.view'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const { specialization, day, timeSlot } = req.query;
 
@@ -466,7 +466,7 @@ router.get('/available/assignment',
 router.post('/:id/reviews',
   checkPermission('coaches.view'),
   logActivity('add_coach_review', 'coach'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const { studentId, rating, comment } = req.body;
       
@@ -494,7 +494,7 @@ router.post('/:id/reviews',
         });
       }
 
-      // Add review
+      // Add review using the instance method
       await coach.addReview(studentId, rating, comment);
 
       res.json({
@@ -516,7 +516,7 @@ router.post('/:id/reviews',
 // Get coach's schedule
 router.get('/:id/schedule',
   checkPermission('coaches.view'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const coach = await Coach.findById(req.params.id)
         .populate({
@@ -562,7 +562,7 @@ router.get('/:id/schedule',
 router.put('/:id/availability',
   checkPermission('coaches.edit'),
   logActivity('update_coach_availability', 'coach'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const { days, timeSlots } = req.body;
       

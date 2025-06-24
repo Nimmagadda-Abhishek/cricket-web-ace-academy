@@ -134,10 +134,15 @@ const ProgramsSection = () => {
                   
                   {/* Enhanced Button */}
                   <Button 
+                    type="button"
+                    onClick={() => {
+                      console.log(`Viewing details for ${program.title}`);
+                      window.location.href = `/programs/${index + 1}`;
+                    }}
                     className="w-full bg-gradient-to-r from-cricket-green to-cricket-orange hover:from-cricket-orange hover:to-cricket-green text-white font-semibold py-3 rounded-full transform transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ripple-effect animate-bounceIn"
                     style={{ animationDelay: '0.3s' }}
                   >
-                    🚀 Enroll Now
+                    🔍 View Details
                   </Button>
                 </div>
               </CardContent>
@@ -158,7 +163,15 @@ const ProgramsSection = () => {
           <div className="bg-gradient-to-r from-cricket-green to-cricket-orange rounded-2xl p-8 text-white shadow-2xl">
             <h3 className="text-3xl font-bold font-poppins mb-4">Not Sure Which Program to Choose?</h3>
             <p className="text-xl mb-6 opacity-90">Book a free consultation with our expert coaches to find the perfect program for your goals.</p>
-            <Button className="bg-white text-cricket-green hover:bg-gray-100 px-8 py-3 font-semibold rounded-full transform transition-all duration-300 hover:scale-105">
+            <Button 
+              type="button"
+              onClick={() => {
+                console.log("Book Free Consultation clicked");
+                document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                alert("Please fill out the contact form to book your free consultation!");
+              }}
+              className="bg-white text-cricket-green hover:bg-gray-100 px-8 py-3 font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
+            >
               📞 Book Free Consultation
             </Button>
           </div>

@@ -1,7 +1,8 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 import validator from 'validator';
 
-export interface IContact extends Document {
+// Define the document interface
+interface IContactDocument extends Document {
   name: string;
   email: string;
   phone: string;
@@ -26,7 +27,24 @@ export interface IContact extends Document {
   isArchived: boolean;
   createdAt: Date;
   updatedAt: Date;
+  
+  // Instance methods
+  addResponse(adminId: string, message: string, isInternal?: boolean): Promise<IContactDocument>;
+  markAsRead(): Promise<IContactDocument>;
+  assignTo(adminId: string): Promise<IContactDocument>;
+  setFollowUpDate(date: Date): Promise<IContactDocument>;
+  addTag(tag: string): Promise<IContactDocument>;
+  removeTag(tag: string): Promise<IContactDocument>;
+  close(resolution?: string): Promise<IContactDocument>;
 }
+
+// Define the model interface with static methods
+interface IContactModel extends Model<IContactDocument> {
+  // Static methods are defined in the schema, no need to redeclare here
+}
+
+// Export the combined interface for external use
+export interface IContact extends IContactDocument {}
 
 const ContactSchema: Schema = new Schema({
   name: {
@@ -51,7 +69,7 @@ const ContactSchema: Schema = new Schema({
     trim: true,
     validate: {
       validator: function(v: string) {
-        return /^[\+]?[1-9][\d]{0,15}$/.test(v);
+        return /^[\+]?[1-9][\d\-\s]{0,20}$/.test(v); // International phone format with optional hyphens and spaces
       },
       message: 'Please provide a valid phone number'
     }
@@ -202,12 +220,12 @@ ContactSchema.index({ isArchived: 1 });
 ContactSchema.index({ subject: 'text', message: 'text' });
 
 // Virtual for response count
-ContactSchema.virtual('responseCount').get(function() {
+ContactSchema.virtual('responseCount').get(function(this: IContactDocument) {
   return this.responses ? this.responses.length : 0;
 });
 
 // Virtual for age (time since created)
-ContactSchema.virtual('age').get(function() {
+ContactSchema.virtual('age').get(function(this: IContactDocument) {
   const now = new Date();
   const created = new Date(this.createdAt);
   const diffTime = Math.abs(now.getTime() - created.getTime());
@@ -216,19 +234,19 @@ ContactSchema.virtual('age').get(function() {
 });
 
 // Virtual for is overdue
-ContactSchema.virtual('isOverdue').get(function() {
+ContactSchema.virtual('isOverdue').get(function(this: IContactDocument) {
   if (!this.followUpDate) return false;
   return new Date() > new Date(this.followUpDate);
 });
 
 // Virtual for last response
-ContactSchema.virtual('lastResponse').get(function() {
+ContactSchema.virtual('lastResponse').get(function(this: IContactDocument) {
   if (!this.responses || this.responses.length === 0) return null;
   return this.responses[this.responses.length - 1];
 });
 
 // Pre-save middleware
-ContactSchema.pre('save', function(next) {
+ContactSchema.pre('save', function(this: IContactDocument, next) {
   // Auto-set priority based on category
   if (this.isNew || this.isModified('category')) {
     switch (this.category) {
@@ -280,9 +298,9 @@ ContactSchema.pre('save', function(next) {
 });
 
 // Instance methods
-ContactSchema.methods.addResponse = function(adminId: string, message: string, isInternal = false) {
+ContactSchema.methods.addResponse = function(this: IContactDocument, adminId: string, message: string, isInternal = false) {
   this.responses.push({
-    from: adminId,
+    from: new mongoose.Types.ObjectId(adminId),
     message,
     date: new Date(),
     isInternal
@@ -299,25 +317,25 @@ ContactSchema.methods.addResponse = function(adminId: string, message: string, i
   return this.save();
 };
 
-ContactSchema.methods.markAsRead = function() {
+ContactSchema.methods.markAsRead = function(this: IContactDocument) {
   this.isRead = true;
   return this.save();
 };
 
-ContactSchema.methods.assignTo = function(adminId: string) {
-  this.assignedTo = adminId;
+ContactSchema.methods.assignTo = function(this: IContactDocument, adminId: string) {
+  this.assignedTo = new mongoose.Types.ObjectId(adminId);
   if (this.status === 'new') {
     this.status = 'in-progress';
   }
   return this.save();
 };
 
-ContactSchema.methods.setFollowUpDate = function(date: Date) {
+ContactSchema.methods.setFollowUpDate = function(this: IContactDocument, date: Date) {
   this.followUpDate = date;
   return this.save();
 };
 
-ContactSchema.methods.addTag = function(tag: string) {
+ContactSchema.methods.addTag = function(this: IContactDocument, tag: string) {
   if (!this.tags.includes(tag)) {
     this.tags.push(tag);
     return this.save();
@@ -325,16 +343,16 @@ ContactSchema.methods.addTag = function(tag: string) {
   return Promise.resolve(this);
 };
 
-ContactSchema.methods.removeTag = function(tag: string) {
+ContactSchema.methods.removeTag = function(this: IContactDocument, tag: string) {
   this.tags = this.tags.filter(t => t !== tag);
   return this.save();
 };
 
-ContactSchema.methods.close = function(resolution?: string) {
+ContactSchema.methods.close = function(this: IContactDocument, resolution?: string) {
   this.status = 'closed';
   if (resolution) {
     this.responses.push({
-      from: this.assignedTo,
+      from: this.assignedTo || new mongoose.Types.ObjectId(),
       message: `Case closed: ${resolution}`,
       date: new Date(),
       isInternal: true
@@ -392,4 +410,4 @@ ContactSchema.statics.findByDateRange = function(startDate: Date, endDate: Date)
   });
 };
 
-export default mongoose.model<IContact>('Contact', ContactSchema);
+export default mongoose.model<IContactDocument, IContactModel>('Contact', ContactSchema);

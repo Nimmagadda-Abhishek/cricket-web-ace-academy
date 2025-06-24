@@ -205,7 +205,14 @@ const AboutSection = () => {
             <div className="relative z-10">
               <h3 className="text-3xl font-bold mb-4 animate-slideDown">Ready to Start Your Cricket Journey?</h3>
               <p className="text-xl mb-6 animate-slideUp">Join hundreds of successful students who have transformed their game with us.</p>
-              <button className="bg-white text-cricket-green px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 hover:scale-105 ripple-effect animate-bounceIn">
+              <button 
+                type="button"
+                onClick={() => {
+                  console.log("Get Started Today clicked");
+                  document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="bg-white text-cricket-green px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 hover:scale-105 ripple-effect animate-bounceIn"
+              >
                 Get Started Today
               </button>
             </div>

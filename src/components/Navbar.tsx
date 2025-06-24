@@ -1,19 +1,30 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
-  const navigation = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Programs', href: '#programs' },
-    { name: 'Coaches', href: '#coaches' },
-    { name: 'Facilities', href: '#facilities' },
-    { name: 'Gallery', href: '#gallery' },
-    { name: 'Contact', href: '#contact' },
-  ];
+  // Different navigation items based on current page
+  const navigation = isHomePage
+    ? [
+        { name: 'Home', href: '#home' },
+        { name: 'About', href: '#about' },
+        { name: 'Programs', href: '#programs' },
+        { name: 'Coaches', href: '#coaches' },
+        { name: 'Facilities', href: '#facilities' },
+        { name: 'Gallery', href: '#gallery' },
+        { name: 'Contact', href: '#contact' },
+      ]
+    : [
+        { name: 'Home', href: '/' },
+        { name: 'Programs', href: '/programs' },
+        { name: 'Coaches', href: '/coaches' },
+        { name: 'Contact', href: '/#contact' },
+      ];
 
   return (
     <nav className="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-lg animate-slideDown">
@@ -21,24 +32,52 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold font-poppins text-cricket-green hover:text-cricket-orange transition-colors duration-300 cursor-pointer animate-slideInLeft">
+              <Link to="/" className="text-2xl font-bold font-poppins text-cricket-green hover:text-cricket-orange transition-colors duration-300 cursor-pointer animate-slideInLeft">
                 <span className="inline-block animate-wiggle">🏏</span> Kalyan Cricket Academy
-              </h1>
+              </Link>
             </div>
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
             {navigation.map((item, index) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className={`text-gray-700 hover:text-cricket-orange transition-all duration-300 font-medium relative group animate-slideInRight stagger-${index + 1}`}
-              >
-                {item.name}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cricket-orange group-hover:w-full transition-all duration-300"></span>
-              </a>
+              isHomePage || item.href.startsWith('/') ? (
+                <Link
+                  key={item.name}
+                  to={item.href.startsWith('/') ? item.href : '/'}
+                  onClick={(e) => {
+                    if (item.href.startsWith('#')) {
+                      e.preventDefault();
+                      document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className={`text-gray-700 hover:text-cricket-orange transition-all duration-300 font-medium relative group animate-slideInRight stagger-${index + 1}`}
+                >
+                  {item.name}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cricket-orange group-hover:w-full transition-all duration-300"></span>
+                </Link>
+              ) : (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className={`text-gray-700 hover:text-cricket-orange transition-all duration-300 font-medium relative group animate-slideInRight stagger-${index + 1}`}
+                >
+                  {item.name}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cricket-orange group-hover:w-full transition-all duration-300"></span>
+                </a>
+              )
             ))}
-            <Button className="bg-cricket-orange hover:bg-cricket-orange/90 hover:scale-105 transition-all duration-300 ripple-effect animate-bounceIn">
+            <Button 
+              type="button"
+              onClick={() => {
+                console.log("Join Now clicked from navbar");
+                if (isHomePage) {
+                  document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  window.location.href = '/programs';
+                }
+              }}
+              className="bg-cricket-orange hover:bg-cricket-orange/90 hover:scale-105 transition-all duration-300 ripple-effect animate-bounceIn"
+            >
               🚀 Join Now
             </Button>
           </div>
@@ -60,17 +99,46 @@ const Navbar = () => {
         <div className="md:hidden animate-slideDown">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
             {navigation.map((item, index) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className={`block px-3 py-2 text-gray-700 hover:text-cricket-orange hover:bg-cricket-orange/10 transition-all duration-300 rounded-lg animate-slideInLeft stagger-${index + 1}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item.name}
-              </a>
+              isHomePage || item.href.startsWith('/') ? (
+                <Link
+                  key={item.name}
+                  to={item.href.startsWith('/') ? item.href : '/'}
+                  className={`block px-3 py-2 text-gray-700 hover:text-cricket-orange hover:bg-cricket-orange/10 transition-all duration-300 rounded-lg animate-slideInLeft stagger-${index + 1}`}
+                  onClick={(e) => {
+                    setIsMenuOpen(false);
+                    if (item.href.startsWith('#')) {
+                      e.preventDefault();
+                      document.querySelector(item.href)?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  {item.name}
+                </Link>
+              ) : (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className={`block px-3 py-2 text-gray-700 hover:text-cricket-orange hover:bg-cricket-orange/10 transition-all duration-300 rounded-lg animate-slideInLeft stagger-${index + 1}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </a>
+              )
             ))}
             <div className="px-3 py-2">
-              <Button className="w-full bg-cricket-orange hover:bg-cricket-orange/90 hover:scale-105 transition-all duration-300 ripple-effect animate-bounceIn">
+              <Button 
+                type="button"
+                onClick={() => {
+                  console.log("Join Now clicked from mobile menu");
+                  setIsMenuOpen(false);
+                  if (isHomePage) {
+                    document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    window.location.href = '/programs';
+                  }
+                }}
+                className="w-full bg-cricket-orange hover:bg-cricket-orange/90 hover:scale-105 transition-all duration-300 ripple-effect animate-bounceIn"
+              >
                 🚀 Join Now
               </Button>
             </div>

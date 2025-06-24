@@ -1,26 +1,38 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useApiConnection } from '@/hooks/use-api-connection';
 
 interface AdminLoginProps {
-  onLogin: (username: string, password: string) => void;
+  onLogin: (email: string, password: string) => void;
   error?: string;
+  isLoading?: boolean;
 }
 
-const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, error }) => {
-  const [username, setUsername] = useState('');
+const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, error, isLoading: externalLoading }) => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [internalLoading, setInternalLoading] = useState(false);
+  const { isConnected, isLoading: connectionLoading } = useApiConnection();
+  
+  // Use external loading state if provided, otherwise use internal
+  const isLoading = externalLoading !== undefined ? externalLoading : internalLoading;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     
-    // Simulate loading
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!isConnected && !connectionLoading) {
+      // If not connected to backend, show a message
+      return;
+    }
     
-    onLogin(username, password);
-    setIsLoading(false);
+    setInternalLoading(true);
+    
+    try {
+      await onLogin(email, password);
+    } finally {
+      setInternalLoading(false);
+    }
   };
 
   return (
@@ -60,21 +72,21 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, error }) => {
 
             <div className="space-y-4">
               <div className="animate-slideInLeft">
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                  Username
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
                 </label>
                 <div className="relative">
                   <input
-                    id="username"
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cricket-orange focus:border-transparent transition-all duration-200 pl-12"
-                    placeholder="Enter your username"
+                    placeholder="Enter your email"
                     required
                   />
                   <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-                    👤
+                    📧
                   </div>
                 </div>
               </div>
@@ -120,8 +132,11 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, error }) => {
             <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
               <p className="text-sm">
                 <strong>Demo Credentials:</strong><br />
-                Username: <code className="bg-blue-100 px-2 py-1 rounded">admin</code><br />
-                Password: <code className="bg-blue-100 px-2 py-1 rounded">password</code>
+                Email: <code className="bg-blue-100 px-2 py-1 rounded">admin@kalyancricketacademy.com</code><br />
+                Password: <code className="bg-blue-100 px-2 py-1 rounded">Admin@123456</code>
+              </p>
+              <p className="text-xs mt-2 text-gray-600">
+                For development: You can also use admin/password
               </p>
             </div>
           </div>

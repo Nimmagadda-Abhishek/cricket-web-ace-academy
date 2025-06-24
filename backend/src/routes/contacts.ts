@@ -5,7 +5,7 @@ import { protect, checkPermission, logActivity, optionalAuth } from '../middlewa
 const router = express.Router();
 
 // Public route - create new contact (from website contact form)
-router.post('/public', async (req, res) => {
+router.post('/public', async (req, res): Promise<any> => {
   try {
     const {
       name,
@@ -52,7 +52,7 @@ router.post('/public', async (req, res) => {
         }
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating contact:', error);
     
     if (error.name === 'ValidationError') {
@@ -78,7 +78,7 @@ router.use(protect);
 router.get('/',
   checkPermission('contacts.view'),
   logActivity('view_contacts', 'contacts'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const {
         category,
@@ -116,7 +116,7 @@ router.get('/',
         query.assignedTo = assignedTo;
       }
 
-      if (search) {
+      if (search && typeof search === 'string') {
         query.$or = [
           { name: { $regex: search, $options: 'i' } },
           { email: { $regex: search, $options: 'i' } },
@@ -170,7 +170,7 @@ router.get('/',
 router.get('/:id',
   checkPermission('contacts.view'),
   logActivity('view_contact', 'contact'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const contact = await Contact.findById(req.params.id)
         .populate('assignedTo', 'name email avatar')
@@ -205,9 +205,9 @@ router.get('/:id',
 
 // Create new contact (admin)
 router.post('/',
-  checkPermission('contacts.view'),
+  checkPermission('contacts.create'),
   logActivity('create_contact', 'contact'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const {
         name,
@@ -218,15 +218,16 @@ router.post('/',
         category,
         priority,
         source,
-        tags,
-        contactPreference
+        contactPreference,
+        assignedTo,
+        tags
       } = req.body;
 
       // Validate required fields
       if (!name || !email || !phone || !subject || !message) {
         return res.status(400).json({
           status: 'fail',
-          message: 'Please provide all required fields'
+          message: 'Please provide all required fields: name, email, phone, subject, and message'
         });
       }
 
@@ -239,9 +240,10 @@ router.post('/',
         message,
         category: category || 'inquiry',
         priority: priority || 'medium',
-        source: source || 'phone',
-        tags: tags || [],
-        contactPreference: contactPreference || 'both'
+        source: source || 'admin',
+        contactPreference: contactPreference || 'both',
+        assignedTo,
+        tags: tags || []
       });
 
       await contact.save();
@@ -251,7 +253,7 @@ router.post('/',
         message: 'Contact created successfully',
         data: { contact }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating contact:', error);
       
       if (error.name === 'ValidationError') {
@@ -274,13 +276,14 @@ router.post('/',
 
 // Update contact
 router.put('/:id',
-  checkPermission('contacts.view'),
+  checkPermission('contacts.edit'),
   logActivity('update_contact', 'contact'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const contactId = req.params.id;
       const updates = req.body;
 
+      // Find the contact first
       const contact = await Contact.findById(contactId);
       if (!contact) {
         return res.status(404).json({
@@ -304,7 +307,7 @@ router.put('/:id',
         message: 'Contact updated successfully',
         data: { contact: updatedContact }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating contact:', error);
       
       if (error.name === 'ValidationError') {
@@ -325,11 +328,11 @@ router.put('/:id',
   }
 );
 
-// Delete contact (soft delete - archive)
+// Delete contact (soft delete)
 router.delete('/:id',
   checkPermission('contacts.delete'),
   logActivity('delete_contact', 'contact'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const contact = await Contact.findById(req.params.id);
       if (!contact) {
@@ -339,19 +342,19 @@ router.delete('/:id',
         });
       }
 
-      // Archive the contact
+      // Soft delete - mark as archived
       contact.isArchived = true;
       await contact.save();
 
       res.json({
         status: 'success',
-        message: 'Contact archived successfully'
+        message: 'Contact deleted successfully'
       });
     } catch (error) {
-      console.error('Error archiving contact:', error);
+      console.error('Error deleting contact:', error);
       res.status(500).json({
         status: 'error',
-        message: 'Failed to archive contact',
+        message: 'Failed to delete contact',
         error: process.env.NODE_ENV === 'development' ? error : undefined
       });
     }
@@ -361,8 +364,8 @@ router.delete('/:id',
 // Add response to contact
 router.post('/:id/responses',
   checkPermission('contacts.respond'),
-  logActivity('respond_to_contact', 'contact'),
-  async (req, res) => {
+  logActivity('add_contact_response', 'contact'),
+  async (req, res): Promise<any> => {
     try {
       const { message, isInternal = false } = req.body;
       
@@ -381,7 +384,7 @@ router.post('/:id/responses',
         });
       }
 
-      // Add response
+      // Add response using the instance method
       await contact.addResponse(req.user._id, message, isInternal);
 
       // Populate the response for return
@@ -407,7 +410,7 @@ router.post('/:id/responses',
 router.put('/:id/assign',
   checkPermission('contacts.assign'),
   logActivity('assign_contact', 'contact'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const { adminId } = req.body;
       
@@ -419,7 +422,7 @@ router.put('/:id/assign',
         });
       }
 
-      // Assign contact
+      // Assign contact using the instance method
       await contact.assignTo(adminId);
       await contact.populate('assignedTo', 'name email');
 
@@ -443,7 +446,7 @@ router.put('/:id/assign',
 router.put('/:id/follow-up',
   checkPermission('contacts.view'),
   logActivity('set_follow_up', 'contact'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const { followUpDate } = req.body;
       
@@ -455,6 +458,7 @@ router.put('/:id/follow-up',
         });
       }
 
+      // Set follow-up date using the instance method
       await contact.setFollowUpDate(new Date(followUpDate));
 
       res.json({
@@ -477,7 +481,7 @@ router.put('/:id/follow-up',
 router.put('/:id/close',
   checkPermission('contacts.respond'),
   logActivity('close_contact', 'contact'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const { resolution } = req.body;
       
@@ -489,6 +493,7 @@ router.put('/:id/close',
         });
       }
 
+      // Close contact using the instance method
       await contact.close(resolution);
 
       res.json({
@@ -511,7 +516,7 @@ router.put('/:id/close',
 router.get('/stats/overview',
   checkPermission('contacts.view'),
   logActivity('view_contact_stats', 'contacts'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const [
         totalContacts,
@@ -581,78 +586,74 @@ router.get('/stats/overview',
   }
 );
 
-// Bulk operations
-router.post('/bulk/actions',
+// Get overdue contacts
+router.get('/overdue/list',
   checkPermission('contacts.view'),
-  logActivity('bulk_contact_actions', 'contacts'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
-      const { contactIds, action, data } = req.body;
+      const overdueContacts = await Contact.find({
+        followUpDate: { $lt: new Date() },
+        status: { $nin: ['resolved', 'closed'] },
+        isArchived: false
+      })
+      .populate('assignedTo', 'name email')
+      .sort({ followUpDate: 1 });
+
+      res.json({
+        status: 'success',
+        data: { contacts: overdueContacts }
+      });
+    } catch (error) {
+      console.error('Error fetching overdue contacts:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to fetch overdue contacts',
+        error: process.env.NODE_ENV === 'development' ? error : undefined
+      });
+    }
+  }
+);
+
+// Bulk operations
+router.post('/bulk/assign',
+  checkPermission('contacts.assign'),
+  logActivity('bulk_assign_contacts', 'contacts'),
+  async (req, res): Promise<any> => {
+    try {
+      const { contactIds, adminId } = req.body;
       
       if (!contactIds || !Array.isArray(contactIds) || contactIds.length === 0) {
         return res.status(400).json({
           status: 'fail',
-          message: 'Please provide valid contact IDs'
+          message: 'Please provide an array of contact IDs'
         });
       }
 
-      let updateQuery: any = {};
-      let message = '';
-
-      switch (action) {
-        case 'mark-read':
-          updateQuery = { isRead: true };
-          message = 'Contacts marked as read';
-          break;
-        case 'mark-unread':
-          updateQuery = { isRead: false };
-          message = 'Contacts marked as unread';
-          break;
-        case 'assign':
-          if (!data.adminId) {
-            return res.status(400).json({
-              status: 'fail',
-              message: 'Admin ID is required for assignment'
-            });
-          }
-          updateQuery = { assignedTo: data.adminId };
-          message = 'Contacts assigned successfully';
-          break;
-        case 'set-priority':
-          if (!data.priority) {
-            return res.status(400).json({
-              status: 'fail',
-              message: 'Priority is required'
-            });
-          }
-          updateQuery = { priority: data.priority };
-          message = 'Priority updated for contacts';
-          break;
-        case 'archive':
-          updateQuery = { isArchived: true };
-          message = 'Contacts archived';
-          break;
-        default:
-          return res.status(400).json({
-            status: 'fail',
-            message: 'Invalid action'
-          });
+      if (!adminId) {
+        return res.status(400).json({
+          status: 'fail',
+          message: 'Admin ID is required'
+        });
       }
 
-      await Contact.updateMany(
+      const result = await Contact.updateMany(
         { _id: { $in: contactIds }, isArchived: false },
-        updateQuery
+        { 
+          assignedTo: adminId,
+          status: 'in-progress'
+        }
       );
 
       res.json({
         status: 'success',
-        message
+        message: `Successfully assigned ${result.modifiedCount} contacts`,
+        data: { modifiedCount: result.modifiedCount }
       });
     } catch (error) {
-      console.error('Error performing bulk action:', error);
+      console.error('Error bulk assigning contacts:', error);
       res.status(500).json({
         status: 'error',
-        message: 'Failed to perform bulk action',
+        message: 'Failed to bulk assign contacts',
         error: process.env.NODE_ENV === 'development' ? error : undefined
       });
     }

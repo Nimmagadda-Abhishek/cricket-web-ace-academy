@@ -88,7 +88,7 @@ router.get('/',
 router.get('/:id',
   checkPermission('students.view'),
   logActivity('view_student', 'student'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const student = await Student.findById(req.params.id)
         .populate('program', 'title price category coach')
@@ -126,7 +126,7 @@ router.get('/:id',
 router.post('/',
   checkPermission('students.create'),
   logActivity('create_student', 'student'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const {
         name,
@@ -156,7 +156,8 @@ router.post('/',
         });
       }
 
-      if (!selectedProgram.canEnroll()) {
+      // Use the canEnroll method from the Program model
+      if (!(selectedProgram as any).canEnroll()) {
         return res.status(400).json({
           status: 'fail',
           message: 'Selected program is full or not available for enrollment'
@@ -189,7 +190,7 @@ router.post('/',
       await student.save();
 
       // Update program enrollment count
-      await selectedProgram.enrollStudent();
+      await (selectedProgram as any).enrollStudent();
 
       // Populate program details for response
       await student.populate('program', 'title price category');
@@ -199,7 +200,7 @@ router.post('/',
         message: 'Student created successfully',
         data: { student }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating student:', error);
       
       if (error.name === 'ValidationError') {
@@ -224,7 +225,7 @@ router.post('/',
 router.put('/:id',
   checkPermission('students.edit'),
   logActivity('update_student', 'student'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const studentId = req.params.id;
       const updates = req.body;
@@ -248,7 +249,7 @@ router.put('/:id',
           });
         }
 
-        if (!newProgram.canEnroll()) {
+        if (!(newProgram as any).canEnroll()) {
           return res.status(400).json({
             status: 'fail',
             message: 'Selected program is full or not available'
@@ -257,9 +258,9 @@ router.put('/:id',
 
         // Update program enrollment counts
         await Program.findById(student.program).then(oldProgram => {
-          if (oldProgram) oldProgram.unenrollStudent();
+          if (oldProgram) (oldProgram as any).unenrollStudent();
         });
-        await newProgram.enrollStudent();
+        await (newProgram as any).enrollStudent();
 
         // Update fees to match new program
         updates.fees = newProgram.price;
@@ -280,7 +281,7 @@ router.put('/:id',
         message: 'Student updated successfully',
         data: { student: updatedStudent }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating student:', error);
       
       if (error.name === 'ValidationError') {
@@ -305,7 +306,7 @@ router.put('/:id',
 router.delete('/:id',
   checkPermission('students.delete'),
   logActivity('delete_student', 'student'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const student = await Student.findById(req.params.id);
       if (!student) {
@@ -322,14 +323,14 @@ router.delete('/:id',
 
       // Update program enrollment count
       await Program.findById(student.program).then(program => {
-        if (program) program.unenrollStudent();
+        if (program) (program as any).unenrollStudent();
       });
 
       res.json({
         status: 'success',
         message: 'Student deleted successfully'
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting student:', error);
       res.status(500).json({
         status: 'error',
@@ -408,7 +409,7 @@ router.get('/stats/overview',
 router.post('/:id/payments',
   checkPermission('students.edit'),
   logActivity('add_payment', 'student'),
-  async (req, res) => {
+  async (req, res): Promise<any> => {
     try {
       const { month, year, amount, paymentMethod, transactionId } = req.body;
       
@@ -485,7 +486,7 @@ router.get('/export/data',
           Email: student.email,
           Phone: student.phone,
           Age: student.age,
-          Program: student.program?.title || 'N/A',
+          Program: (student.program as any)?.title || 'N/A',
           Status: student.status,
           Fees: student.fees,
           'Join Date': new Date(student.joinDate).toLocaleDateString(),

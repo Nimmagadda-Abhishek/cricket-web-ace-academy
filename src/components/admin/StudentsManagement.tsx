@@ -119,13 +119,18 @@ const StudentsManagement = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={(e) => {
+            e.preventDefault();
+            alert('Student added successfully!');
+            setShowAddModal(false);
+          }}>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
               <input
                 type="text"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cricket-orange focus:border-transparent"
                 placeholder="Enter student name"
+                required
               />
             </div>
             <div>
@@ -134,6 +139,7 @@ const StudentsManagement = () => {
                 type="email"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cricket-orange focus:border-transparent"
                 placeholder="Enter email address"
+                required
               />
             </div>
             <div>
@@ -142,6 +148,7 @@ const StudentsManagement = () => {
                 type="tel"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cricket-orange focus:border-transparent"
                 placeholder="Enter phone number"
+                required
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -151,11 +158,17 @@ const StudentsManagement = () => {
                   type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cricket-orange focus:border-transparent"
                   placeholder="Age"
+                  required
+                  min="5"
+                  max="50"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Program</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cricket-orange focus:border-transparent">
+                <select 
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cricket-orange focus:border-transparent"
+                  required
+                >
                   {programs.map(program => (
                     <option key={program} value={program}>{program}</option>
                   ))}
@@ -327,13 +340,22 @@ const StudentsManagement = () => {
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                        <button 
+                          onClick={() => alert(`View details for ${student.name}`)}
+                          className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                        >
                           👁️
                         </button>
-                        <button className="text-green-600 hover:text-green-800 transition-colors duration-200">
+                        <button 
+                          onClick={() => alert(`Edit ${student.name}`)}
+                          className="text-green-600 hover:text-green-800 transition-colors duration-200"
+                        >
                           ✏️
                         </button>
-                        <button className="text-red-600 hover:text-red-800 transition-colors duration-200">
+                        <button 
+                          onClick={() => alert(`Delete ${student.name}`)}
+                          className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                        >
                           🗑️
                         </button>
                       </div>
