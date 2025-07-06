@@ -229,17 +229,7 @@ const Facilities = () => {
                     </p>
 
                     {/* Specifications */}
-                    <div className="mb-6">
-                      <h4 className="font-semibold text-cricket-green mb-3">Specifications:</h4>
-                      <div className="grid grid-cols-2 gap-3">
-                        {Object.entries(facility.specifications).map(([key, value], idx) => (
-                          <div key={idx} className="flex justify-between text-sm">
-                            <span className="text-gray-600">{key}:</span>
-                            <span className="font-medium text-cricket-green">{value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+
 
                     {/* Features */}
                     <div className="mb-6">

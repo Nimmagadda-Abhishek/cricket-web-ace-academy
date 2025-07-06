@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
 
@@ -87,5 +88,18 @@ export const getDatabaseStats = async () => {
     return null;
   }
 };
+
+// Supabase client configuration for backend
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  throw new Error('SUPABASE_URL and SUPABASE_SERVICE_KEY must be set in environment variables');
+}
+
+export const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+// Usage: import { supabase } from '../config/database';
+// Example: const { data, error } = await supabase.from('programs').select('*');
 
 export default connectDB;

@@ -1,6 +1,8 @@
 // API service for making requests to the backend
+import supabaseService from './supabase';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true' || true;
 const IS_DEV = import.meta.env.DEV || process.env.NODE_ENV === 'development';
 
 // Generic fetch function with error handling
@@ -29,30 +31,88 @@ async function fetchData(endpoint: string, options: RequestInit = {}) {
 // Programs API
 export const programsApi = {
   // Get all public programs
-  getPrograms: () => {
-    // For development, return mock data
-    if (IS_DEV) {
+  getPrograms: async () => {
+    try {
+      // Use Supabase if enabled
+      if (USE_SUPABASE) {
+        return await supabaseService.programs.getPrograms();
+      }
+      
+      // Try to use Hostinger database if not in dev mode
+      if (!IS_DEV) {
+        try {
+          const result = await fetchData('/programs/public');
+          return result;
+        } catch (error) {
+          console.warn('Failed to fetch from API, falling back to mock data:', error);
+          // Fall back to mock data on error
+          return {
+            data: {
+              programs: mockPrograms,
+            },
+          };
+        }
+      }
+      
+      // For development or on error, return mock data
       return Promise.resolve({
         data: {
           programs: mockPrograms,
         },
       });
+    } catch (error) {
+      console.error('Error in getPrograms:', error);
+      // Always fall back to mock data on any error
+      return {
+        data: {
+          programs: mockPrograms,
+        },
+      };
     }
-    return fetchData('/programs/public');
   },
   
   // Get program details by ID
-  getProgramById: (id: string) => {
-    // For development, return mock data
-    if (IS_DEV) {
+  getProgramById: async (id: string) => {
+    try {
+      // Use Supabase if enabled
+      if (USE_SUPABASE) {
+        return await supabaseService.programs.getProgramById(id);
+      }
+      
+      // Try to use Hostinger database if not in dev mode
+      if (!IS_DEV) {
+        try {
+          const result = await fetchData(`/programs/${id}`);
+          return result;
+        } catch (error) {
+          console.warn(`Failed to fetch program ${id} from API, falling back to mock data:`, error);
+          // Fall back to mock data on error
+          const program = mockPrograms.find(p => p._id === id) || mockPrograms[0];
+          return {
+            data: {
+              program,
+            },
+          };
+        }
+      }
+      
+      // For development or on error, return mock data
       const program = mockPrograms.find(p => p._id === id) || mockPrograms[0];
       return Promise.resolve({
         data: {
           program,
         },
       });
+    } catch (error) {
+      console.error(`Error in getProgramById for ID ${id}:`, error);
+      // Always fall back to mock data on any error
+      const program = mockPrograms.find(p => p._id === id) || mockPrograms[0];
+      return {
+        data: {
+          program,
+        },
+      };
     }
-    return fetchData(`/programs/${id}`);
   },
 };
 
@@ -61,7 +121,7 @@ export const paymentsApi = {
   // Create a new payment intent
   createPaymentIntent: (data: { amount: number; programId: string; studentInfo: any }) => {
     // For development, return mock success
-    if (IS_DEV) {
+    if (IS_DEV && !USE_SUPABASE) {
       return Promise.resolve({
         data: {
           clientSecret: 'pi_mock_client_secret',
@@ -69,15 +129,25 @@ export const paymentsApi = {
         },
       });
     }
+    
+    // Note: Supabase doesn't handle payment intents directly
+    // You would typically use a serverless function or backend API for this
+    // This would connect to Stripe or another payment processor
+    
     return fetchData('/payments/create-intent', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
   
-  // Confirm payment
+  // Confirm payment and create enrollment
   confirmPayment: (paymentIntentId: string) => {
-    // For development, return mock success
+    // Use Supabase to update enrollment status if enabled
+    if (USE_SUPABASE) {
+      return supabaseService.payments.updateEnrollmentStatus(paymentIntentId, 'succeeded');
+    }
+    
+    // For development without Supabase, return mock success
     if (IS_DEV) {
       return Promise.resolve({
         data: {
@@ -86,9 +156,43 @@ export const paymentsApi = {
         },
       });
     }
+    
+    // Fallback to REST API
     return fetchData('/payments/confirm', {
       method: 'POST',
       body: JSON.stringify({ paymentIntentId }),
+    });
+  },
+  
+  // Create enrollment record
+  createEnrollment: (data: { 
+    program_id: string; 
+    student_info: any; 
+    payment_intent_id: string;
+    amount_paid: number;
+  }) => {
+    // Use Supabase if enabled
+    if (USE_SUPABASE) {
+      return supabaseService.payments.createEnrollment(data);
+    }
+    
+    // For development without Supabase, return mock success
+    if (IS_DEV) {
+      return Promise.resolve({
+        data: {
+          enrollment: {
+            id: 'enroll_mock_123',
+            ...data,
+            payment_status: 'pending',
+          },
+        },
+      });
+    }
+    
+    // Fallback to REST API
+    return fetchData('/enrollments', {
+      method: 'POST',
+      body: JSON.stringify(data),
     });
   },
 };
@@ -97,7 +201,12 @@ export const paymentsApi = {
 export const contactsApi = {
   // Submit contact form
   submitContact: (data: { name: string; email: string; phone: string; message: string }) => {
-    // For development, return mock success
+    // Use Supabase if enabled
+    if (USE_SUPABASE) {
+      return supabaseService.contacts.submitContact(data);
+    }
+    
+    // For development without Supabase, return mock success
     if (IS_DEV) {
       return Promise.resolve({
         data: {
@@ -106,12 +215,14 @@ export const contactsApi = {
         },
       });
     }
+    
+    // Fallback to REST API
     return fetchData('/contacts', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
-};
+}; 
 
 // Mock data for development
 const mockPrograms = [
@@ -356,3 +467,4 @@ export default {
   payments: paymentsApi,
   contacts: contactsApi,
 };
+

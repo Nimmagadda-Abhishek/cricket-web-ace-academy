@@ -1,16 +1,96 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
 
 interface DashboardProps {
   onNavigate?: (page: string) => void;
 }
 
+interface DashboardStats {
+  students: number;
+  programs: number;
+  coaches: number;
+  revenue: string;
+  facilities: number;
+  testimonials: number;
+  galleryImages: number;
+  contacts: number;
+}
+
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
-  const stats = [
-    { title: 'Total Students', value: '487', change: '+12%', icon: '👥', color: 'bg-blue-500' },
-    { title: 'Active Programs', value: '8', change: '+2', icon: '🏏', color: 'bg-cricket-orange' },
-    { title: 'Total Coaches', value: '24', change: '+3', icon: '👨‍🏫', color: 'bg-green-500' },
-    { title: 'Monthly Revenue', value: '₹37,73,440', change: '+18%', icon: '💰', color: 'bg-purple-500' }
+  const [stats, setStats] = useState<DashboardStats>({
+    students: 0,
+    programs: 0,
+    coaches: 0,
+    revenue: '₹0',
+    facilities: 0,
+    testimonials: 0,
+    galleryImages: 0,
+    contacts: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
+
+  const fetchDashboardStats = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch programs count
+      const { count: programsCount } = await supabase
+        .from('programs')
+        .select('*', { count: 'exact', head: true });
+      
+      // Fetch contacts count
+      const { count: contactsCount } = await supabase
+        .from('contacts')
+        .select('*', { count: 'exact', head: true });
+      
+      // Fetch facilities count
+      const { count: facilitiesCount } = await supabase
+        .from('facilities')
+        .select('*', { count: 'exact', head: true });
+      
+      // Fetch testimonials count
+      const { count: testimonialsCount } = await supabase
+        .from('testimonials')
+        .select('*', { count: 'exact', head: true });
+      
+      // Fetch gallery images count
+      const { count: galleryCount } = await supabase
+        .from('gallery')
+        .select('*', { count: 'exact', head: true });
+      
+      // Set the stats
+      setStats({
+        students: 487, // Mock data for now
+        programs: programsCount || 0,
+        coaches: 24, // Mock data for now
+        revenue: '₹37,73,440', // Mock data for now
+        facilities: facilitiesCount || 0,
+        testimonials: testimonialsCount || 0,
+        galleryImages: galleryCount || 0,
+        contacts: contactsCount || 0
+      });
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const statCards = [
+    { title: 'Total Students', value: stats.students.toString(), change: '+12%', icon: '👥', color: 'bg-blue-500', page: 'students' },
+    { title: 'Active Programs', value: stats.programs.toString(), change: '+2', icon: '🏏', color: 'bg-cricket-orange', page: 'programs' },
+    { title: 'Total Coaches', value: stats.coaches.toString(), change: '+3', icon: '👨‍🏫', color: 'bg-green-500', page: 'coaches' },
+    { title: 'Monthly Revenue', value: stats.revenue, change: '+18%', icon: '💰', color: 'bg-purple-500', page: null },
+    { title: 'Facilities', value: stats.facilities.toString(), icon: '🏢', color: 'bg-amber-500', page: 'facilities' },
+    { title: 'Testimonials', value: stats.testimonials.toString(), icon: '⭐', color: 'bg-pink-500', page: 'testimonials' },
+    { title: 'Gallery Images', value: stats.galleryImages.toString(), icon: '📸', color: 'bg-indigo-500', page: 'gallery' },
+    { title: 'Contact Requests', value: stats.contacts.toString(), icon: '📞', color: 'bg-teal-500', page: 'contacts' }
   ];
 
   const recentActivities = [
@@ -56,6 +136,30 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           alert('Navigation function not available');
         }
         break;
+      case 'Upload to Gallery':
+        console.log('Navigating to gallery page');
+        if (onNavigate) {
+          onNavigate('gallery');
+        } else {
+          alert('Navigation function not available');
+        }
+        break;
+      case 'Add Testimonial':
+        console.log('Navigating to testimonials page');
+        if (onNavigate) {
+          onNavigate('testimonials');
+        } else {
+          alert('Navigation function not available');
+        }
+        break;
+      case 'Manage Facilities':
+        console.log('Navigating to facilities page');
+        if (onNavigate) {
+          onNavigate('facilities');
+        } else {
+          alert('Navigation function not available');
+        }
+        break;
       case 'Generate Report':
         console.log('Report generation clicked');
         alert('Report generation feature coming soon!');
@@ -77,25 +181,49 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     <div className="space-y-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <Card key={index} className={`card-hover gradient-card border-0 shadow-lg overflow-hidden animate-bounceIn stagger-${index + 1}`}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
-                  <p className="text-3xl font-bold text-cricket-green">{stat.value}</p>
-                  <p className="text-sm text-green-600 mt-1">
-                    <span className="inline-block mr-1">📈</span>
-                    {stat.change} from last month
-                  </p>
+        {loading ? (
+          // Loading skeleton
+          Array(8).fill(0).map((_, index) => (
+            <Card key={index} className="card-hover gradient-card border-0 shadow-lg overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="w-full">
+                    <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3 mb-2"></div>
+                    <div className="h-8 bg-gray-200 rounded animate-pulse w-1/2 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded animate-pulse w-1/3"></div>
+                  </div>
+                  <div className="bg-gray-200 animate-pulse w-16 h-16 rounded-full"></div>
                 </div>
-                <div className={`w-16 h-16 ${stat.color} rounded-full flex items-center justify-center text-white text-2xl animate-float`}>
-                  {stat.icon}
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          statCards.map((stat, index) => (
+            <Card 
+              key={index} 
+              className={`card-hover gradient-card border-0 shadow-lg overflow-hidden animate-bounceIn stagger-${index + 1} ${stat.page ? 'cursor-pointer' : ''}`}
+              onClick={() => stat.page && onNavigate && onNavigate(stat.page)}
+            >
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
+                    <p className="text-3xl font-bold text-cricket-green">{stat.value}</p>
+                    {stat.change && (
+                      <p className="text-sm text-green-600 mt-1">
+                        <span className="inline-block mr-1">📈</span>
+                        {stat.change} from last month
+                      </p>
+                    )}
+                  </div>
+                  <div className={`w-16 h-16 ${stat.color} rounded-full flex items-center justify-center text-white text-2xl animate-float`}>
+                    {stat.icon}
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -213,6 +341,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             {[
               { action: 'Add New Student', icon: '👤', color: 'bg-blue-500' },
               { action: 'Schedule Training', icon: '📅', color: 'bg-green-500' },
+              { action: 'Upload to Gallery', icon: '📸', color: 'bg-indigo-500' },
+              { action: 'Add Testimonial', icon: '⭐', color: 'bg-pink-500' },
+              { action: 'Manage Facilities', icon: '🏢', color: 'bg-amber-500' },
               { action: 'Send Newsletter', icon: '📧', color: 'bg-purple-500' },
               { action: 'Generate Report', icon: '📊', color: 'bg-cricket-orange' }
             ].map((item, index) => (

@@ -5,12 +5,34 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import GalleryComponent from '@/components/Gallery';
+import { supabase } from '@/integrations/supabase/client';
+import '@/styles/animations.css';
 
 const Gallery = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [useDynamicGallery, setUseDynamicGallery] = useState(false);
+  
+  // Check if we have gallery images in the database
+  useEffect(() => {
+    const checkGalleryImages = async () => {
+      try {
+        const { count } = await supabase
+          .from('gallery')
+          .select('*', { count: 'exact', head: true });
+        
+        setUseDynamicGallery(count !== null && count > 0);
+      } catch (error) {
+        console.error('Error checking gallery images:', error);
+        setUseDynamicGallery(false);
+      }
+    };
+    
+    checkGalleryImages();
+  }, []);
 
   // Sample gallery images - will be replaced with dynamic admin content
   const galleryImages = [
@@ -142,161 +164,166 @@ const Gallery = () => {
   return (
     <div>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-        {/* Hero Section */}
-        <section className="relative py-20 bg-gradient-to-r from-cricket-green to-cricket-orange overflow-hidden">
-          <div className="absolute inset-0 bg-black/20"></div>
-          
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="animate-fadeInUp">
-              <h1 className="text-5xl md:text-7xl font-bold font-poppins text-white mb-6">
-                Our
-                <span className="block text-white">Gallery</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
-                Capturing moments of excellence, dedication, and triumph
-              </p>
-              <div className="flex justify-center">
-                <div className="bg-white/10 backdrop-blur-md rounded-full px-6 py-3 border border-white/20">
-                  <span className="text-white font-semibold">📸 {galleryImages.length} Photos & Counting</span>
+      
+      {useDynamicGallery ? (
+        <GalleryComponent />
+      ) : (
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+          {/* Hero Section */}
+          <section className="relative py-20 bg-gradient-to-r from-cricket-green to-cricket-orange overflow-hidden">
+            <div className="absolute inset-0 bg-black/20"></div>
+            
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+              <div className="animate-fadeInUp">
+                <h1 className="text-5xl md:text-7xl font-bold font-poppins text-white mb-6">
+                  Our
+                  <span className="block text-white">Gallery</span>
+                </h1>
+                <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
+                  Capturing moments of excellence, dedication, and triumph
+                </p>
+                <div className="flex justify-center">
+                  <div className="bg-white/10 backdrop-blur-md rounded-full px-6 py-3 border border-white/20">
+                    <span className="text-white font-semibold">📸 {galleryImages.length} Photos & Counting</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Floating Elements */}
-          <div className="absolute top-20 left-10 animate-float">
-            <div className="w-4 h-4 bg-white/20 rounded-full"></div>
-          </div>
-          <div className="absolute top-40 right-20 animate-float-delayed">
-            <div className="w-6 h-6 bg-white/30 rounded-full"></div>
-          </div>
-          <div className="absolute bottom-20 left-1/4 animate-float">
-            <div className="w-3 h-3 bg-white/25 rounded-full"></div>
-          </div>
-        </section>
+            {/* Floating Elements */}
+            <div className="absolute top-20 left-10 animate-float">
+              <div className="w-4 h-4 bg-white/20 rounded-full"></div>
+            </div>
+            <div className="absolute top-40 right-20 animate-float-delayed">
+              <div className="w-6 h-6 bg-white/30 rounded-full"></div>
+            </div>
+            <div className="absolute bottom-20 left-1/4 animate-float">
+              <div className="w-3 h-3 bg-white/25 rounded-full"></div>
+            </div>
+          </section>
 
-        {/* Category Filter */}
-        <section className="py-12 bg-white sticky top-16 z-40 shadow-md">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap justify-center gap-4">
-              {categories.map((category, index) => (
-                <Button
-                  key={category.id}
-                  variant={selectedCategory === category.id ? "default" : "outline"}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`
-                    px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105
-                    ${selectedCategory === category.id 
-                      ? 'bg-cricket-orange hover:bg-cricket-orange/90 text-white shadow-lg' 
-                      : 'border-2 border-cricket-green text-cricket-green hover:bg-cricket-green hover:text-white'
-                    }
-                    animate-slideInUp
-                  `}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  {category.name}
-                  <Badge 
-                    variant="secondary" 
-                    className={`ml-2 ${selectedCategory === category.id ? 'bg-white/20 text-white' : 'bg-cricket-green/10 text-cricket-green'}`}
+          {/* Category Filter */}
+          <section className="py-12 bg-white sticky top-16 z-40 shadow-md">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-wrap justify-center gap-4">
+                {categories.map((category, index) => (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.id ? "default" : "outline"}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`
+                      px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105
+                      ${selectedCategory === category.id 
+                        ? 'bg-cricket-orange hover:bg-cricket-orange/90 text-white shadow-lg' 
+                        : 'border-2 border-cricket-green text-cricket-green hover:bg-cricket-green hover:text-white'
+                      }
+                      animate-slideInUp
+                    `}
+                    style={{ animationDelay: `${index * 0.1}s` }}
                   >
-                    {category.count}
-                  </Badge>
-                </Button>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Gallery Grid */}
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredImages.map((image, index) => (
-                <Card 
-                  key={image.id}
-                  className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer bg-white animate-fadeInUp"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                  onClick={() => openLightbox(image.url)}
-                >
-                  <div className="relative aspect-square overflow-hidden">
-                    <img
-                      src={image.url}
-                      alt={image.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                    
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="absolute bottom-4 left-4 right-4 text-white">
-                        <h3 className="font-bold text-lg mb-1">{image.title}</h3>
-                        <p className="text-sm text-white/90">{image.description}</p>
-                      </div>
-                    </div>
-
-                    {/* Category Badge */}
-                    <div className="absolute top-3 right-3">
-                      <Badge 
-                        className="bg-cricket-orange/90 text-white capitalize backdrop-blur-sm"
-                      >
-                        {image.category}
-                      </Badge>
-                    </div>
-
-                    {/* Zoom Icon */}
-                    <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-
-            {/* Empty State */}
-            {filteredImages.length === 0 && (
-              <div className="text-center py-16">
-                <div className="text-6xl mb-4">📸</div>
-                <h3 className="text-2xl font-bold text-gray-600 mb-2">No photos in this category</h3>
-                <p className="text-gray-500">Check back soon for more amazing moments!</p>
+                    {category.name}
+                    <Badge 
+                      variant="secondary" 
+                      className={`ml-2 ${selectedCategory === category.id ? 'bg-white/20 text-white' : 'bg-cricket-green/10 text-cricket-green'}`}
+                    >
+                      {category.count}
+                    </Badge>
+                  </Button>
+                ))}
               </div>
-            )}
-          </div>
-        </section>
-
-        {/* Call to Action */}
-        <section className="py-16 bg-gradient-to-r from-cricket-green to-cricket-orange">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl font-bold font-poppins text-white mb-6 animate-fadeInUp">
-              Want to Be Part of Our Story?
-            </h2>
-            <p className="text-xl text-white/90 mb-8 animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
-              Join our academy and create your own moments of cricket excellence
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
-              <Button
-                size="lg"
-                className="bg-white text-cricket-green hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
-                onClick={() => navigate('/contact')}
-              >
-                🚀 Join Academy
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-white text-white hover:bg-white hover:text-cricket-green px-8 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
-                onClick={() => navigate('/programs')}
-              >
-                📋 View Programs
-              </Button>
             </div>
-          </div>
-        </section>
-      </div>
+          </section>
+
+          {/* Gallery Grid */}
+          <section className="py-16 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredImages.map((image, index) => (
+                  <Card 
+                    key={image.id}
+                    className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer bg-white animate-fadeInUp"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                    onClick={() => openLightbox(image.url)}
+                  >
+                    <div className="relative aspect-square overflow-hidden">
+                      <img
+                        src={image.url}
+                        alt={image.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      
+                      {/* Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute bottom-4 left-4 right-4 text-white">
+                          <h3 className="font-bold text-lg mb-1">{image.title}</h3>
+                          <p className="text-sm text-white/90">{image.description}</p>
+                        </div>
+                      </div>
+
+                      {/* Category Badge */}
+                      <div className="absolute top-3 right-3">
+                        <Badge 
+                          className="bg-cricket-orange/90 text-white capitalize backdrop-blur-sm"
+                        >
+                          {image.category}
+                        </Badge>
+                      </div>
+
+                      {/* Zoom Icon */}
+                      <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Empty State */}
+              {filteredImages.length === 0 && (
+                <div className="text-center py-16">
+                  <div className="text-6xl mb-4">📸</div>
+                  <h3 className="text-2xl font-bold text-gray-600 mb-2">No photos in this category</h3>
+                  <p className="text-gray-500">Check back soon for more amazing moments!</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Call to Action */}
+          <section className="py-16 bg-gradient-to-r from-cricket-green to-cricket-orange">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+              <h2 className="text-4xl font-bold font-poppins text-white mb-6 animate-fadeInUp">
+                Want to Be Part of Our Story?
+              </h2>
+              <p className="text-xl text-white/90 mb-8 animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+                Join our academy and create your own moments of cricket excellence
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
+                <Button
+                  size="lg"
+                  className="bg-white text-cricket-green hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
+                  onClick={() => navigate('/contact')}
+                >
+                  🚀 Join Academy
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-white text-white hover:bg-white hover:text-cricket-green px-8 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
+                  onClick={() => navigate('/programs')}
+                >
+                  📋 View Programs
+                </Button>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
 
       {/* Lightbox Modal */}
       {selectedImage && (

@@ -9,7 +9,240 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      programs: {
+        Row: {
+          id: string
+          title: string
+          description: string
+          age_group: string
+          duration: string
+          price: number
+          max_students: number
+          current_students: number
+          features: string[]
+          status: string
+          coach: Json
+          schedule: Json
+          equipment: Json
+          level: string
+          category: string
+          start_date: string
+          icon: string
+          color: string
+          image: string
+          prerequisites: string[]
+          certification_provided: boolean
+          discount: Json | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description: string
+          age_group: string
+          duration: string
+          price: number
+          max_students: number
+          current_students?: number
+          features: string[]
+          status?: string
+          coach: Json
+          schedule: Json
+          equipment: Json
+          level: string
+          category: string
+          start_date: string
+          icon: string
+          color: string
+          image: string
+          prerequisites: string[]
+          certification_provided: boolean
+          discount?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string
+          age_group?: string
+          duration?: string
+          price?: number
+          max_students?: number
+          current_students?: number
+          features?: string[]
+          status?: string
+          coach?: Json
+          schedule?: Json
+          equipment?: Json
+          level?: string
+          category?: string
+          start_date?: string
+          icon?: string
+          color?: string
+          image?: string
+          prerequisites?: string[]
+          certification_provided?: boolean
+          discount?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      contacts: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          phone: string
+          message: string
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          phone: string
+          message: string
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          phone?: string
+          message?: string
+          status?: string
+          created_at?: string
+        }
+      }
+      enrollments: {
+        Row: {
+          id: string
+          program_id: string
+          student_info: Json
+          payment_status: string
+          payment_intent_id: string
+          amount_paid: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          program_id: string
+          student_info: Json
+          payment_status?: string
+          payment_intent_id: string
+          amount_paid: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          program_id?: string
+          student_info?: Json
+          payment_status?: string
+          payment_intent_id?: string
+          amount_paid?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      gallery: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          url: string
+          category: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          url: string
+          category?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          url?: string
+          category?: string
+          created_at?: string
+        }
+      }
+      facilities: {
+        Row: {
+          id: string
+          name: string
+          description: string
+          image_url: string
+          features: string[]
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description: string
+          image_url: string
+          features: string[]
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string
+          image_url?: string
+          features?: string[]
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      testimonials: {
+        Row: {
+          id: string
+          name: string
+          role: string
+          content: string
+          rating: number
+          image_url: string
+          is_featured: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          role: string
+          content: string
+          rating?: number
+          image_url: string
+          is_featured?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          role?: string
+          content?: string
+          rating?: number
+          image_url?: string
+          is_featured?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

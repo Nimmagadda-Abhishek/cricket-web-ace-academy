@@ -34,12 +34,12 @@ const ContactSection = () => {
   const contactInfo = [
     {
       title: 'Address',
-      content: '123 Cricket Lane, Sports District, City 12345',
+      content: 'Kukatpally, Hyderabad, Telangana 500072',
       icon: '📍'
     },
     {
       title: 'Phone',
-      content: '+1 (555) 123-4567',
+      content: '91 9876543210',
       icon: '📞'
     },
     {
@@ -49,7 +49,7 @@ const ContactSection = () => {
     },
     {
       title: 'Training Hours',
-      content: 'Mon-Fri: 6AM-10PM\nSat-Sun: 8AM-8PM',
+      content: 'Mon-Fri: 11AM-11PM\nSat-Sun: 11AM-1PM',
       icon: '⏰'
     }
   ];

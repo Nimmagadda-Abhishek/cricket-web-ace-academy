@@ -1,12 +1,7 @@
-import connectDB from '../config/database';
 import Admin from '../models/Admin';
-import mongoose from 'mongoose';
 
 const createAdmin = async () => {
   try {
-    await connectDB();
-    console.log('🌱 Connected to database');
-
     // Check if admin already exists
     const existingAdmin = await Admin.findOne({ email: 'admin@kalyancricketacademy.com' });
     
@@ -48,8 +43,6 @@ const createAdmin = async () => {
     console.log('📧 Email: admin@kalyancricketacademy.com');
     console.log('🔑 Password: Admin@123456');
 
-    await mongoose.disconnect();
-    console.log('🔌 Disconnected from database');
     process.exit(0);
   } catch (error) {
     console.error('❌ Error creating admin:', error);

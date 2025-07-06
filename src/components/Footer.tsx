@@ -29,9 +29,16 @@ const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Academy Info */}
           <div>
-            <h3 className="text-2xl font-bold font-poppins text-cricket-orange mb-4">
-              Kalyan Cricket Academy
-            </h3>
+            <div className="flex items-center mb-4">
+              <img 
+                src="/images/logo/logo.png" 
+                alt="Kalyan Cricket Academy Logo" 
+                className="h-12 w-auto mr-3"
+              />
+              <h3 className="text-2xl font-bold font-poppins text-cricket-orange">
+                Kalyan Cricket Academy
+              </h3>
+            </div>
             <p className="text-gray-300 mb-6">
               Developing cricket excellence through professional coaching, 
               world-class facilities, and personalized training programs.

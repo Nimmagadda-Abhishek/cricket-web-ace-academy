@@ -47,6 +47,34 @@ export const protect = async (req: Request, res: Response, next: NextFunction): 
 
     const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
 
+    // Special case for development mode with dummy admin
+    if ((process.env.NODE_ENV === 'development' || process.env.NODE_ENV === undefined) && decoded.id === 'dev-admin-id-123') {
+      // Create a dummy admin user for development
+      req.user = {
+        id: 'dev-admin-id-123',
+        name: 'Development Admin',
+        email: 'admin@kalyancricketacademy.com',
+        role: 'super-admin',
+        permissions: [],
+        isActive: true,
+        loginAttempts: 0,
+        isLocked: () => false,
+        changedPasswordAfter: () => false,
+        hasPermission: () => true,
+        profile: {
+          department: 'administration',
+          joinDate: new Date().toISOString()
+        },
+        preferences: {
+          theme: 'light',
+          language: 'en'
+        },
+        activityLog: [],
+        logActivity: () => Promise.resolve()
+      };
+      return next();
+    }
+
     // 3) Check if user still exists
     const currentUser = await Admin.findById(decoded.id).select('+password');
     if (!currentUser) {
@@ -260,7 +288,9 @@ export const signToken = (id: string): string => {
 
 // Create and send token response
 export const createSendToken = (user: any, statusCode: number, res: Response) => {
-  const token = signToken(user._id);
+  // Use user.id or user._id depending on what's available (for dummy admin support)
+  const userId = user.id || user._id;
+  const token = signToken(userId);
   
   const cookieOptions = {
     expires: new Date(

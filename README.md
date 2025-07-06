@@ -1,8 +1,16 @@
-# Welcome to your Lovable project
+# Cricket Academy Web Application
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/312ec8e0-1810-491a-8d9d-e09a9cfd3abf
+
+## Database Configuration
+
+This project now uses Hostinger MySQL database instead of Supabase. For setup instructions, see [Hostinger Database Setup Guide](./docs/HOSTINGER_DATABASE_SETUP.md).
+
+## Development Setup
+
+For development and testing, we've included a free test database. See the [Development Setup Guide](./docs/DEVELOPMENT_SETUP.md) for instructions on how to set up your development environment.
 
 ## How can I edit this code?
 

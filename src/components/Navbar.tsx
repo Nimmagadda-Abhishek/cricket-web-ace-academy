@@ -33,8 +33,12 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <Link to="/" className="text-2xl font-bold font-poppins text-cricket-green hover:text-cricket-orange transition-colors duration-300 cursor-pointer animate-slideInLeft">
-                <span className="inline-block animate-wiggle">🏏</span> Kalyan Cricket Academy
+              <Link to="/" className="flex items-center text-2xl font-bold font-poppins text-cricket-green hover:text-cricket-orange transition-colors duration-300 cursor-pointer animate-slideInLeft">
+                <img 
+                  src="/images/logo/logo.png" 
+                  alt="Kalyan Cricket Academy Logo" 
+                  className="h-10 w-auto mr-2"
+                />
               </Link>
             </div>
           </div>
@@ -151,3 +155,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+

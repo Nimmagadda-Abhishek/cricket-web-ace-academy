@@ -1,18 +1,12 @@
-import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import Admin from '../models/Admin';
-import connectDB from '../config/database';
 
 // Load environment variables
 dotenv.config();
 
 async function testLogin() {
   try {
-    // Connect to database
-    await connectDB();
-    console.log('Connected to database');
-
     // Find admin by email
     const email = 'admin@kalyancricketacademy.com';
     const password = 'Admin@123456';
@@ -63,10 +57,6 @@ async function testLogin() {
 
   } catch (error) {
     console.error('Error:', error);
-  } finally {
-    // Close database connection
-    await mongoose.connection.close();
-    console.log('Database connection closed');
   }
 }
 

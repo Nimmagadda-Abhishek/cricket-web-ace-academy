@@ -1,14 +1,98 @@
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const AboutSection = () => {
+  const statsRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [counts, setCounts] = useState([0, 0, 0, 0]);
+  const [finishedCounts, setFinishedCounts] = useState([false, false, false, false]);
+  
   const stats = [
-    { number: '500+', label: 'Students Trained', icon: '👨‍🎓', color: 'bg-blue-500' },
-    { number: '15+', label: 'Years Experience', icon: '🏏', color: 'bg-cricket-orange' },
-    { number: '50+', label: 'Professional Players', icon: '🏆', color: 'bg-cricket-gold' },
-    { number: '98%', label: 'Success Rate', icon: '📈', color: 'bg-green-500' },
+    { number: '500+', value: 500, label: 'Students Trained', icon: '👨‍🎓', color: 'bg-blue-500', suffix: '+' },
+    { number: '15+', value: 15, label: 'Years Experience', icon: '🏏', color: 'bg-cricket-orange', suffix: '+' },
+    { number: '50+', value: 50, label: 'Professional Players', icon: '🏆', color: 'bg-cricket-gold', suffix: '+' },
+    { number: '98%', value: 98, label: 'Success Rate', icon: '📈', color: 'bg-green-500', suffix: '%' },
   ];
+  
+  // Detect when stats section is visible
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    
+    if (statsRef.current) {
+      observer.observe(statsRef.current);
+    }
+    
+    return () => {
+      if (statsRef.current) {
+        observer.disconnect();
+      }
+    };
+  }, []);
+  
+  // Animate the counting when visible
+  useEffect(() => {
+    if (!isVisible) return;
+    
+    // Create separate animations for each stat with staggered starts
+    stats.forEach((stat, index) => {
+      const duration = 2000; // 2 seconds
+      const delay = index * 200; // 200ms delay between each stat starting
+      const frameDuration = 1000 / 60; // 60fps
+      const totalFrames = Math.round(duration / frameDuration);
+      
+      // Start the animation after the delay
+      const timer = setTimeout(() => {
+        let frame = 0;
+        const countUp = () => {
+          const progress = frame / totalFrames;
+          
+          // Custom easing with slight bounce at the end
+          let easeProgress;
+          if (progress < 0.9) {
+            // First 90% of animation - smooth acceleration
+            easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress / 0.9);
+          } else {
+            // Last 10% - add a slight bounce
+            const bounceProgress = (progress - 0.9) / 0.1; // normalize to 0-1 for the last 10%
+            easeProgress = 0.97 + Math.sin(bounceProgress * Math.PI) * 0.03; // small sine wave bounce
+          }
+          
+          // Update just this stat's count
+          setCounts(prevCounts => {
+            const newCounts = [...prevCounts];
+            newCounts[index] = Math.floor(easeProgress * stat.value);
+            return newCounts;
+          });
+          
+          frame++;
+          
+          if (frame <= totalFrames) {
+            requestAnimationFrame(countUp);
+          } else {
+            // Mark this count as finished to trigger the finish animation
+            setFinishedCounts(prev => {
+              const newFinished = [...prev];
+              newFinished[index] = true;
+              return newFinished;
+            });
+          }
+        };
+        
+        requestAnimationFrame(countUp);
+      }, delay);
+      
+      return () => clearTimeout(timer);
+    });
+  }, [isVisible]);
 
   const features = [
     { title: 'High-Performance Training', description: '15 nets with Turf, Astro-Turf, Cement & Matting surfaces for diverse training conditions', icon: '🏏' },
@@ -44,48 +128,48 @@ const AboutSection = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
           {/* Left Side - Image Gallery */}
           <div className="animate-slideInLeft">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-4">
-                <div className="image-overlay rounded-xl overflow-hidden card-hover">
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-6">
+                <div className="image-overlay rounded-xl overflow-hidden card-hover shadow-lg">
                   <img
                     src="https://kalyancricketacademy.in/wp-content/uploads/2025/03/Untitled-design-28-1024x576.png"
                     alt="Cricket Training"
-                    className="w-full h-48 object-cover image-zoom hover-brightness"
+                    className="w-full h-64 sm:h-72 md:h-80 object-cover image-zoom hover-brightness"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end p-4">
-                    <p className="text-white text-sm font-medium">Professional Training</p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-4">
+                    <p className="text-white text-base font-medium">Professional Training</p>
                   </div>
                 </div>
-                <div className="image-overlay rounded-xl overflow-hidden card-hover">
+                <div className="image-overlay rounded-xl overflow-hidden card-hover shadow-lg">
                   <img
                     src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1605&q=80"
                     alt="Cricket Equipment"
-                    className="w-full h-32 object-cover image-zoom hover-brightness"
+                    className="w-full h-48 sm:h-56 md:h-64 object-cover image-zoom hover-brightness"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end p-3">
-                    <p className="text-white text-xs font-medium">Quality Equipment</p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-4">
+                    <p className="text-white text-base font-medium">Quality Equipment</p>
                   </div>
                 </div>
               </div>
-              <div className="space-y-4 mt-8">
-                <div className="image-overlay rounded-xl overflow-hidden card-hover">
+              <div className="space-y-6 mt-10">
+                <div className="image-overlay rounded-xl overflow-hidden card-hover shadow-lg">
                   <img
                     src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
                     alt="Cricket Stadium"
-                    className="w-full h-32 object-cover image-zoom hover-brightness"
+                    className="w-full h-48 sm:h-56 md:h-64 object-cover image-zoom hover-brightness"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end p-3">
-                    <p className="text-white text-xs font-medium">World-Class Facilities</p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-4">
+                    <p className="text-white text-base font-medium">World-Class Facilities</p>
                   </div>
                 </div>
-                <div className="image-overlay rounded-xl overflow-hidden card-hover">
+                <div className="image-overlay rounded-xl overflow-hidden card-hover shadow-lg">
                   <img
                     src="https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
                     alt="Cricket Coaching"
-                    className="w-full h-48 object-cover image-zoom hover-brightness"
+                    className="w-full h-64 sm:h-72 md:h-80 object-cover image-zoom hover-brightness"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end p-4">
-                    <p className="text-white text-sm font-medium">Expert Coaching</p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-4">
+                    <p className="text-white text-base font-medium">Expert Coaching</p>
                   </div>
                 </div>
               </div>
@@ -155,16 +239,16 @@ const AboutSection = () => {
           </div>
 
           <div className="animate-slideInRight">
-            <div className="image-overlay rounded-2xl overflow-hidden hover-shadow-lg">
+            <div className="image-overlay rounded-2xl overflow-hidden hover-shadow-lg shadow-xl">
               <img
                 src="https://kalyancricketacademy.in/wp-content/uploads/2025/03/cricket-1-1024x682-1.webp"
                 alt="Cricket Training Session"
-                className="w-full h-96 object-cover image-zoom"
+                className="w-full h-[28rem] sm:h-[32rem] md:h-[36rem] object-cover image-zoom"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-8">
                 <div className="text-white">
-                  <h4 className="text-2xl font-bold mb-2 animate-slideUp">Professional Training</h4>
-                  <p className="text-white/90 animate-slideUp" style={{ animationDelay: '0.2s' }}>
+                  <h4 className="text-3xl font-bold mb-3 animate-slideUp">Professional Training</h4>
+                  <p className="text-white/90 text-lg animate-slideUp" style={{ animationDelay: '0.2s' }}>
                     Experience world-class coaching in our modern facilities
                   </p>
                 </div>
@@ -174,7 +258,7 @@ const AboutSection = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
             <Card key={index} className={`card-hover gradient-card border-0 shadow-xl overflow-hidden group animate-bounceIn stagger-${index + 1}`}>
               <CardContent className="p-8 text-center relative">
@@ -187,9 +271,20 @@ const AboutSection = () => {
                   {stat.icon}
                 </div>
                 
-                {/* Number */}
-                <div className="text-4xl font-bold font-poppins text-cricket-green mb-2 group-hover:text-cricket-orange transition-colors duration-300 animate-shimmer">
-                  {stat.number}
+                {/* Number with Animation */}
+                <div className="text-4xl font-bold font-poppins text-cricket-green mb-2 group-hover:text-cricket-orange transition-colors duration-300">
+                  {isVisible ? (
+                    <span 
+                      className={`inline-block ${finishedCounts[index] ? 'animate-countFinish' : ''}`} 
+                      style={{ minWidth: '3ch' }}
+                    >
+                      {counts[index]}{stat.suffix}
+                    </span>
+                  ) : (
+                    <span className="inline-block" style={{ minWidth: '3ch' }}>
+                      0{stat.suffix}
+                    </span>
+                  )}
                 </div>
                 
                 {/* Label */}
@@ -200,31 +295,7 @@ const AboutSection = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="text-center mt-16 animate-fadeInUp">
-          <div className="bg-gradient-to-r from-cricket-green to-cricket-orange rounded-2xl p-8 text-white relative overflow-hidden">
-            <div className="absolute inset-0 bg-black/10"></div>
-            <div className="relative z-10">
-              <h3 className="text-3xl font-bold mb-4 animate-slideDown">Ready to Start Your Cricket Journey?</h3>
-              <p className="text-xl mb-6 animate-slideUp">Join hundreds of successful students who have transformed their game with us.</p>
-              <button 
-                type="button"
-                onClick={() => {
-                  console.log("Get Started Today clicked");
-                  document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="bg-white text-cricket-green px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 hover:scale-105 ripple-effect animate-bounceIn"
-              >
-                Get Started Today
-              </button>
-            </div>
-            <div className="absolute top-4 right-4 animate-float">
-              <div className="text-4xl opacity-30">🏏</div>
-            </div>
-            <div className="absolute bottom-4 left-4 animate-float" style={{ animationDelay: '1s' }}>
-              <div className="text-3xl opacity-30">🏆</div>
-            </div>
-          </div>
-        </div>
+
       </div>
     </section>
   );

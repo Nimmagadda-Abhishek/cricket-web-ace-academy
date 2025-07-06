@@ -54,7 +54,7 @@ const Contact = () => {
       value: 'Hyderabad, Telangana',
       icon: '📍',
       color: 'from-red-500 to-pink-600',
-      action: 'https://maps.google.com'
+      action: 'https://maps.app.goo.gl/UgRgniPEa97x34Lv7'
     }
   ];
 

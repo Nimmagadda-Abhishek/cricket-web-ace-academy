@@ -112,20 +112,60 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, error, isLoading: exte
               </div>
             </div>
 
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-cricket-green to-cricket-orange hover:from-cricket-orange hover:to-cricket-green text-white font-semibold py-3 rounded-lg transform transition-all duration-300 hover:scale-105 shadow-lg animate-bounceIn"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Logging in...
-                </div>
-              ) : (
-                '🚀 Login to Dashboard'
-              )}
-            </Button>
+            <div className="space-y-2">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-cricket-green to-cricket-orange hover:from-cricket-orange hover:to-cricket-green text-white font-semibold py-3 rounded-lg transform transition-all duration-300 hover:scale-105 shadow-lg animate-bounceIn"
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Logging in...
+                  </div>
+                ) : (
+                  '🚀 Login to Dashboard'
+                )}
+              </Button>
+              
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    // Use a dynamic API URL based on environment
+                    const apiUrl = import.meta.env.PROD 
+                      ? '/api/auth/login'  // In production, use relative path
+                      : 'http://localhost:5000/api/auth/login'; // In development, use localhost
+                    
+                    console.log('Attempting direct login to:', apiUrl);
+                    
+                    const response = await fetch(apiUrl, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ 
+                        email: email || 'admin@kalyancricketacademy.com', 
+                        password: password || 'Admin@123456' 
+                      }),
+                      credentials: 'include'
+                    });
+                    const data = await response.json();
+                    if (response.ok && data.status === 'success') {
+                      alert('Direct login successful! Token: ' + data.token.substring(0, 10) + '...');
+                      localStorage.setItem('token', data.token);
+                      localStorage.setItem('user', JSON.stringify(data.user));
+                      onLogin(email || 'admin@kalyancricketacademy.com', password || 'Admin@123456');
+                    } else {
+                      alert('Direct login failed: ' + JSON.stringify(data));
+                    }
+                  } catch (error) {
+                    alert('Direct login error: ' + (error instanceof Error ? error.message : String(error)));
+                  }
+                }}
+                className="w-full text-xs py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded"
+              >
+                Try Direct API Login
+              </button>
+            </div>
           </form>
 
           <div className="mt-6 text-center animate-fadeInUp">
@@ -135,8 +175,63 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, error, isLoading: exte
                 Email: <code className="bg-blue-100 px-2 py-1 rounded">admin@kalyancricketacademy.com</code><br />
                 Password: <code className="bg-blue-100 px-2 py-1 rounded">Admin@123456</code>
               </p>
+              <button 
+                type="button"
+                onClick={() => {
+                  setEmail('admin@kalyancricketacademy.com');
+                  setPassword('Admin@123456');
+                }}
+                className="mt-2 bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs font-semibold py-1 px-3 rounded transition-colors"
+              >
+                Auto-fill Demo Credentials
+              </button>
+              <div className="flex justify-center space-x-2 mt-2">
+                <button 
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      // Use a dynamic API URL based on environment
+                      const apiUrl = import.meta.env.PROD 
+                        ? '/api/auth/debug'  // In production, use relative path
+                        : 'http://localhost:5000/api/auth/debug'; // In development, use localhost
+                      
+                      console.log('Testing API connection to:', apiUrl);
+                      
+                      const response = await fetch(apiUrl);
+                      const data = await response.json();
+                      alert('API Debug Response: ' + JSON.stringify(data, null, 2));
+                    } catch (error) {
+                      alert('API Debug Error: ' + (error instanceof Error ? error.message : String(error)));
+                    }
+                  }}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-semibold py-1 px-2 rounded transition-colors"
+                >
+                  Test API
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setEmail('admin');
+                    setPassword('password');
+                  }}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-semibold py-1 px-2 rounded transition-colors"
+                >
+                  Use Alt Credentials
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => {
+                    localStorage.clear();
+                    alert('localStorage cleared');
+                    window.location.reload();
+                  }}
+                  className="bg-red-100 hover:bg-red-200 text-red-800 text-xs font-semibold py-1 px-2 rounded transition-colors"
+                >
+                  Clear Storage
+                </button>
+              </div>
               <p className="text-xs mt-2 text-gray-600">
-                For development: You can also use admin/password
+                For development: You can use either the credentials above or admin/password
               </p>
             </div>
           </div>

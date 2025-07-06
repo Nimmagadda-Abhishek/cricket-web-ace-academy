@@ -1,4 +1,3 @@
-import connectDB from '../config/database';
 import Admin from '../models/Admin';
 import Coach from '../models/Coach';
 import Program from '../models/Program';
@@ -8,7 +7,6 @@ import bcrypt from 'bcryptjs';
 
 const seedDatabase = async () => {
   try {
-    await connectDB();
     console.log('🌱 Starting database seeding...');
 
     // Clear existing data (optional - remove in production)
@@ -626,7 +624,7 @@ const seedDatabase = async () => {
         isRead: true,
         responses: [
           {
-            from: superAdmin._id,
+            from: superAdmin?._id || 'system', // Use optional chaining and provide a fallback
             message: 'Thank you for your wonderful feedback! We are delighted to hear about your daughter\'s progress.',
             date: new Date(),
             isInternal: false

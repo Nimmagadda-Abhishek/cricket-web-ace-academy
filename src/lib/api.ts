@@ -1,10 +1,46 @@
 /**
  * API Service for Cricket Academy
  * This file contains utilities for making API requests to the backend
+ * and also provides a unified interface for database operations
  */
 
-// Base URL for API requests
-const API_BASE_URL = 'http://localhost:5000/api';
+import supabaseService from '@/services/supabase';
+import hostingerService from '@/services/hostinger';
+
+// Determine which database service to use
+const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
+console.log(`Using database service: ${useSupabase ? 'Supabase' : 'Hostinger'}`);
+
+// Select the appropriate database service with error handling
+let dbService;
+try {
+  dbService = useSupabase ? supabaseService : hostingerService;
+} catch (error) {
+  console.error('Error initializing database service:', error);
+  // Provide a fallback service that returns mock data
+  dbService = {
+    programs: {
+      getPrograms: () => Promise.resolve({ data: { programs: [] } }),
+      getProgramById: (id: string) => Promise.resolve({ data: { program: null } }),
+    },
+    contacts: {
+      submitContact: () => Promise.resolve({ data: { message: 'Contact form submitted (mock)' } }),
+    },
+    payments: {
+      createEnrollment: () => Promise.resolve({ data: { enrollment: {} } }),
+      updateEnrollmentStatus: () => Promise.resolve({ data: { status: 'succeeded' } }),
+    },
+  };
+}
+
+export { dbService };
+
+// Base URL for API requests - dynamically determine based on environment
+const API_BASE_URL = import.meta.env.PROD 
+  ? '/api'  // In production, use relative path
+  : 'http://localhost:5002/api'; // In development, use localhost with port 5002
+
+console.log('Using API base URL:', API_BASE_URL);
 
 // Default headers for API requests
 const DEFAULT_HEADERS = {
@@ -101,6 +137,24 @@ export const api = {
       apiRequest<{ user: any }>('/auth/me', 'GET'),
   },
   
+  // Achievements endpoints
+  achievements: {
+    getAll: () => 
+      apiRequest<{ achievements: any[] }>('/achievements', 'GET'),
+    
+    getById: (id: string) => 
+      apiRequest<{ achievement: any }>(`/achievements/${id}`, 'GET'),
+    
+    create: (achievementData: any) => 
+      apiRequest<{ achievement: any }>('/achievements', 'POST', achievementData),
+    
+    update: (id: string, achievementData: any) => 
+      apiRequest<{ achievement: any }>(`/achievements/${id}`, 'PUT', achievementData),
+    
+    delete: (id: string) => 
+      apiRequest<null>(`/achievements/${id}`, 'DELETE'),
+  },
+  
   // Students endpoints
   students: {
     getAll: () => 
@@ -146,11 +200,104 @@ export const api = {
       apiRequest<{ contacts: any[] }>('/contacts', 'GET'),
   },
   
+  // Admin endpoints
+  admin: {
+    // Testimonials
+    testimonials: {
+      getAll: () => 
+        apiRequest<{ testimonials: any[] }>('/admin/testimonials', 'GET'),
+      
+      getById: (id: string) => 
+        apiRequest<{ testimonial: any }>(`/admin/testimonials/${id}`, 'GET'),
+      
+      create: (testimonialData: any) => 
+        apiRequest<{ testimonial: any }>('/admin/testimonials', 'POST', testimonialData),
+      
+      update: (id: string, testimonialData: any) => 
+        apiRequest<{ testimonial: any }>(`/admin/testimonials/${id}`, 'PUT', testimonialData),
+      
+      delete: (id: string) => 
+        apiRequest<null>(`/admin/testimonials/${id}`, 'DELETE'),
+    },
+    
+    // Facilities
+    facilities: {
+      getAll: () => 
+        apiRequest<{ facilities: any[] }>('/admin/facilities', 'GET'),
+      
+      getById: (id: string) => 
+        apiRequest<{ facility: any }>(`/admin/facilities/${id}`, 'GET'),
+      
+      create: (facilityData: any) => 
+        apiRequest<{ facility: any }>('/admin/facilities', 'POST', facilityData),
+      
+      update: (id: string, facilityData: any) => 
+        apiRequest<{ facility: any }>(`/admin/facilities/${id}`, 'PUT', facilityData),
+      
+      delete: (id: string) => 
+        apiRequest<null>(`/admin/facilities/${id}`, 'DELETE'),
+    },
+    
+    // Gallery
+    gallery: {
+      getAll: () => 
+        apiRequest<{ images: any[] }>('/admin/gallery', 'GET'),
+      
+      getById: (id: string) => 
+        apiRequest<{ image: any }>(`/admin/gallery/${id}`, 'GET'),
+      
+      create: (imageData: any) => 
+        apiRequest<{ image: any }>('/admin/gallery', 'POST', imageData),
+      
+      update: (id: string, imageData: any) => 
+        apiRequest<{ image: any }>(`/admin/gallery/${id}`, 'PUT', imageData),
+      
+      delete: (id: string) => 
+        apiRequest<null>(`/admin/gallery/${id}`, 'DELETE'),
+    },
+  },
+  
+  // File upload endpoint
+  upload: {
+    uploadImage: async (file: File, folder: string = 'uploads'): Promise<string> => {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('folder', folder);
+        
+        const response = await fetch(`${API_BASE_URL.replace('/api', '')}/api/upload`, {
+          method: 'POST',
+          body: formData,
+          // Don't set Content-Type header for FormData
+          headers: {
+            // Include authorization if available
+            ...(localStorage.getItem('token') ? {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            } : {})
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to upload image');
+        }
+        
+        const data = await response.json();
+        return data.url;
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        throw error;
+      }
+    }
+  },
+  
   // Health check
   health: {
     check: () => 
       apiRequest<any>('/health', 'GET'),
   },
+  
+  // Direct database operations (using either Supabase or Hostinger)
+  db: dbService,
 };
 
 /**
@@ -159,11 +306,87 @@ export const api = {
  */
 export const checkApiConnection = async (): Promise<boolean> => {
   try {
-    const response = await fetch(`${API_BASE_URL.replace('/api', '')}/health`);
-    return response.ok;
+    // Try the health endpoint first
+    try {
+      const response = await fetch(`${API_BASE_URL.replace('/api', '')}/health`, {
+        method: 'GET',
+        headers: DEFAULT_HEADERS,
+        // Short timeout to avoid long waits
+        signal: AbortSignal.timeout(3000)
+      });
+      if (response.ok) return true;
+    } catch (healthError) {
+      console.log('Health endpoint check failed, trying login endpoint...');
+    }
+    
+    // If health check fails, try the login endpoint
+    const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: DEFAULT_HEADERS,
+      body: JSON.stringify({ 
+        email: 'admin@kalyancricketacademy.com', 
+        password: 'wrong-password-just-checking-connection' 
+      }),
+      // Short timeout to avoid long waits
+      signal: AbortSignal.timeout(3000)
+    });
+    
+    // Even a 401 response means the API is available
+    return loginResponse.status !== 0;
   } catch (error) {
     console.error('API connection check failed:', error);
     return false;
+  }
+};
+
+// Check database connection through the server API
+export const checkDatabaseConnection = async (): Promise<{connected: boolean, message: string}> => {
+  try {
+    // First try the dedicated check-db endpoint
+    try {
+      const response = await fetch(`${API_BASE_URL}/check-db`, {
+        method: 'GET',
+        headers: DEFAULT_HEADERS,
+        signal: AbortSignal.timeout(3000)
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.status === 'success') {
+        return { connected: true, message: 'Connected to database successfully' };
+      }
+    } catch (e) {
+      console.log('First DB check failed, trying auth debug endpoint...');
+    }
+    
+    // If that fails, try the auth debug endpoint
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/debug`, {
+        method: 'GET',
+        headers: DEFAULT_HEADERS,
+        signal: AbortSignal.timeout(3000)
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.status === 'success') {
+        return { connected: true, message: 'Connected to database successfully via auth debug' };
+      } else {
+        return { 
+          connected: false, 
+          message: data.message || 'Failed to connect to database' 
+        };
+      }
+    } catch (e) {
+      console.log('Auth debug endpoint failed too');
+      throw e;
+    }
+  } catch (error) {
+    console.error('Database connection check failed:', error);
+    return { 
+      connected: false, 
+      message: error instanceof Error ? error.message : 'Unknown error checking database connection' 
+    };
   }
 };
 

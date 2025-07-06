@@ -18,6 +18,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage, onNavi
     { id: 'programs', name: 'Programs', icon: '🏏' },
     { id: 'coaches', name: 'Coaches', icon: '👨‍🏫' },
     { id: 'facilities', name: 'Facilities', icon: '🏢' },
+    { id: 'achievements', name: 'Achievements', icon: '🏆' },
     { id: 'testimonials', name: 'Testimonials', icon: '⭐' },
     { id: 'gallery', name: 'Gallery', icon: '📸' },
     { id: 'contacts', name: 'Contacts', icon: '📞' },

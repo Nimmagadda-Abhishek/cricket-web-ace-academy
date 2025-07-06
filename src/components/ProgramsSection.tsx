@@ -57,7 +57,7 @@ const ProgramsSection = () => {
       ageGroup: '22+ Years',
       icon: '🏢',
       color: 'bg-gradient-to-br from-green-500 to-emerald-600',
-      image: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      image: '/images/corporate-cricket-program.jpg',
       coach: 'Coach Arjun',
       experience: '8+ Years',
       schedule: 'Weekends',
@@ -119,22 +119,6 @@ const ProgramsSection = () => {
 
                 {/* Program Details */}
                 <div className="space-y-3 mb-6">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Level:</span>
-                    <span className="font-medium text-cricket-green">{program.level}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Age Group:</span>
-                    <span className="font-medium text-cricket-green">{program.ageGroup}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Coach:</span>
-                    <span className="font-medium text-cricket-green">{program.coach}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Schedule:</span>
-                    <span className="font-medium text-cricket-green">{program.schedule}</span>
-                  </div>
                 </div>
 
                 {/* Highlights */}
@@ -164,19 +148,7 @@ const ProgramsSection = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="mt-16 text-center animate-fadeInUp">
-          <div className="bg-gradient-to-r from-cricket-green to-cricket-orange rounded-2xl p-8 text-white shadow-2xl">
-            <h3 className="text-3xl font-bold font-poppins mb-4">Ready to Start Your Cricket Journey?</h3>
-            <p className="text-xl mb-6 opacity-90">Book a free consultation with our expert coaches to find the perfect program for your goals.</p>
-            <Button 
-              type="button"
-              onClick={() => navigate('/contact')}
-              className="bg-white text-cricket-green hover:bg-gray-100 px-8 py-3 font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
-            >
-              📞 Book Free Consultation
-            </Button>
-          </div>
-        </div>
+        
       </div>
     </section>
   );

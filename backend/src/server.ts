@@ -6,14 +6,14 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
-import connectDB, { checkDatabaseHealth, getDatabaseStats } from './config/database';
-
 // Import routes
 import authRoutes from './routes/auth';
 import studentRoutes from './routes/students';
 import programRoutes from './routes/programs';
 import coachRoutes from './routes/coaches';
 import contactRoutes from './routes/contacts';
+import adminRoutes from './routes/adminRoutes';
+import achievementsRoutes from './routes/achievements';
 
 // Import middleware
 import { enforceHTTPS } from './middleware/auth';
@@ -125,29 +125,14 @@ app.use(cookieParser());
 
 // Health check endpoint (before auth middleware)
 app.get('/health', async (req, res) => {
-  try {
-    const dbHealth = await checkDatabaseHealth();
-    const dbStats = await getDatabaseStats();
-    
-    res.status(200).json({
-      status: 'success',
-      message: 'Cricket Academy API is running',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      environment: process.env.NODE_ENV,
-      database: {
-        connected: dbHealth,
-        stats: dbStats
-      },
-      version: process.env.npm_package_version || '1.0.0'
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: 'error',
-      message: 'Health check failed',
-      error: process.env.NODE_ENV === 'development' ? error : 'Internal server error'
-    });
-  }
+  res.status(200).json({
+    status: 'success',
+    message: 'Cricket Academy API is running',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV,
+    version: process.env.npm_package_version || '1.0.0'
+  });
 });
 
 // API routes
@@ -156,6 +141,8 @@ app.use('/api/students', studentRoutes);
 app.use('/api/programs', programRoutes);
 app.use('/api/coaches', coachRoutes);
 app.use('/api/contacts', contactRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/achievements', achievementsRoutes);
 
 // API documentation endpoint
 app.get('/api', (req, res) => {
@@ -168,7 +155,9 @@ app.get('/api', (req, res) => {
       students: '/api/students',
       programs: '/api/programs',
       coaches: '/api/coaches',
-      contacts: '/api/contacts'
+      contacts: '/api/contacts',
+      admin: '/api/admin',
+      achievements: '/api/achievements'
     },
     documentation: 'https://api-docs.cricket-academy.com', // Replace with actual docs URL
     support: 'support@kalyancricketacademy.com'
@@ -247,7 +236,7 @@ app.use((error: any, req: express.Request, res: express.Response, next: express.
   return res.status(error.statusCode || 500).json({
     status: 'error',
     message: error.message || 'Something went wrong',
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    ...((process.env.NODE_ENV === 'development' || process.env.NODE_ENV === undefined) && { stack: error.stack })
   });
 });
 
@@ -282,15 +271,12 @@ process.on('SIGINT', () => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5002; // Changed to 5002 to avoid conflict
 
 let server: any;
 
 const startServer = async () => {
   try {
-    // Connect to database
-    await connectDB();
-    
     // Start server
     server = app.listen(PORT, () => {
       console.log('🚀 Cricket Academy API Server Started');
@@ -299,11 +285,10 @@ const startServer = async () => {
       console.log(`🔗 API URL: http://localhost:${PORT}/api`);
       console.log(`💊 Health check: http://localhost:${PORT}/health`);
       
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === undefined) {
         console.log('\n🔐 Test Credentials:');
         console.log('📧 Email: admin@kalyancricketacademy.com');
         console.log('🔑 Password: Admin@123456');
-        console.log('\n💡 Run "npm run seed" to populate with sample data');
       }
     });
 

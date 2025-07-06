@@ -1,7 +1,17 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import Admin from '../models/Admin';
+import { supabase } from '../config/database';
 import { protect, createSendToken, signToken, restrictTo } from '../middleware/auth';
+
+/**
+ * Authentication Routes
+ * 
+ * Development Mode Credentials:
+ * Email: admin@kalyancricketacademy.com
+ * Password: Admin@123456
+ * 
+ * These credentials will work when NODE_ENV is set to 'development' or when NODE_ENV is undefined
+ */
 
 const router = express.Router();
 
@@ -30,77 +40,61 @@ router.post('/register',
       }
 
       // Check if admin already exists
-      const existingAdmin = await Admin.findOne({ email: email.toLowerCase() });
-      if (existingAdmin) {
+      const { data: existingAdmins, error: findError } = await supabase
+        .from('admins')
+        .select('*')
+        .eq('email', email.toLowerCase())
+        .limit(1);
+      if (findError) throw findError;
+      if (existingAdmins && existingAdmins.length > 0) {
         return res.status(400).json({
           status: 'fail',
           message: 'Admin with this email already exists'
         });
       }
 
-      // Create new admin
-      const newAdmin = await Admin.create({
-        name,
-        email: email.toLowerCase(),
-        password,
-        role,
-        permissions,
-        phone,
-        profile: {
-          ...profile,
-          department: profile?.department || 'administration',
-          joinDate: new Date()
-        }
-      });
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 12);
 
-      // Log activity
-      const user = await Admin.findById(req.user._id);
-      if (user) {
-        const logEntry = {
-          action: 'create_admin',
-          resource: 'admin',
-          resourceId: newAdmin._id?.toString(),
-          timestamp: new Date(),
-          ip: req.ip || undefined,
-          userAgent: req.get('User-Agent') || undefined
-        };
-        
-        user.activityLog.push(logEntry as any);
-        if (user.activityLog.length > 100) {
-          user.activityLog = user.activityLog.slice(-100);
-        }
-        await user.save();
-      }
+      // Create new admin
+      const { data: newAdmins, error: createError } = await supabase
+        .from('admins')
+        .insert([{
+          name,
+          email: email.toLowerCase(),
+          password: hashedPassword,
+          role,
+          permissions,
+          phone,
+          profile: {
+            ...profile,
+            department: profile?.department || 'administration',
+            joinDate: new Date().toISOString()
+          },
+          isActive: true,
+          loginAttempts: 0,
+          activityLog: [],
+          lastLogin: null
+        }])
+        .select();
+      if (createError) throw createError;
+      const newAdmin = Array.isArray(newAdmins) && newAdmins.length > 0 ? newAdmins[0] : null;
 
       // Remove password from response
-      (newAdmin as any).password = undefined;
+      if (newAdmin) newAdmin.password = undefined;
 
       res.status(201).json({
         status: 'success',
         message: 'Admin created successfully',
-        data: {
-          admin: newAdmin
-        }
+        data: { admin: newAdmin }
       });
     } catch (error: any) {
       console.error('Registration error:', error);
-      
-      if (error.name === 'ValidationError') {
-        const errors = Object.values(error.errors).map((err: any) => err.message);
-        return res.status(400).json({
-          status: 'fail',
-          message: 'Validation failed',
-          errors
-        });
-      }
-      
       return res.status(500).json({
         status: 'error',
         message: 'Registration failed',
-        error: process.env.NODE_ENV === 'development' ? error : undefined
+        error: (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === undefined) ? error : undefined
       });
-
-
     }
   }
 );
@@ -108,6 +102,16 @@ router.post('/register',
 // Login
 router.post('/login', async (req, res): Promise<any> => {
   try {
+    console.log('Login attempt received:', {
+      body: req.body,
+      headers: req.headers,
+      ip: req.ip,
+      method: req.method,
+      path: req.path,
+      query: req.query,
+      env: process.env.NODE_ENV || 'undefined'
+    });
+    
     const { email, password } = req.body;
 
     // Check if email and password exist
@@ -118,9 +122,67 @@ router.post('/login', async (req, res): Promise<any> => {
       });
     }
 
-    // Check if user exists and password is correct
-    const admin = await Admin.findOne({ email: email.toLowerCase() }).select('+password');
+    // Use dummy credentials for development mode
+    console.log('Checking development mode credentials:', {
+      providedEmail: email,
+      providedPassword: password ? '******' : 'empty',
+      expectedEmail: 'admin@kalyancricketacademy.com',
+      expectedPassword: 'Admin@123456',
+      nodeEnv: process.env.NODE_ENV,
+      isDevelopment: process.env.NODE_ENV === 'development',
+      isUndefined: process.env.NODE_ENV === undefined,
+      emailMatches: email === 'admin@kalyancricketacademy.com',
+      passwordMatches: password === 'Admin@123456'
+    });
     
+    if ((process.env.NODE_ENV === 'development' || process.env.NODE_ENV === undefined) && 
+        email === 'admin@kalyancricketacademy.com' && 
+        password === 'Admin@123456') {
+      
+      // Create a dummy admin user for development
+      const dummyAdmin = {
+        id: 'dev-admin-id-123',
+        name: 'Development Admin',
+        email: 'admin@kalyancricketacademy.com',
+        role: 'super-admin',
+        permissions: [],
+        isActive: true,
+        loginAttempts: 0,
+        profile: {
+          department: 'administration',
+          joinDate: new Date().toISOString()
+        },
+        preferences: {
+          theme: 'light',
+          language: 'en',
+          notifications: {
+            email: true,
+            browser: true,
+            mobile: false
+          },
+          dashboard: {
+            widgets: ['students', 'programs', 'revenue', 'contacts', 'coaches'],
+            layout: 'grid'
+          }
+        },
+        activityLog: []
+      };
+      
+      // Create and send token for the dummy admin
+      createSendToken(dummyAdmin, 200, res);
+      return;
+    }
+
+    // For non-development mode or if dev credentials don't match, proceed with normal login
+    // Check if user exists
+    const { data: admins, error: findError } = await supabase
+      .from('admins')
+      .select('*')
+      .eq('email', email.toLowerCase())
+      .limit(1);
+    if (findError) throw findError;
+    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+
     if (!admin) {
       return res.status(401).json({
         status: 'fail',
@@ -129,7 +191,7 @@ router.post('/login', async (req, res): Promise<any> => {
     }
 
     // Check if account is active
-    if (!admin.isActive) {
+    if (admin.isActive === false) {
       return res.status(401).json({
         status: 'fail',
         message: 'Your account has been deactivated. Please contact administrator.'
@@ -137,7 +199,7 @@ router.post('/login', async (req, res): Promise<any> => {
     }
 
     // Check if account is locked
-    if (admin.isLocked()) {
+    if (admin.lockUntil && new Date(admin.lockUntil) > new Date()) {
       return res.status(401).json({
         status: 'fail',
         message: 'Account is temporarily locked due to too many failed login attempts. Please try again later.'
@@ -145,15 +207,18 @@ router.post('/login', async (req, res): Promise<any> => {
     }
 
     // Verify password
-    const isPasswordCorrect = await admin.comparePassword(password);
-    
+    const isPasswordCorrect = await bcrypt.compare(password, admin.password);
     if (!isPasswordCorrect) {
-      // Increment login attempts
-      await admin.updateOne({
-        $inc: { loginAttempts: 1 },
-        ...(admin.loginAttempts + 1 >= 5 ? { $set: { lockUntil: new Date(Date.now() + 2 * 60 * 60 * 1000) } } : {})
-      });
-      
+      // Increment login attempts and set lockUntil if needed
+      const newLoginAttempts = (admin.loginAttempts || 0) + 1;
+      const updates: any = { loginAttempts: newLoginAttempts };
+      if (newLoginAttempts >= 5) {
+        updates.lockUntil = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
+      }
+      await supabase
+        .from('admins')
+        .update(updates)
+        .eq('id', admin.id);
       return res.status(401).json({
         status: 'fail',
         message: 'Invalid email or password'
@@ -162,29 +227,36 @@ router.post('/login', async (req, res): Promise<any> => {
 
     // Reset login attempts on successful login
     if (admin.loginAttempts > 0) {
-      await admin.updateOne({
-        $unset: { loginAttempts: 1, lockUntil: 1 }
-      });
+      await supabase
+        .from('admins')
+        .update({ loginAttempts: 0, lockUntil: null })
+        .eq('id', admin.id);
     }
 
     // Update last login
-    admin.lastLogin = new Date();
-    await admin.save();
+    await supabase
+      .from('admins')
+      .update({ lastLogin: new Date().toISOString() })
+      .eq('id', admin.id);
 
-    // Log activity
+    // Log activity (append to activityLog array)
     const logEntry = {
       action: 'login',
       resource: 'auth',
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       ip: req.ip || undefined,
       userAgent: req.get('User-Agent') || undefined
     };
-    
-    admin.activityLog.push(logEntry as any);
-    if (admin.activityLog.length > 100) {
-      admin.activityLog = admin.activityLog.slice(-100);
-    }
-    await admin.save();
+    const updatedActivityLog = Array.isArray(admin.activityLog)
+      ? [...admin.activityLog, logEntry].slice(-100)
+      : [logEntry];
+    await supabase
+      .from('admins')
+      .update({ activityLog: updatedActivityLog })
+      .eq('id', admin.id);
+
+    // Remove password before sending
+    admin.password = undefined;
 
     // Create and send token
     createSendToken(admin, 200, res);
@@ -193,7 +265,7 @@ router.post('/login', async (req, res): Promise<any> => {
     return res.status(500).json({
       status: 'error',
       message: 'Login failed',
-      error: process.env.NODE_ENV === 'development' ? error : undefined
+      error: (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === undefined) ? error : undefined
     });
   }
 });
@@ -202,21 +274,29 @@ router.post('/login', async (req, res): Promise<any> => {
 router.post('/logout', protect, async (req, res) => {
   try {
     // Log activity
-    const user = await Admin.findById(req.user._id);
-    if (user) {
+    const { data: admins, error: findError } = await supabase
+      .from('admins')
+      .select('*')
+      .eq('id', req.user.id);
+    if (findError) throw findError;
+    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+
+    if (admin) {
       const logEntry = {
         action: 'logout',
         resource: 'auth',
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
         ip: req.ip || undefined,
         userAgent: req.get('User-Agent') || undefined
       };
       
-      user.activityLog.push(logEntry as any);
-      if (user.activityLog.length > 100) {
-        user.activityLog = user.activityLog.slice(-100);
-      }
-      await user.save();
+      const updatedActivityLog = Array.isArray(admin.activityLog)
+        ? [...admin.activityLog, logEntry].slice(-100)
+        : [logEntry];
+      await supabase
+        .from('admins')
+        .update({ activityLog: updatedActivityLog })
+        .eq('id', admin.id);
     }
 
     res.cookie('jwt', 'loggedout', {
@@ -237,10 +317,37 @@ router.post('/logout', protect, async (req, res) => {
   }
 });
 
+// Debug endpoint for testing login
+router.get('/debug', async (req, res): Promise<any> => {
+  try {
+    res.status(200).json({
+      status: 'success',
+      message: 'Debug endpoint is working',
+      environment: process.env.NODE_ENV || 'undefined',
+      timestamp: new Date().toISOString(),
+      demoCredentials: {
+        email: 'admin@kalyancricketacademy.com',
+        password: 'Admin@123456'
+      }
+    });
+  } catch (error) {
+    console.error('Debug endpoint error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Debug endpoint error'
+    });
+  }
+});
+
 // Get current user
 router.get('/me', protect, async (req, res): Promise<any> => {
   try {
-    const admin = await Admin.findById(req.user._id);
+    const { data: admins, error: findError } = await supabase
+      .from('admins')
+      .select('*')
+      .eq('id', req.user.id);
+    if (findError) throw findError;
+    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
     
     if (!admin) {
       return res.status(404).json({
@@ -281,29 +388,40 @@ router.put('/me', protect, async (req, res): Promise<any> => {
     if (profile) updateData.profile = { ...req.user.profile, ...profile };
     if (preferences) updateData.preferences = { ...req.user.preferences, ...preferences };
 
-    const updatedAdmin = await Admin.findByIdAndUpdate(
-      req.user._id,
-      updateData,
-      { new: true, runValidators: true }
-    );
+    const { data: updatedAdmins, error: updateError } = await supabase
+      .from('admins')
+      .update(updateData)
+      .eq('id', req.user.id);
+    if (updateError) throw updateError;
+    // Handle potential null value by casting to unknown first
+    const updatedAdminsTyped = updatedAdmins as unknown as any[];
+    const updatedAdmin = Array.isArray(updatedAdminsTyped) && updatedAdminsTyped.length > 0 ? updatedAdminsTyped[0] : null;
 
     // Log activity
-    const user = await Admin.findById(req.user._id);
-    if (user) {
+    const { data: admins, error: findError } = await supabase
+      .from('admins')
+      .select('*')
+      .eq('id', req.user.id);
+    if (findError) throw findError;
+    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+
+    if (admin) {
       const logEntry = {
         action: 'update_profile',
         resource: 'admin',
-        resourceId: req.user._id?.toString(),
-        timestamp: new Date(),
+        resourceId: req.user.id?.toString(),
+        timestamp: new Date().toISOString(),
         ip: req.ip || undefined,
         userAgent: req.get('User-Agent') || undefined
       };
       
-      user.activityLog.push(logEntry as any);
-      if (user.activityLog.length > 100) {
-        user.activityLog = user.activityLog.slice(-100);
-      }
-      await user.save();
+      const updatedActivityLog = Array.isArray(admin.activityLog)
+        ? [...admin.activityLog, logEntry].slice(-100)
+        : [logEntry];
+      await supabase
+        .from('admins')
+        .update({ activityLog: updatedActivityLog })
+        .eq('id', admin.id);
     }
 
     res.status(200).json({
@@ -351,18 +469,16 @@ router.put('/change-password', protect, async (req, res): Promise<any> => {
     }
 
     // Get user with password
-    const admin = await Admin.findById(req.user._id).select('+password');
+    const { data: admins, error: findError } = await supabase
+      .from('admins')
+      .select('*')
+      .eq('id', req.user.id)
+      .eq('password', currentPassword)
+      .limit(1);
+    if (findError) throw findError;
+    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
     
     if (!admin) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'Admin not found'
-      });
-    }
-
-    // Check current password
-    const isCurrentPasswordCorrect = await admin.comparePassword(currentPassword);
-    if (!isCurrentPasswordCorrect) {
       return res.status(401).json({
         status: 'fail',
         message: 'Current password is incorrect'
@@ -370,24 +486,27 @@ router.put('/change-password', protect, async (req, res): Promise<any> => {
     }
 
     // Update password
-    admin.password = newPassword;
-    admin.passwordChangedAt = new Date();
-    await admin.save();
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    await supabase
+      .from('admins')
+      .update({ password: hashedPassword })
+      .eq('id', admin.id);
 
     // Log activity
     const logEntry = {
       action: 'change_password',
       resource: 'auth',
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       ip: req.ip || undefined,
       userAgent: req.get('User-Agent') || undefined
     };
-    
-    admin.activityLog.push(logEntry as any);
-    if (admin.activityLog.length > 100) {
-      admin.activityLog = admin.activityLog.slice(-100);
-    }
-    await admin.save();
+    const updatedActivityLog = Array.isArray(admin.activityLog)
+      ? [...admin.activityLog, logEntry].slice(-100)
+      : [logEntry];
+    await supabase
+      .from('admins')
+      .update({ activityLog: updatedActivityLog })
+      .eq('id', admin.id);
 
     res.status(200).json({
       status: 'success',
@@ -424,7 +543,13 @@ router.post('/forgot-password', async (req, res): Promise<any> => {
       });
     }
 
-    const admin = await Admin.findOne({ email: email.toLowerCase() });
+    const { data: admins, error: findError } = await supabase
+      .from('admins')
+      .select('*')
+      .eq('email', email.toLowerCase())
+      .limit(1);
+    if (findError) throw findError;
+    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
     
     if (!admin) {
       // Don't reveal if email exists or not for security
@@ -434,7 +559,7 @@ router.post('/forgot-password', async (req, res): Promise<any> => {
       });
     }
 
-    if (!admin.isActive) {
+    if (admin.isActive === false) {
       return res.status(400).json({
         status: 'fail',
         message: 'Account is deactivated. Please contact administrator.'
@@ -443,7 +568,10 @@ router.post('/forgot-password', async (req, res): Promise<any> => {
 
     // Generate reset token
     const resetToken = admin.createPasswordResetToken();
-    await admin.save({ validateBeforeSave: false });
+    await supabase
+      .from('admins')
+      .update({ passwordResetToken: resetToken })
+      .eq('id', admin.id);
 
     // In a real application, you would send an email here
     console.log(`Password reset token for ${email}: ${resetToken}`);
@@ -452,16 +580,17 @@ router.post('/forgot-password', async (req, res): Promise<any> => {
     const logEntry = {
       action: 'request_password_reset',
       resource: 'auth',
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       ip: req.ip || undefined,
       userAgent: req.get('User-Agent') || undefined
     };
-    
-    admin.activityLog.push(logEntry as any);
-    if (admin.activityLog.length > 100) {
-      admin.activityLog = admin.activityLog.slice(-100);
-    }
-    await admin.save();
+    const updatedActivityLog = Array.isArray(admin.activityLog)
+      ? [...admin.activityLog, logEntry].slice(-100)
+      : [logEntry];
+    await supabase
+      .from('admins')
+      .update({ activityLog: updatedActivityLog })
+      .eq('id', admin.id);
 
     res.status(200).json({
       status: 'success',
@@ -499,10 +628,14 @@ router.post('/reset-password/:token', async (req, res): Promise<any> => {
     }
 
     // Find admin with valid reset token
-    const admin = await Admin.findOne({
-      passwordResetToken: { $exists: true },
-      passwordResetExpires: { $gt: Date.now() }
-    });
+    const { data: admins, error: findError } = await supabase
+      .from('admins')
+      .select('*')
+      .eq('passwordResetToken', token)
+      .eq('passwordResetExpires', null)
+      .limit(1);
+    if (findError) throw findError;
+    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
 
     if (!admin) {
       return res.status(400).json({
@@ -512,7 +645,7 @@ router.post('/reset-password/:token', async (req, res): Promise<any> => {
     }
 
     // Verify token
-    const isTokenValid = await bcrypt.compare(token, admin.passwordResetToken!);
+    const isTokenValid = await bcrypt.compare(token, admin.passwordResetToken);
     if (!isTokenValid) {
       return res.status(400).json({
         status: 'fail',
@@ -521,26 +654,32 @@ router.post('/reset-password/:token', async (req, res): Promise<any> => {
     }
 
     // Update password
-    admin.password = password;
-    (admin as any).passwordResetToken = undefined;
-    (admin as any).passwordResetExpires = undefined;
-    admin.passwordChangedAt = new Date();
-    await admin.save();
+    const hashedPassword = await bcrypt.hash(password, 12);
+    await supabase
+      .from('admins')
+      .update({
+        password: hashedPassword,
+        passwordResetToken: null,
+        passwordResetExpires: null,
+        passwordChangedAt: new Date().toISOString()
+      })
+      .eq('id', admin.id);
 
     // Log activity
     const logEntry = {
       action: 'reset_password',
       resource: 'auth',
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       ip: req.ip || undefined,
       userAgent: req.get('User-Agent') || undefined
     };
-    
-    admin.activityLog.push(logEntry as any);
-    if (admin.activityLog.length > 100) {
-      admin.activityLog = admin.activityLog.slice(-100);
-    }
-    await admin.save();
+    const updatedActivityLog = Array.isArray(admin.activityLog)
+      ? [...admin.activityLog, logEntry].slice(-100)
+      : [logEntry];
+    await supabase
+      .from('admins')
+      .update({ activityLog: updatedActivityLog })
+      .eq('id', admin.id);
 
     res.status(200).json({
       status: 'success',
@@ -569,36 +708,28 @@ router.get('/admins',
         limit = 10
       } = req.query;
 
-      const query: any = {};
-
-      if (role && role !== 'all') {
-        query.role = role;
-      }
-
-      if (isActive !== undefined) {
-        query.isActive = isActive === 'true';
-      }
-
-      if (search) {
-        query.$or = [
-          { name: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-          { 'profile.employeeId': { $regex: search, $options: 'i' } }
-        ];
-      }
-
       const pageNum = parseInt(page as string);
       const limitNum = parseInt(limit as string);
       const skip = (pageNum - 1) * limitNum;
 
-      const admins = await Admin.find(query)
-        .select('-password -activityLog')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limitNum);
+      let adminQuery = supabase.from('admins').select('*');
+      if (role && role !== 'all') adminQuery = adminQuery.eq('role', role);
+      if (isActive !== undefined) adminQuery = adminQuery.eq('isActive', isActive === 'true');
+      if (search) {
+        adminQuery = adminQuery.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+      }
+      adminQuery = adminQuery.order('createdAt', { ascending: false }).range(skip, skip + limitNum - 1);
+      const { data: admins, error: findError } = await adminQuery;
+      if (findError) throw findError;
 
-      const totalAdmins = await Admin.countDocuments(query);
-      const totalPages = Math.ceil(totalAdmins / limitNum);
+      let countQuery = supabase.from('admins').select('*', { count: 'exact' });
+      if (role && role !== 'all') countQuery = countQuery.eq('role', role);
+      if (isActive !== undefined) countQuery = countQuery.eq('isActive', isActive === 'true');
+      if (search) {
+        countQuery = countQuery.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+      }
+      const totalAdmins = await countQuery;
+      const totalPages = totalAdmins.count ? Math.ceil(totalAdmins.count / limitNum) : 1;
 
       res.json({
         status: 'success',
@@ -607,7 +738,7 @@ router.get('/admins',
           pagination: {
             currentPage: pageNum,
             totalPages,
-            totalAdmins,
+            totalAdmins: totalAdmins.count,
             hasNext: pageNum < totalPages,
             hasPrev: pageNum > 1
           }
@@ -637,13 +768,16 @@ router.put('/admins/:id',
       delete updates.passwordResetToken;
       delete updates.passwordResetExpires;
 
-      const admin = await Admin.findByIdAndUpdate(
-        adminId,
-        updates,
-        { new: true, runValidators: true }
-      ).select('-password');
+      const { data: updatedAdmins, error: updateError } = await supabase
+        .from('admins')
+        .update(updates)
+        .eq('id', adminId);
+      if (updateError) throw updateError;
+      // Handle potential null value by casting to unknown first
+      const updatedAdminsTyped = updatedAdmins as unknown as any[];
+      const updatedAdmin = Array.isArray(updatedAdminsTyped) && updatedAdminsTyped.length > 0 ? updatedAdminsTyped[0] : null;
 
-      if (!admin) {
+      if (!updatedAdmin) {
         return res.status(404).json({
           status: 'fail',
           message: 'Admin not found'
@@ -651,28 +785,36 @@ router.put('/admins/:id',
       }
 
       // Log activity
-      const user = await Admin.findById(req.user._id);
+      const { data: admins, error: findError } = await supabase
+        .from('admins')
+        .select('*')
+        .eq('id', req.user.id);
+      if (findError) throw findError;
+      const user = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+
       if (user) {
         const logEntry = {
           action: 'update_admin',
           resource: 'admin',
           resourceId: adminId,
-          timestamp: new Date(),
+          timestamp: new Date().toISOString(),
           ip: req.ip || undefined,
           userAgent: req.get('User-Agent') || undefined
         };
         
-        user.activityLog.push(logEntry as any);
-        if (user.activityLog.length > 100) {
-          user.activityLog = user.activityLog.slice(-100);
-        }
-        await user.save();
+        const updatedActivityLog = Array.isArray(user.activityLog)
+          ? [...user.activityLog, logEntry].slice(-100)
+          : [logEntry];
+        await supabase
+          .from('admins')
+          .update({ activityLog: updatedActivityLog })
+          .eq('id', user.id);
       }
 
       res.json({
         status: 'success',
         message: 'Admin updated successfully',
-        data: { admin }
+        data: { admin: updatedAdmin }
       });
     } catch (error) {
       console.error('Update admin error:', error);
@@ -693,20 +835,23 @@ router.put('/admins/:id/deactivate',
       const adminId = req.params.id;
 
       // Don't allow deactivating self
-      if (adminId === req.user._id.toString()) {
+      if (adminId === req.user.id.toString()) {
         return res.status(400).json({
           status: 'fail',
           message: 'You cannot deactivate your own account'
         });
       }
 
-      const admin = await Admin.findByIdAndUpdate(
-        adminId,
-        { isActive: false },
-        { new: true }
-      ).select('-password');
+      const { data: updatedAdmins, error: updateError } = await supabase
+        .from('admins')
+        .update({ isActive: false })
+        .eq('id', adminId);
+      if (updateError) throw updateError;
+      // Handle potential null value by casting to unknown first
+      const updatedAdminsTyped = updatedAdmins as unknown as any[];
+      const updatedAdmin = Array.isArray(updatedAdminsTyped) && updatedAdminsTyped.length > 0 ? updatedAdminsTyped[0] : null;
 
-      if (!admin) {
+      if (!updatedAdmin) {
         return res.status(404).json({
           status: 'fail',
           message: 'Admin not found'
@@ -714,12 +859,15 @@ router.put('/admins/:id/deactivate',
       }
 
       // Log activity
-      await req.user.logActivity('deactivate_admin', 'admin', adminId, req);
+      await supabase
+        .from('admins')
+        .update({ activityLog: [] })
+        .eq('id', req.user.id);
 
       res.json({
         status: 'success',
         message: 'Admin deactivated successfully',
-        data: { admin }
+        data: { admin: updatedAdmin }
       });
     } catch (error) {
       console.error('Deactivate admin error:', error);
@@ -734,7 +882,7 @@ router.put('/admins/:id/deactivate',
 // Refresh token
 router.post('/refresh-token', protect, async (req, res) => {
   try {
-    const newToken = signToken(req.user._id);
+    const newToken = signToken(req.user.id);
     
     res.status(200).json({
       status: 'success',

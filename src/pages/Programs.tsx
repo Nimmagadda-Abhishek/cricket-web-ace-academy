@@ -98,7 +98,7 @@ const Programs = () => {
       level: 'All Levels',
       icon: '🏢',
       color: 'from-green-400 to-green-600',
-      image: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      image: 'https://thesportsschool.com/wp-content/uploads/2020/06/63344-scaled-1.jpg',
       features: [
         'Skill Training - Improve batting, bowling & fielding',
         'Fitness & Strength - Build endurance & prevent injuries',
@@ -190,13 +190,10 @@ const Programs = () => {
                   key={program.id} 
                   className={`group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 bg-gradient-to-br ${program.color} text-white`}
                 >
-                  {/* Background Image */}
-                  <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500">
-                    <img
-                      src={program.image}
-                      alt={program.title}
-                      className="w-full h-full object-cover"
-                    />
+                  {/* Background Pattern */}
+                  <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-10 right-10 w-20 h-20 rounded-full bg-white"></div>
+                    <div className="absolute bottom-10 left-10 w-16 h-16 rounded-full bg-white"></div>
                   </div>
 
                   {/* Content */}

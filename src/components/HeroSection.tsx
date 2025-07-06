@@ -9,18 +9,20 @@ const HeroSection = () => {
   // Slideshow images - cricket and coaching related
   const slides = [
     {
-      url: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+      url: '/images/hero/cricket-stadium.jpg',
       alt: 'Cricket stadium with players'
     },
     {
-      url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+      url: '/images/hero/cricket-coaching.jpg',
       alt: 'Cricket coaching session'
     },
     {
-      url: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+      url: '/images/hero/cricket-batting.jpg',
       alt: 'Cricket player batting'
     }
   ];
+  
+
 
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -44,7 +46,7 @@ const HeroSection = () => {
         {slides.map((slide, index) => (
           <div
             key={index}
-            className={`slide bg-cover bg-center parallax-bg ${
+            className={`slide bg-cover bg-center ${
               index === currentSlide ? 'active' : ''
             }`}
             style={{
@@ -84,7 +86,11 @@ const HeroSection = () => {
         <div className="animate-fadeInUp">
           <div className="mb-6 animate-scaleIn">
             <div className="inline-block p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6">
-              <div className="text-6xl animate-float">🏏</div>
+              <img 
+                src="/images/logo/logo.png" 
+                alt="Kalyan Cricket Academy Logo" 
+                className="h-24 w-auto animate-float"
+              />
             </div>
           </div>
           
@@ -140,13 +146,11 @@ const HeroSection = () => {
       </div>
 
       {/* Animated Scroll Indicator */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="w-8 h-12 border-2 border-white/50 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
-        </div>
-      </div>
+      
     </section>
   );
 };
 
 export default HeroSection;
+
+
