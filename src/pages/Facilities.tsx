@@ -157,7 +157,7 @@ const Facilities = () => {
             <div>
               <h1 className="text-5xl md:text-7xl font-bold font-poppins text-white mb-6">
                 World-Class
-                <span className="block text-white">Facilities</span>
+                <span className="block gradient-text-facilities">Facilities</span>
               </h1>
               <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
                 Experience cricket training at its finest with our state-of-the-art facilities designed for excellence
@@ -282,7 +282,7 @@ const Facilities = () => {
         {/* Additional Info */}
         <section className="py-16 bg-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h3 className="text-3xl font-bold font-poppins heading-gradient mb-6">
+            <h3 className="text-3xl font-bold font-poppins gradient-text-facilities mb-6">
               Why Choose Our Facilities?
             </h3>
             <div className="grid md:grid-cols-3 gap-8">

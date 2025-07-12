@@ -135,57 +135,46 @@ const AchievementsSection: React.FC = () => {
   const displayAchievements = [...achievements, ...achievements];
 
   return (
-    <section className="py-20 bg-gray-50 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-20 left-20 w-32 h-32 bg-cricket-orange rounded-full animate-pulse-slow"></div>
-        <div className="absolute bottom-20 right-20 w-24 h-24 bg-cricket-green rounded-full animate-float"></div>
+    <section className="py-20 bg-gray-50 relative overflow-hidden parallax-section">
+      {/* Enhanced Parallax Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 right-10 w-32 h-32 bg-gradient-to-br from-cricket-orange/12 to-cricket-purple/12 rounded-full parallax-bg-element"></div>
+        <div className="absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-br from-cricket-green/12 to-cricket-orange/12 rounded-full parallax-bg-element-2"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-br from-cricket-purple/12 to-cricket-green/12 rounded-full parallax-bg-element-3"></div>
+        <div className="absolute top-1/3 right-1/3 w-28 h-28 bg-gradient-to-br from-cricket-orange/8 to-cricket-purple/8 rounded-full parallax-bg-element"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-20 h-20 bg-gradient-to-br from-cricket-green/8 to-cricket-orange/8 rounded-full parallax-bg-element-2"></div>
       </div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-16 animate-fadeInUp">
-          <h2 className="text-5xl font-bold font-poppins heading-gradient mb-6">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-bold font-poppins gradient-text-achievements mb-6">
             Our Achievements
           </h2>
-          <div className="w-24 h-1 bg-cricket-orange mx-auto mb-6 rounded-full"></div>
-          <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-secondary max-w-3xl mx-auto">
             Celebrating the success of our students and the academy's milestones
           </p>
         </div>
 
-        {/* Achievements Slider */}
         <div className="overflow-hidden mb-10">
           <div className="flex flex-nowrap gap-6 animate-marquee">
             {displayAchievements.map((achievement, index) => (
               <div key={`${achievement.id}-${index}`} className="min-w-[300px] max-w-[300px] flex-shrink-0">
-                <div className="group card-hover border-0 shadow-xl overflow-hidden bg-white relative animate-bounceIn hover:shadow-2xl transition-all duration-500 rounded-xl h-full">
-                  {/* Achievement Image */}
-                  <div className="relative h-48 overflow-hidden">
+                <div className="bg-white rounded-xl shadow-lg h-full flex flex-col hover:shadow-xl transition-all duration-300 hover:-translate-y-2" style={{height: '400px'}}>
+                  <div className="relative flex-shrink-0" style={{height: '70%'}}>
                     <img
                       src={achievement.image_url}
                       alt={achievement.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover rounded-t-xl"
+                      style={{height: '100%', width: '100%'}}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                    
-                    {/* Achievement Icon */}
-                    <div className={`absolute top-4 right-4 w-12 h-12 bg-gradient-to-br ${achievement.color} rounded-full flex items-center justify-center text-white text-xl shadow-lg`}>
+                    <div className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-br from-cricket-orange to-cricket-purple rounded-full flex items-center justify-center text-white text-xl shadow-lg">
                       {achievement.icon}
                     </div>
                   </div>
-
-                  <div className="p-6">
-                    {/* Achievement Title */}
-                    <h3 className="text-xl font-bold text-cricket-green mb-2 group-hover:text-cricket-orange transition-colors duration-300">
+                  <div className="flex-1 p-6 flex flex-col justify-between" style={{height: '30%'}}>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
                       {achievement.title}
                     </h3>
-                    
-                    {/* Description */}
-                    <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-                      {achievement.description}
-                    </p>
-
-                    {/* Achievement Date */}
                     <div className="flex items-center text-sm text-cricket-orange">
                       <span className="font-semibold">Achievement Date:</span>
                       <span className="ml-2">{formatDate(achievement.achievement_date)}</span>

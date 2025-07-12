@@ -12,9 +12,7 @@ const FacilitiesSection = () => {
   const [useDynamicFacilities, setUseDynamicFacilities] = useState(false);
   
   // State for typing animation
-  const [titleText, setTitleText] = useState("");
   const [descriptionText, setDescriptionText] = useState("");
-  const fullTitle = "World-Class Facilities";
   const fullDescription = "Train like a professional with our state-of-the-art facilities designed to enhance every aspect of your cricket development";
 
   // Check if we have facilities in the database
@@ -115,36 +113,9 @@ const FacilitiesSection = () => {
     };
   }, []);
   
-  // Title typing animation
-  useEffect(() => {
-    if (!isVisible) return;
-    
-    // Reset the text first
-    setTitleText("");
-    
-    let currentIndex = 0;
-    const typingSpeed = 80; // ms per character
-    
-    const typeTitle = () => {
-      if (currentIndex <= fullTitle.length) {
-        setTitleText(fullTitle.substring(0, currentIndex));
-        currentIndex++;
-        setTimeout(typeTitle, typingSpeed);
-      }
-    };
-    
-    // Start typing after a short delay
-    setTimeout(typeTitle, 500);
-    
-    return () => {
-      // Clean up any pending timeouts
-      setTitleText(fullTitle);
-    };
-  }, [isVisible, fullTitle]);
-  
   // Description typing animation (starts after title is complete)
   useEffect(() => {
-    if (!isVisible || titleText !== fullTitle) return;
+    if (!isVisible) return;
     
     // Reset the description text
     setDescriptionText("");
@@ -167,7 +138,7 @@ const FacilitiesSection = () => {
       clearTimeout(timer);
       setDescriptionText(fullDescription);
     };
-  }, [isVisible, titleText, fullDescription]);
+  }, [isVisible, fullDescription]);
   
   // State for facility cards animation
   const [visibleCards, setVisibleCards] = useState<boolean[]>(Array(facilities.length).fill(false));
@@ -189,64 +160,101 @@ const FacilitiesSection = () => {
       {useDynamicFacilities ? (
         <Facilities />
       ) : (
-        <section id="facilities" className="py-20 bg-white" ref={sectionRef}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="facilities" className="py-20 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden parallax-section" ref={sectionRef}>
+          {/* Enhanced Parallax Background Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 right-10 w-28 h-28 bg-gradient-to-br from-cricket-green/15 to-cricket-orange/15 rounded-full parallax-bg-element-2"></div>
+            <div className="absolute bottom-20 left-20 w-20 h-20 bg-gradient-to-br from-cricket-purple/15 to-cricket-green/15 rounded-full parallax-bg-element"></div>
+            <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-gradient-to-br from-cricket-orange/15 to-cricket-purple/15 rounded-full parallax-bg-element-3"></div>
+            <div className="absolute top-1/3 left-1/4 w-32 h-32 bg-gradient-to-br from-cricket-green/10 to-cricket-orange/10 rounded-full parallax-bg-element"></div>
+            <div className="absolute bottom-1/3 right-1/3 w-24 h-24 bg-gradient-to-br from-cricket-purple/10 to-cricket-orange/10 rounded-full parallax-bg-element-2"></div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold font-poppins text-cricket-green mb-4 min-h-[3rem]">
-                {titleText}
-                {titleText !== fullTitle && isVisible && (
-                  <span className="inline-block w-0.5 h-8 bg-cricket-orange ml-1 align-middle animate-blink"></span>
-                )}
-                {!isVisible && (
-                  <span className="opacity-0">World-Class Facilities</span>
-                )}
+              <h2 className="text-5xl font-bold font-poppins gradient-text-facilities mb-6">
+                World-Class Facilities
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto min-h-[4rem]">
-                {descriptionText}
-                {descriptionText !== fullDescription && isVisible && titleText === fullTitle && (
-                  <span className="inline-block w-0.5 h-6 bg-cricket-orange ml-1 align-middle animate-blink"></span>
-                )}
-                {!isVisible && (
-                  <span className="opacity-0">Train like a professional with our state-of-the-art facilities designed to enhance every aspect of your cricket development</span>
-                )}
+              <p className="text-xl text-secondary max-w-3xl mx-auto">
+                Train like a professional with our state-of-the-art facilities designed to enhance every aspect of your cricket development
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {facilities.map((facility, index) => (
-                <div 
-                  key={index} 
-                  className={`transition-all duration-700 transform ${
-                    visibleCards[index] || !isVisible
-                      ? 'opacity-100 translate-y-0' 
-                      : 'opacity-0 translate-y-10'
-                  }`}
-                >
-                  <Card className="hover-lift border-0 shadow-lg h-full">
-                    <CardContent className="p-6">
-                      <div className="text-5xl mb-4">{facility.icon}</div>
-                      <h3 className="text-xl font-bold font-poppins text-cricket-green mb-3">
-                        {facility.title}
-                      </h3>
-                      <p className="text-gray-600 mb-4">{facility.description}</p>
-                      
-                      <div className="space-y-2">
-                        {facility.features.map((feature, idx) => (
-                          <div 
-                            key={idx} 
-                            className="flex items-center space-x-2 transition-all duration-500"
-                          >
-                            <div className="w-4 h-4 bg-cricket-orange rounded-full flex items-center justify-center">
-                              <span className="text-white text-xs">✓</span>
-                            </div>
-                            <span className="text-gray-700 text-sm">{feature}</span>
-                          </div>
-                        ))}
+            {/* Apple Intelligence Style Cards Container */}
+            <div className="relative">
+              {/* Scroll Buttons */}
+              <button
+                onClick={() => {
+                  const container = document.getElementById('facilities-scroll');
+                  if (container) {
+                    container.scrollBy({ left: -400, behavior: 'smooth' });
+                  }
+                }}
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-white transition-all duration-300 hover:scale-110"
+                aria-label="Scroll left"
+              >
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => {
+                  const container = document.getElementById('facilities-scroll');
+                  if (container) {
+                    container.scrollBy({ left: 400, behavior: 'smooth' });
+                  }
+                }}
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-white transition-all duration-300 hover:scale-110"
+                aria-label="Scroll right"
+              >
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              {/* Cards Container */}
+              <div 
+                id="facilities-scroll"
+                className="flex gap-6 overflow-x-auto scrollbar-hide pb-6 px-2 smooth-scroll"
+              >
+                {facilities.map((facility, index) => (
+                  <div 
+                    key={index} 
+                    className="min-w-[400px] max-w-[400px] flex-shrink-0"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    {/* Apple Intelligence Style Card */}
+                    <div className="group relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-[500px] flex flex-col card-fade-in">
+                      {/* Card Header */}
+                      <div className="p-8 pb-6 flex-shrink-0">
+                        <div className="text-5xl mb-6">{facility.icon}</div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-cricket-orange transition-colors duration-300">
+                          {facility.title}
+                        </h3>
+                        <p className="text-secondary leading-relaxed">
+                          {facility.description}
+                        </p>
                       </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              ))}
+                      
+                      {/* Features List */}
+                      <div className="px-8 pb-8 flex-1 flex flex-col justify-end">
+                        <div className="space-y-3">
+                          {facility.features.map((feature, idx) => (
+                            <div key={idx} className="flex items-center space-x-3">
+                              <div className="w-2 h-2 bg-gradient-to-r from-cricket-orange to-cricket-purple rounded-full flex-shrink-0"></div>
+                              <span className="text-primary-body text-sm font-medium">{feature}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Hover Glow Effect */}
+                      <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cricket-green/0 via-cricket-green/5 to-cricket-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>

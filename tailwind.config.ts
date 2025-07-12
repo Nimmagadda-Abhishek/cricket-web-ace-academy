@@ -58,7 +58,11 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				'cricket-green': 'hsl(var(--cricket-green))',
-				'cricket-orange': 'hsl(var(--cricket-orange))',
+				'cricket-orange': '#FF5E3A',
+				'card-bg': '#F5F5F7',
+				'base-bg': '#FFFFFF',
+				'cricket-pink': '#FF2D55',
+				'cricket-purple': '#BF5AF2',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

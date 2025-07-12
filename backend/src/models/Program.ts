@@ -340,7 +340,7 @@ const ProgramSchema: Schema = new Schema({
 });
 
 // Indexes for better performance
-ProgramSchema.index({ title: 1 });
+// Removed duplicate index for title
 ProgramSchema.index({ category: 1 });
 ProgramSchema.index({ level: 1 });
 ProgramSchema.index({ status: 1 });

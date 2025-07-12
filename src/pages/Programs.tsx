@@ -145,7 +145,7 @@ const Programs = () => {
             <div>
               <h1 className="text-5xl md:text-7xl font-bold font-poppins text-white mb-6">
                 Our Training
-                <span className="block text-white">Programs</span>
+                <span className="block gradient-text-programs">Programs</span>
               </h1>
               <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
                 Choose from our comprehensive range of cricket training programs designed to elevate your game at every level
@@ -188,43 +188,58 @@ const Programs = () => {
               {filteredPrograms.map((program, index) => (
                 <Card 
                   key={program.id} 
-                  className={`group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 bg-gradient-to-br ${program.color} text-white`}
+                  className={
+                    `group relative overflow-hidden ai-card ai-rounded ai-shadow border-0 transition-all duration-400 ai-fade-in` +
+                    (index % 2 === 0 ? ' ai-slide-up' : ' ai-scale-in') +
+                    ' hover:scale-[1.02] hover:shadow-2xl'
+                  }
+                  style={{ background: 'var(--ai-surface)', color: 'var(--ai-heading)' }}
                 >
+                  {/* Gradient Accent Bar */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '6px',
+                    background: 'linear-gradient(90deg, #FF5E3A 0%, #FF2D55 50%, #BF5AF2 100%)',
+                    borderTopLeftRadius: '16px',
+                    borderTopRightRadius: '16px',
+                    opacity: 0.9
+                  }} />
                   {/* Background Pattern */}
-                  <div className="absolute inset-0 opacity-10">
+                  <div className="absolute inset-0 opacity-5 pointer-events-none">
                     <div className="absolute top-10 right-10 w-20 h-20 rounded-full bg-white"></div>
                     <div className="absolute bottom-10 left-10 w-16 h-16 rounded-full bg-white"></div>
                   </div>
-
                   {/* Content */}
                   <div className="relative z-10">
                     <CardHeader className="pb-4">
                       <div className="flex items-center space-x-3 mb-4">
-                        <div className="text-4xl">{program.icon}</div>
+                        <div className="text-4xl" style={{background: 'linear-gradient(90deg, #FF5E3A 0%, #FF2D55 50%, #BF5AF2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>{program.icon}</div>
                         <div>
-                          <CardTitle className="text-2xl font-bold font-poppins text-white mb-2">
+                          <CardTitle className="text-2xl font-bold font-poppins gradient-text mb-2">
                             {program.title}
                           </CardTitle>
                           <div className="flex flex-wrap gap-2">
-                            <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                            <Badge variant="secondary" className="bg-white/80 text-gray-700 border-white/30">
                               {program.level}
                             </Badge>
-                            <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                            <Badge variant="secondary" className="bg-white/80 text-gray-700 border-white/30">
                               {program.ageGroup}
                             </Badge>
                           </div>
                         </div>
                       </div>
-                      <p className="text-white/90 leading-relaxed">{program.description}</p>
+                      <p className="ai-body leading-relaxed">{program.description}</p>
                     </CardHeader>
-
                     <CardContent className="space-y-6">
                       {/* Schedule Info */}
-                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                        <h4 className="font-semibold text-white mb-3 flex items-center">
+                      <div className="bg-white/60 rounded-lg p-4">
+                        <h4 className="font-semibold text-gray-700 mb-3 flex items-center">
                           <span className="mr-2">📅</span> Schedule
                         </h4>
-                        <div className="grid grid-cols-2 gap-4 text-sm text-white/90">
+                        <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
                           <div>
                             <span className="font-medium">Days:</span>
                             <div>{program.schedule.days.join(', ')}</div>
@@ -239,44 +254,41 @@ const Programs = () => {
                           </div>
                         </div>
                       </div>
-
                       {/* Coach Info */}
-                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                        <h4 className="font-semibold text-white mb-3 flex items-center">
+                      <div className="bg-white/60 rounded-lg p-4">
+                        <h4 className="font-semibold text-gray-700 mb-3 flex items-center">
                           <span className="mr-2">👨‍🏫</span> Coach
                         </h4>
-                        <div className="text-sm text-white/90">
+                        <div className="text-sm text-gray-700">
                           <div className="font-medium">{program.coach.name}</div>
                           <div>{program.coach.experience} experience</div>
                         </div>
                       </div>
-
                       {/* Features List */}
                       <div>
-                        <h4 className="font-semibold text-white mb-3 flex items-center">
+                        <h4 className="font-semibold text-gray-700 mb-3 flex items-center">
                           <span className="mr-2">🎯</span> What You'll Learn
                         </h4>
                         <div className="space-y-2">
                           {program.features.map((feature, idx) => (
-                            <div key={idx} className="flex items-start space-x-2 text-white/90 text-sm">
-                              <span className="text-yellow-300 mt-1">✓</span>
+                            <div key={idx} className="flex items-start space-x-2 text-gray-700 text-sm">
+                              <span className="text-gradient mt-1" style={{color: '#FF2D55'}}>✓</span>
                               <span>{feature}</span>
                             </div>
                           ))}
                         </div>
                       </div>
-
                       {/* Action Buttons */}
                       <div className="flex space-x-3 pt-4">
                         <Button
                           onClick={() => handleEnrollNow(program.id)}
-                          className="flex-1 bg-white text-cricket-green hover:bg-gray-100 font-semibold py-3 rounded-full transition-all duration-300 transform hover:scale-105"
+                          className="flex-1 ai-btn font-semibold py-3 rounded-full"
                         >
                           🚀 Enroll Now
                         </Button>
                         <Button
                           variant="outline"
-                          className="px-6 border-white/30 text-white hover:bg-white/10 rounded-full transition-all duration-300"
+                          className="px-6 border-gray-300 text-gray-700 hover:bg-gray-100 rounded-full"
                           onClick={() => navigate('/contact')}
                         >
                           📞 Contact

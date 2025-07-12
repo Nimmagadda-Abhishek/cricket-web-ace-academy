@@ -1,6 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import { supabase } from '../config/database';
+import Admin from '../models/Admin';
 import { protect, createSendToken, signToken, restrictTo } from '../middleware/auth';
 
 /**
@@ -40,13 +40,8 @@ router.post('/register',
       }
 
       // Check if admin already exists
-      const { data: existingAdmins, error: findError } = await supabase
-        .from('admins')
-        .select('*')
-        .eq('email', email.toLowerCase())
-        .limit(1);
-      if (findError) throw findError;
-      if (existingAdmins && existingAdmins.length > 0) {
+      const existingAdmin = await Admin.findOne({ email: email.toLowerCase() });
+      if (existingAdmin) {
         return res.status(400).json({
           status: 'fail',
           message: 'Admin with this email already exists'
@@ -57,36 +52,32 @@ router.post('/register',
       const hashedPassword = await bcrypt.hash(password, 12);
 
       // Create new admin
-      const { data: newAdmins, error: createError } = await supabase
-        .from('admins')
-        .insert([{
-          name,
-          email: email.toLowerCase(),
-          password: hashedPassword,
-          role,
-          permissions,
-          phone,
-          profile: {
-            ...profile,
-            department: profile?.department || 'administration',
-            joinDate: new Date().toISOString()
-          },
-          isActive: true,
-          loginAttempts: 0,
-          activityLog: [],
-          lastLogin: null
-        }])
-        .select();
-      if (createError) throw createError;
-      const newAdmin = Array.isArray(newAdmins) && newAdmins.length > 0 ? newAdmins[0] : null;
+      const newAdmin = await Admin.create({
+        name,
+        email: email.toLowerCase(),
+        password: hashedPassword,
+        role,
+        permissions,
+        phone,
+        profile: {
+          ...(typeof profile === 'object' && profile !== null ? profile : {}),
+          department: (profile && typeof profile.department === 'string') ? profile.department : 'administration',
+          joinDate: (profile && typeof profile.joinDate === 'string') ? profile.joinDate : new Date().toISOString()
+        },
+        isActive: true,
+        loginAttempts: 0,
+        activityLog: [],
+        lastLogin: null
+      });
 
       // Remove password from response
-      if (newAdmin) newAdmin.password = undefined;
+      const newAdminObj = newAdmin.toObject() as { password?: string };
+      if ('password' in newAdminObj) delete newAdminObj.password;
 
       res.status(201).json({
         status: 'success',
         message: 'Admin created successfully',
-        data: { admin: newAdmin }
+        data: { admin: newAdminObj }
       });
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -175,13 +166,7 @@ router.post('/login', async (req, res): Promise<any> => {
 
     // For non-development mode or if dev credentials don't match, proceed with normal login
     // Check if user exists
-    const { data: admins, error: findError } = await supabase
-      .from('admins')
-      .select('*')
-      .eq('email', email.toLowerCase())
-      .limit(1);
-    if (findError) throw findError;
-    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+    const admin = await Admin.findOne({ email: email.toLowerCase() });
 
     if (!admin) {
       return res.status(401).json({
@@ -207,18 +192,11 @@ router.post('/login', async (req, res): Promise<any> => {
     }
 
     // Verify password
-    const isPasswordCorrect = await bcrypt.compare(password, admin.password);
+    const isPasswordCorrect = admin.password ? await bcrypt.compare(password, admin.password) : false;
     if (!isPasswordCorrect) {
       // Increment login attempts and set lockUntil if needed
       const newLoginAttempts = (admin.loginAttempts || 0) + 1;
-      const updates: any = { loginAttempts: newLoginAttempts };
-      if (newLoginAttempts >= 5) {
-        updates.lockUntil = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
-      }
-      await supabase
-        .from('admins')
-        .update(updates)
-        .eq('id', admin.id);
+      await Admin.findByIdAndUpdate(admin._id, { loginAttempts: newLoginAttempts });
       return res.status(401).json({
         status: 'fail',
         message: 'Invalid email or password'
@@ -227,17 +205,11 @@ router.post('/login', async (req, res): Promise<any> => {
 
     // Reset login attempts on successful login
     if (admin.loginAttempts > 0) {
-      await supabase
-        .from('admins')
-        .update({ loginAttempts: 0, lockUntil: null })
-        .eq('id', admin.id);
+      await Admin.findByIdAndUpdate(admin._id, { loginAttempts: 0, lockUntil: null });
     }
 
     // Update last login
-    await supabase
-      .from('admins')
-      .update({ lastLogin: new Date().toISOString() })
-      .eq('id', admin.id);
+    await Admin.findByIdAndUpdate(admin._id, { lastLogin: new Date().toISOString() });
 
     // Log activity (append to activityLog array)
     const logEntry = {
@@ -250,16 +222,14 @@ router.post('/login', async (req, res): Promise<any> => {
     const updatedActivityLog = Array.isArray(admin.activityLog)
       ? [...admin.activityLog, logEntry].slice(-100)
       : [logEntry];
-    await supabase
-      .from('admins')
-      .update({ activityLog: updatedActivityLog })
-      .eq('id', admin.id);
+    await Admin.findByIdAndUpdate(admin._id, { activityLog: updatedActivityLog });
 
     // Remove password before sending
-    admin.password = undefined;
+    const adminObj = admin.toObject() as { password?: string };
+    if ('password' in adminObj) delete adminObj.password;
 
     // Create and send token
-    createSendToken(admin, 200, res);
+    createSendToken(adminObj, 200, res);
   } catch (error: any) {
     console.error('Login error:', error);
     return res.status(500).json({
@@ -274,12 +244,7 @@ router.post('/login', async (req, res): Promise<any> => {
 router.post('/logout', protect, async (req, res) => {
   try {
     // Log activity
-    const { data: admins, error: findError } = await supabase
-      .from('admins')
-      .select('*')
-      .eq('id', req.user.id);
-    if (findError) throw findError;
-    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+    const admin = await Admin.findById(req.user.id);
 
     if (admin) {
       const logEntry = {
@@ -293,10 +258,7 @@ router.post('/logout', protect, async (req, res) => {
       const updatedActivityLog = Array.isArray(admin.activityLog)
         ? [...admin.activityLog, logEntry].slice(-100)
         : [logEntry];
-      await supabase
-        .from('admins')
-        .update({ activityLog: updatedActivityLog })
-        .eq('id', admin.id);
+      await Admin.findByIdAndUpdate(admin._id, { activityLog: updatedActivityLog });
     }
 
     res.cookie('jwt', 'loggedout', {
@@ -342,12 +304,7 @@ router.get('/debug', async (req, res): Promise<any> => {
 // Get current user
 router.get('/me', protect, async (req, res): Promise<any> => {
   try {
-    const { data: admins, error: findError } = await supabase
-      .from('admins')
-      .select('*')
-      .eq('id', req.user.id);
-    if (findError) throw findError;
-    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+    const admin = await Admin.findById(req.user.id);
     
     if (!admin) {
       return res.status(404).json({
@@ -388,22 +345,10 @@ router.put('/me', protect, async (req, res): Promise<any> => {
     if (profile) updateData.profile = { ...req.user.profile, ...profile };
     if (preferences) updateData.preferences = { ...req.user.preferences, ...preferences };
 
-    const { data: updatedAdmins, error: updateError } = await supabase
-      .from('admins')
-      .update(updateData)
-      .eq('id', req.user.id);
-    if (updateError) throw updateError;
-    // Handle potential null value by casting to unknown first
-    const updatedAdminsTyped = updatedAdmins as unknown as any[];
-    const updatedAdmin = Array.isArray(updatedAdminsTyped) && updatedAdminsTyped.length > 0 ? updatedAdminsTyped[0] : null;
+    const updatedAdmin = await Admin.findByIdAndUpdate(req.user.id, updateData, { new: true });
 
     // Log activity
-    const { data: admins, error: findError } = await supabase
-      .from('admins')
-      .select('*')
-      .eq('id', req.user.id);
-    if (findError) throw findError;
-    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+    const admin = await Admin.findById(req.user.id);
 
     if (admin) {
       const logEntry = {
@@ -418,10 +363,7 @@ router.put('/me', protect, async (req, res): Promise<any> => {
       const updatedActivityLog = Array.isArray(admin.activityLog)
         ? [...admin.activityLog, logEntry].slice(-100)
         : [logEntry];
-      await supabase
-        .from('admins')
-        .update({ activityLog: updatedActivityLog })
-        .eq('id', admin.id);
+      await Admin.findByIdAndUpdate(admin._id, { activityLog: updatedActivityLog });
     }
 
     res.status(200).json({
@@ -469,14 +411,7 @@ router.put('/change-password', protect, async (req, res): Promise<any> => {
     }
 
     // Get user with password
-    const { data: admins, error: findError } = await supabase
-      .from('admins')
-      .select('*')
-      .eq('id', req.user.id)
-      .eq('password', currentPassword)
-      .limit(1);
-    if (findError) throw findError;
-    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+    const admin = await Admin.findById(req.user.id);
     
     if (!admin) {
       return res.status(401).json({
@@ -487,10 +422,7 @@ router.put('/change-password', protect, async (req, res): Promise<any> => {
 
     // Update password
     const hashedPassword = await bcrypt.hash(newPassword, 12);
-    await supabase
-      .from('admins')
-      .update({ password: hashedPassword })
-      .eq('id', admin.id);
+    await Admin.findByIdAndUpdate(admin._id, { password: hashedPassword });
 
     // Log activity
     const logEntry = {
@@ -503,10 +435,7 @@ router.put('/change-password', protect, async (req, res): Promise<any> => {
     const updatedActivityLog = Array.isArray(admin.activityLog)
       ? [...admin.activityLog, logEntry].slice(-100)
       : [logEntry];
-    await supabase
-      .from('admins')
-      .update({ activityLog: updatedActivityLog })
-      .eq('id', admin.id);
+    await Admin.findByIdAndUpdate(admin._id, { activityLog: updatedActivityLog });
 
     res.status(200).json({
       status: 'success',
@@ -543,13 +472,7 @@ router.post('/forgot-password', async (req, res): Promise<any> => {
       });
     }
 
-    const { data: admins, error: findError } = await supabase
-      .from('admins')
-      .select('*')
-      .eq('email', email.toLowerCase())
-      .limit(1);
-    if (findError) throw findError;
-    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+    const admin = await Admin.findOne({ email: email.toLowerCase() });
     
     if (!admin) {
       // Don't reveal if email exists or not for security
@@ -567,14 +490,11 @@ router.post('/forgot-password', async (req, res): Promise<any> => {
     }
 
     // Generate reset token
-    const resetToken = admin.createPasswordResetToken();
-    await supabase
-      .from('admins')
-      .update({ passwordResetToken: resetToken })
-      .eq('id', admin.id);
+    admin.createPasswordResetToken();
+    await admin.save({ validateBeforeSave: false });
 
     // In a real application, you would send an email here
-    console.log(`Password reset token for ${email}: ${resetToken}`);
+    console.log(`Password reset token for ${email}: ${admin.passwordResetToken}`);
 
     // Log activity
     const logEntry = {
@@ -587,16 +507,13 @@ router.post('/forgot-password', async (req, res): Promise<any> => {
     const updatedActivityLog = Array.isArray(admin.activityLog)
       ? [...admin.activityLog, logEntry].slice(-100)
       : [logEntry];
-    await supabase
-      .from('admins')
-      .update({ activityLog: updatedActivityLog })
-      .eq('id', admin.id);
+    await Admin.findByIdAndUpdate(admin._id, { activityLog: updatedActivityLog });
 
     res.status(200).json({
       status: 'success',
       message: 'Password reset instructions sent to your email',
       // In development, include the token (remove in production)
-      ...(process.env.NODE_ENV === 'development' && { resetToken })
+      ...(process.env.NODE_ENV === 'development' && { resetToken: admin.passwordResetToken })
     });
   } catch (error: any) {
     console.error('Forgot password error:', error);
@@ -628,14 +545,7 @@ router.post('/reset-password/:token', async (req, res): Promise<any> => {
     }
 
     // Find admin with valid reset token
-    const { data: admins, error: findError } = await supabase
-      .from('admins')
-      .select('*')
-      .eq('passwordResetToken', token)
-      .eq('passwordResetExpires', null)
-      .limit(1);
-    if (findError) throw findError;
-    const admin = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+    const admin = await Admin.findOne({ passwordResetToken: token, passwordResetExpires: { $gt: Date.now() } });
 
     if (!admin) {
       return res.status(400).json({
@@ -645,7 +555,7 @@ router.post('/reset-password/:token', async (req, res): Promise<any> => {
     }
 
     // Verify token
-    const isTokenValid = await bcrypt.compare(token, admin.passwordResetToken);
+    const isTokenValid = admin.passwordResetToken ? await bcrypt.compare(token, admin.passwordResetToken) : false;
     if (!isTokenValid) {
       return res.status(400).json({
         status: 'fail',
@@ -655,15 +565,12 @@ router.post('/reset-password/:token', async (req, res): Promise<any> => {
 
     // Update password
     const hashedPassword = await bcrypt.hash(password, 12);
-    await supabase
-      .from('admins')
-      .update({
-        password: hashedPassword,
-        passwordResetToken: null,
-        passwordResetExpires: null,
-        passwordChangedAt: new Date().toISOString()
-      })
-      .eq('id', admin.id);
+    await Admin.findByIdAndUpdate(admin._id, {
+      password: hashedPassword,
+      passwordResetToken: null,
+      passwordResetExpires: null,
+      passwordChangedAt: new Date().toISOString()
+    });
 
     // Log activity
     const logEntry = {
@@ -676,10 +583,7 @@ router.post('/reset-password/:token', async (req, res): Promise<any> => {
     const updatedActivityLog = Array.isArray(admin.activityLog)
       ? [...admin.activityLog, logEntry].slice(-100)
       : [logEntry];
-    await supabase
-      .from('admins')
-      .update({ activityLog: updatedActivityLog })
-      .eq('id', admin.id);
+    await Admin.findByIdAndUpdate(admin._id, { activityLog: updatedActivityLog });
 
     res.status(200).json({
       status: 'success',
@@ -712,24 +616,23 @@ router.get('/admins',
       const limitNum = parseInt(limit as string);
       const skip = (pageNum - 1) * limitNum;
 
-      let adminQuery = supabase.from('admins').select('*');
-      if (role && role !== 'all') adminQuery = adminQuery.eq('role', role);
-      if (isActive !== undefined) adminQuery = adminQuery.eq('isActive', isActive === 'true');
+      let adminQuery = Admin.find({});
+      if (role && role !== 'all') adminQuery = adminQuery.where('role', role);
+      if (isActive !== undefined) adminQuery = adminQuery.where('isActive', isActive === 'true');
       if (search) {
-        adminQuery = adminQuery.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+        adminQuery = adminQuery.or([{ name: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }]);
       }
-      adminQuery = adminQuery.order('createdAt', { ascending: false }).range(skip, skip + limitNum - 1);
-      const { data: admins, error: findError } = await adminQuery;
-      if (findError) throw findError;
+      adminQuery = adminQuery.sort({ createdAt: -1 }).skip(skip).limit(limitNum);
+      const admins = await adminQuery;
 
-      let countQuery = supabase.from('admins').select('*', { count: 'exact' });
-      if (role && role !== 'all') countQuery = countQuery.eq('role', role);
-      if (isActive !== undefined) countQuery = countQuery.eq('isActive', isActive === 'true');
+      let countQuery = Admin.countDocuments({});
+      if (role && role !== 'all') countQuery = countQuery.where('role', role);
+      if (isActive !== undefined) countQuery = countQuery.where('isActive', isActive === 'true');
       if (search) {
-        countQuery = countQuery.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+        countQuery = countQuery.or([{ name: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }]);
       }
       const totalAdmins = await countQuery;
-      const totalPages = totalAdmins.count ? Math.ceil(totalAdmins.count / limitNum) : 1;
+      const totalPages = totalAdmins ? Math.ceil(totalAdmins / limitNum) : 1;
 
       res.json({
         status: 'success',
@@ -738,7 +641,7 @@ router.get('/admins',
           pagination: {
             currentPage: pageNum,
             totalPages,
-            totalAdmins: totalAdmins.count,
+            totalAdmins: totalAdmins,
             hasNext: pageNum < totalPages,
             hasPrev: pageNum > 1
           }
@@ -768,14 +671,7 @@ router.put('/admins/:id',
       delete updates.passwordResetToken;
       delete updates.passwordResetExpires;
 
-      const { data: updatedAdmins, error: updateError } = await supabase
-        .from('admins')
-        .update(updates)
-        .eq('id', adminId);
-      if (updateError) throw updateError;
-      // Handle potential null value by casting to unknown first
-      const updatedAdminsTyped = updatedAdmins as unknown as any[];
-      const updatedAdmin = Array.isArray(updatedAdminsTyped) && updatedAdminsTyped.length > 0 ? updatedAdminsTyped[0] : null;
+      const updatedAdmin = await Admin.findByIdAndUpdate(adminId, updates, { new: true });
 
       if (!updatedAdmin) {
         return res.status(404).json({
@@ -785,12 +681,7 @@ router.put('/admins/:id',
       }
 
       // Log activity
-      const { data: admins, error: findError } = await supabase
-        .from('admins')
-        .select('*')
-        .eq('id', req.user.id);
-      if (findError) throw findError;
-      const user = Array.isArray(admins) && admins.length > 0 ? admins[0] : null;
+      const user = await Admin.findById(req.user.id);
 
       if (user) {
         const logEntry = {
@@ -805,10 +696,7 @@ router.put('/admins/:id',
         const updatedActivityLog = Array.isArray(user.activityLog)
           ? [...user.activityLog, logEntry].slice(-100)
           : [logEntry];
-        await supabase
-          .from('admins')
-          .update({ activityLog: updatedActivityLog })
-          .eq('id', user.id);
+        await Admin.findByIdAndUpdate(user._id, { activityLog: updatedActivityLog });
       }
 
       res.json({
@@ -842,14 +730,7 @@ router.put('/admins/:id/deactivate',
         });
       }
 
-      const { data: updatedAdmins, error: updateError } = await supabase
-        .from('admins')
-        .update({ isActive: false })
-        .eq('id', adminId);
-      if (updateError) throw updateError;
-      // Handle potential null value by casting to unknown first
-      const updatedAdminsTyped = updatedAdmins as unknown as any[];
-      const updatedAdmin = Array.isArray(updatedAdminsTyped) && updatedAdminsTyped.length > 0 ? updatedAdminsTyped[0] : null;
+      const updatedAdmin = await Admin.findByIdAndUpdate(adminId, { isActive: false });
 
       if (!updatedAdmin) {
         return res.status(404).json({
@@ -859,10 +740,7 @@ router.put('/admins/:id/deactivate',
       }
 
       // Log activity
-      await supabase
-        .from('admins')
-        .update({ activityLog: [] })
-        .eq('id', req.user.id);
+      await Admin.findByIdAndUpdate(req.user.id, { activityLog: [] });
 
       res.json({
         status: 'success',

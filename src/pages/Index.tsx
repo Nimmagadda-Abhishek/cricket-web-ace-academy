@@ -13,35 +13,30 @@ import '@/styles/animations.css';
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
-      <Navbar />
-      <HeroSection />
-      
-      <AchievementsSection />
-      
-      <AboutSection />
-      <ProgramsSection />
+    <div className="parallax-container">
+      {/* Parallax Background Elements */}
+      <div className="parallax-background">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-cricket-orange/5 to-cricket-purple/5 rounded-full parallax-bg-element"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-cricket-green/5 to-cricket-orange/5 rounded-full parallax-bg-element-2"></div>
+        <div className="absolute top-1/3 left-1/4 w-16 h-16 bg-gradient-to-br from-cricket-purple/5 to-cricket-green/5 rounded-full parallax-bg-element-3"></div>
+        <div className="absolute top-2/3 right-1/3 w-20 h-20 bg-gradient-to-br from-cricket-orange/3 to-cricket-purple/3 rounded-full parallax-bg-element"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-28 h-28 bg-gradient-to-br from-cricket-green/4 to-cricket-orange/4 rounded-full parallax-bg-element-2"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-12 h-12 bg-gradient-to-br from-cricket-purple/4 to-cricket-green/4 rounded-full parallax-bg-element-3"></div>
+      </div>
 
-      <FacilitiesSection />
-      <TestimonialsSection />
-      <ContactSection />
-      <Footer />
-      
-      {/* WhatsApp Contact Button */}
-      <div className="fixed bottom-4 right-4 z-40">
-        <a
-          href="https://wa.me/919876543210"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
-          title="Contact us on WhatsApp"
-        >
-          <img 
-            src="/icons/whatsapp-icon.svg" 
-            alt="WhatsApp" 
-            className="w-full h-full"
-          />
-        </a>
+      <div className="parallax-content">
+        <Navbar />
+        <HeroSection />
+        
+        <AchievementsSection />
+        
+        <AboutSection />
+        <ProgramsSection />
+
+        <FacilitiesSection />
+        <TestimonialsSection />
+        <ContactSection />
+        <Footer />
       </div>
     </div>
   );

@@ -1,62 +1,46 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
   const navigate = useNavigate();
-  
-  // Slideshow images - cricket and coaching related
   const slides = [
-    {
-      url: '/images/hero/cricket-stadium.jpg',
-      alt: 'Cricket stadium with players'
-    },
-    {
-      url: '/images/hero/cricket-coaching.jpg',
-      alt: 'Cricket coaching session'
-    },
-    {
-      url: '/images/hero/cricket-batting.jpg',
-      alt: 'Cricket player batting'
-    }
+    { url: '/images/hero/cricket-stadium.jpg', alt: 'Cricket stadium with players' },
+    { url: '/images/hero/cricket-coaching.jpg', alt: 'Cricket coaching session' },
+    { url: '/images/hero/cricket-batting.jpg', alt: 'Cricket player batting' }
   ];
-  
-
-
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  // Auto-advance slideshow
+  
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000); // Change slide every 5 seconds
-
+    const timer = setInterval(() => setCurrentSlide((prev) => (prev + 1) % slides.length), 5000);
     return () => clearInterval(timer);
   }, [slides.length]);
-
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
-
+  
+  const goToSlide = (index: number) => setCurrentSlide(index);
+  
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden ai-fade-in parallax-section" style={{background: 'var(--ai-bg)'}}>
+      {/* Enhanced Parallax Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-cricket-orange/15 to-cricket-purple/15 rounded-full parallax-bg-element"></div>
+        <div className="absolute bottom-20 right-20 w-24 h-24 bg-gradient-to-br from-cricket-green/15 to-cricket-orange/15 rounded-full parallax-bg-element-2"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-br from-cricket-purple/15 to-cricket-green/15 rounded-full parallax-bg-element-3"></div>
+        <div className="absolute top-1/3 right-1/4 w-20 h-20 bg-gradient-to-br from-cricket-orange/10 to-cricket-purple/10 rounded-full parallax-bg-element"></div>
+        <div className="absolute top-3/4 left-1/3 w-28 h-28 bg-gradient-to-br from-cricket-green/12 to-cricket-orange/12 rounded-full parallax-bg-element-2"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-12 h-12 bg-gradient-to-br from-cricket-purple/12 to-cricket-green/12 rounded-full parallax-bg-element-3"></div>
+      </div>
+
       {/* Background Slideshow */}
       <div className="absolute inset-0 slideshow-container">
         {slides.map((slide, index) => (
           <div
             key={index}
-            className={`slide bg-cover bg-center ${
-              index === currentSlide ? 'active' : ''
-            }`}
-            style={{
-              backgroundImage: `url('${slide.url}')`
-            }}
+            className={`slide bg-cover bg-center ${index === currentSlide ? 'active' : ''}`}
+            style={{ backgroundImage: `url('${slide.url}')` }}
           />
         ))}
       </div>
       
-      {/* Slideshow Indicators */}
       <div className="slideshow-indicators">
         {slides.map((_, index) => (
           <button
@@ -68,85 +52,52 @@ const HeroSection = () => {
         ))}
       </div>
       
-      <div className="absolute inset-0 gradient-hero opacity-90"></div>
-      <div className="absolute inset-0 bg-black/30"></div>
+      <div className="absolute inset-0" style={{background: 'linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(245,245,247,0.80) 100%)'}}></div>
       
-      {/* Floating Elements */}
-      <div className="absolute top-20 left-10 animate-float">
-        <div className="w-20 h-20 bg-cricket-orange/20 rounded-full animate-pulse-slow"></div>
-      </div>
-      <div className="absolute bottom-32 right-16 animate-float" style={{ animationDelay: '2s' }}>
-        <div className="w-16 h-16 bg-cricket-gold/20 rounded-full animate-pulse-slow"></div>
-      </div>
-      <div className="absolute top-1/3 right-20 animate-rotate-slow">
-        <div className="text-6xl opacity-20">🏏</div>
-      </div>
-      
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="animate-fadeInUp">
-          <div className="mb-6 animate-scaleIn">
-            <div className="inline-block p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6">
-              <img 
-                src="/images/logo/logo.png" 
-                alt="Kalyan Cricket Academy Logo" 
-                className="h-24 w-auto animate-float"
-              />
+      <div className="relative z-10 text-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="ai-fade-in">
+          <div className="mb-6 ai-scale-in">
+            <div className="inline-block p-4 rounded-full bg-white/60 backdrop-blur-md border border-white/30 mb-6 hover:bg-white/80 transition-all duration-300 hover:scale-110">
+              <img src="/images/logo/logo.png" alt="Kalyan Cricket Academy Logo" className="h-24 w-auto" />
             </div>
           </div>
           
-          <h1 className="text-5xl md:text-8xl font-bold font-poppins text-white mb-6 text-shadow">
-            Kalyan Cricket
-            <span className="block gradient-text">Academy</span>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in-up" style={{fontFamily: 'var(--ai-font)'}}>
+            <span className="gradient-text-hero" style={{display: 'inline-block'}}>Kalyan</span>
+            <span className="block gradient-text-hero">Cricket Academy</span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
-            Structured training for long-term growth with hands-on coaching, match simulations & real-game exposure. 
-            Focus on skill-building, teamwork & performance excellence.
+          <p className="text-secondary text-xl md:text-2xl mb-8 max-w-3xl mx-auto ai-slide-up leading-relaxed">
+            Structured training for long-term growth with hands-on coaching, match simulations & real-game exposure. Focus on skill-building, teamwork & performance excellence.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
-            <Button 
-              size="lg" 
+          <div className="flex justify-center mb-8 ai-fade-in">
+            <button 
               type="button"
-              onClick={() => navigate('/contact')}
-              className="bg-cricket-orange hover:bg-cricket-orange/90 text-white px-10 py-6 text-lg font-semibold rounded-full hover-glow ripple-effect transform transition-all duration-300 hover:scale-105"
-            >
-              🚀 Book A Demo
-            </Button>
-            <Button 
-              size="lg" 
-              type="button"
-              variant="outline" 
-              onClick={() => {
-                console.log("View Programs clicked");
-                document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="border-2 border-white text-white hover:bg-white hover:text-cricket-green px-10 py-6 text-lg font-semibold rounded-full glass-effect transform transition-all duration-300 hover:scale-105"
+              onClick={() => document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-white/80 backdrop-blur-md border border-gray-200 text-primary-headline px-8 py-4 rounded-2xl font-semibold hover:bg-white hover:shadow-lg transition-all duration-300 transform hover:scale-105 glass-button hover-lift"
             >
               📋 View Programs
-            </Button>
+            </button>
           </div>
-
-          {/* Stats Counter */}
-          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mt-12">
-            <div className="text-center animate-scaleIn" style={{ animationDelay: '0.2s' }}>
-              <div className="text-3xl md:text-4xl font-bold text-cricket-gold">500+</div>
-              <div className="text-white/80">Students</div>
+          
+          {/* Floating Stats */}
+          <div className="flex justify-center space-x-8 mt-12">
+            <div className="text-center animate-fade-in-scale" style={{animationDelay: '0.2s'}}>
+              <div className="text-3xl font-bold text-cricket-orange mb-2">500+</div>
+              <div className="text-sm text-tertiary">Active Students</div>
             </div>
-            <div className="text-center animate-scaleIn" style={{ animationDelay: '0.4s' }}>
-              <div className="text-3xl md:text-4xl font-bold text-cricket-gold">15+</div>
-              <div className="text-white/80">Years</div>
+            <div className="text-center animate-fade-in-scale" style={{animationDelay: '0.4s'}}>
+              <div className="text-3xl font-bold text-cricket-green mb-2">15+</div>
+              <div className="text-sm text-tertiary">Expert Coaches</div>
             </div>
-            <div className="text-center animate-scaleIn" style={{ animationDelay: '0.6s' }}>
-              <div className="text-3xl md:text-4xl font-bold text-cricket-gold">98%</div>
-              <div className="text-white/80">Success</div>
+            <div className="text-center animate-fade-in-scale" style={{animationDelay: '0.6s'}}>
+              <div className="text-3xl font-bold text-cricket-purple mb-2">10+</div>
+              <div className="text-sm text-tertiary">Years Experience</div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Animated Scroll Indicator */}
-      
     </section>
   );
 };

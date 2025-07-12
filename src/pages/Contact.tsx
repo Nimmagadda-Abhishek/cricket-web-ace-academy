@@ -98,7 +98,7 @@ const Contact = () => {
             <div>
               <h1 className="text-5xl md:text-7xl font-bold font-poppins text-white mb-6">
                 Get In
-                <span className="block text-white">Touch</span>
+                <span className="block gradient-text-contact">Touch</span>
               </h1>
               <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
                 Ready to start your cricket journey? Contact us today for personalized training programs

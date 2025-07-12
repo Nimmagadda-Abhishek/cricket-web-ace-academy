@@ -177,7 +177,7 @@ const Gallery = () => {
               <div className="animate-fadeInUp">
                 <h1 className="text-5xl md:text-7xl font-bold font-poppins text-white mb-6">
                   Our
-                  <span className="block text-white">Gallery</span>
+                  <span className="block gradient-text-gallery">Gallery</span>
                 </h1>
                 <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
                   Capturing moments of excellence, dedication, and triumph

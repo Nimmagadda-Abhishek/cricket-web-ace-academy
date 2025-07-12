@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import Testimonials from './Testimonials';
 import { supabase } from '@/integrations/supabase/client';
+import { Link } from 'react-router-dom';
 
 // Custom CSS for scrollbar hiding
 const scrollbarHideStyles = {
@@ -186,23 +187,25 @@ const TestimonialsSection = () => {
       {useDynamicTestimonials ? (
         <Testimonials />
       ) : (
-        <section id="gallery" className="py-20 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute top-20 left-20 text-8xl animate-rotate-slow">🏏</div>
-            <div className="absolute bottom-20 right-20 text-6xl animate-float">⭐</div>
-            <div className="absolute top-1/2 right-1/4 text-4xl animate-pulse-slow">🏆</div>
+        <section className="py-20 bg-gray-50 relative overflow-hidden parallax-section">
+          {/* Enhanced Parallax Background Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-cricket-orange/12 to-cricket-purple/12 rounded-full parallax-bg-element"></div>
+            <div className="absolute bottom-20 right-20 w-24 h-24 bg-gradient-to-br from-cricket-green/12 to-cricket-orange/12 rounded-full parallax-bg-element-2"></div>
+            <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-gradient-to-br from-cricket-purple/12 to-cricket-green/12 rounded-full parallax-bg-element-3"></div>
+            <div className="absolute top-1/3 left-1/3 w-28 h-28 bg-gradient-to-br from-cricket-orange/8 to-cricket-purple/8 rounded-full parallax-bg-element"></div>
+            <div className="absolute bottom-1/3 left-1/4 w-20 h-20 bg-gradient-to-br from-cricket-green/8 to-cricket-orange/8 rounded-full parallax-bg-element-2"></div>
           </div>
-
+          
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            {/* Enhanced Testimonials Section */}
+            
             <div className="text-center mb-16 animate-fadeInUp">
-              <h2 className="text-5xl font-bold font-poppins heading-gradient mb-6 animate-slideDown">
-                What Our Players Say
+              <h2 className="text-5xl font-bold font-poppins gradient-text-testimonials mb-6 animate-slideDown">
+                What Our Students Say
               </h2>
               <div className="w-24 h-1 bg-cricket-orange mx-auto mb-6 rounded-full animate-shimmer"></div>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-slideUp mb-4">
-                Hear from our successful players and their families about their incredible journey with us
+              <p className="text-xl text-secondary max-w-3xl mx-auto animate-slideUp">
+                Hear from our students and parents about their experience at Kalyan Cricket Academy
               </p>
             </div>
 
@@ -306,7 +309,7 @@ const TestimonialsSection = () => {
                   {/* Enhanced Quote */}
                   <div className="relative mb-6">
                     <div className="text-6xl text-cricket-orange/20 absolute -top-4 -left-2">"</div>
-                    <p className="text-gray-700 italic leading-relaxed text-center relative z-10 animate-fadeInUp max-h-32 overflow-y-auto">
+                    <p className="text-primary-body italic leading-relaxed text-center relative z-10 animate-fadeInUp max-h-32 overflow-y-auto">
                       {testimonial.content}
                     </p>
                     <div className="text-6xl text-cricket-orange/20 absolute -bottom-8 -right-2 rotate-180">"</div>
@@ -332,48 +335,49 @@ const TestimonialsSection = () => {
             Academy Gallery
           </h2>
           <div className="w-24 h-1 bg-cricket-orange mx-auto mb-6 rounded-full animate-shimmer"></div>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-slideUp">
-            Take a look at life at Kalyan Cricket Academy - from training sessions to celebrations
-          </p>
+                        <p className="text-xl text-secondary max-w-3xl mx-auto animate-slideUp">
+                Take a look at life at Kalyan Cricket Academy - from training sessions to celebrations
+              </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {galleryImages.map((image, index) => (
-            <Card 
-              key={index} 
-              className={`card-hover border-0 shadow-xl overflow-hidden cursor-pointer group gradient-border animate-bounceIn stagger-${index + 1}`}
-            >
-              <CardContent className="p-0 relative">
-                <div className="aspect-square bg-cover bg-center relative overflow-hidden image-overlay">
-                  <img 
-                    src={image.image} 
-                    alt={image.title}
-                    className="w-full h-full object-cover image-zoom hover-brightness"
-                  />
-                  
-                  {/* Enhanced Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  {/* Enhanced Content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                    <h4 className="font-semibold text-lg mb-1 animate-slideUp">{image.title}</h4>
-                    <p className="text-sm opacity-90 animate-slideUp" style={{ animationDelay: '0.1s' }}>{image.category}</p>
-                  </div>
-                  
-                  {/* Decorative Corner Element */}
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="w-8 h-8 bg-cricket-orange/80 rounded-full flex items-center justify-center animate-bounceIn">
-                      <span className="text-white text-xs">🔍</span>
+            <Link to="/gallery" key={index}>
+              <Card 
+                className={`card-hover border-0 shadow-xl overflow-hidden cursor-pointer group gradient-border animate-bounceIn stagger-${index + 1}`}
+              >
+                <CardContent className="p-0 relative">
+                  <div className="aspect-square bg-cover bg-center relative overflow-hidden image-overlay">
+                    <img 
+                      src={image.image} 
+                      alt={image.title}
+                      className="w-full h-full object-cover image-zoom hover-brightness"
+                    />
+                    
+                    {/* Enhanced Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    
+                    {/* Enhanced Content - always visible */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4" style={{ color: '#FFF176' }}>
+                      <h4 className="font-semibold text-lg mb-1 animate-slideUp">{image.title}</h4>
+                      <p className="text-sm opacity-90 animate-slideUp" style={{ animationDelay: '0.1s' }}>{image.category}</p>
+                    </div>
+                    
+                    {/* Decorative Corner Element */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="w-8 h-8 bg-cricket-orange/80 rounded-full flex items-center justify-center animate-bounceIn">
+                        <span className="text-white text-xs">🔍</span>
+                      </div>
+                    </div>
+                    
+                    {/* Category Badge */}
+                    <div className="absolute top-2 left-2 bg-cricket-green/90 text-white px-2 py-1 rounded-full text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-slideDown">
+                      {image.category}
                     </div>
                   </div>
-                  
-                  {/* Category Badge */}
-                  <div className="absolute top-2 left-2 bg-cricket-green/90 text-white px-2 py-1 rounded-full text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-slideDown">
-                    {image.category}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
 

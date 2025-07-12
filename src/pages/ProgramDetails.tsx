@@ -190,7 +190,7 @@ const ProgramDetails: React.FC = () => {
               <div className="mb-8">
                 <div className="flex items-center mb-2">
                   <span className="text-3xl mr-3">{program.icon}</span>
-                  <h1 className="text-4xl font-bold font-poppins heading-gradient">{program.title}</h1>
+                  <h1 className="text-4xl font-bold font-poppins gradient-text-programs">{program.title}</h1>
                 </div>
                 <p className="text-xl text-gray-600 mb-4">{program.description}</p>
                 

@@ -92,7 +92,7 @@ const Facilities = () => {
     <section id="facilities" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-cricket-green mb-4">Our Facilities</h2>
+          <h2 className="text-4xl font-bold gradient-text-facilities mb-4">Our Facilities</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Explore our world-class cricket facilities designed to provide the best training environment for players of all levels.
           </p>

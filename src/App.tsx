@@ -11,6 +11,8 @@ import Contact from "./pages/Contact";
 import Facilities from "./pages/Facilities";
 import Gallery from "./pages/Gallery";
 import Checkout from "./pages/Checkout";
+import WhatsAppButton from "./components/WhatsAppButton";
+import './styles/apple-intelligence.css';
 
 const queryClient = new QueryClient();
 
@@ -38,12 +40,15 @@ const App = () => (
           {/* Checkout Route */}
           <Route path="/checkout/:id" element={<Checkout />} />
           
+
+          
           {/* Admin Route */}
           <Route path="/admin" element={<AdminPanel />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <WhatsAppButton />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
