@@ -91,16 +91,31 @@ const corsOptions = {
       'http://localhost:8080',
       'http://127.0.0.1:8080',
       'https://cricket-academy.com', // Add your production domain
+      'https://admin.cricket-academy.com', // Admin subdomain
+      'https://admin.kalyancricketacademy.com', // Alternative admin subdomain
     ];
     
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
+    // Check if origin is in allowed list
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      console.log(`CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+      // Check for subdomain patterns
+      const domainPatterns = [
+        /^https:\/\/admin\.(cricket-academy\.com|kalyancricketacademy\.com)$/,
+        /^https:\/\/admin\.(localhost|127\.0\.0\.1):\d+$/,
+      ];
+      
+      const isAllowedSubdomain = domainPatterns.some(pattern => pattern.test(origin));
+      
+      if (isAllowedSubdomain) {
+        callback(null, true);
+      } else {
+        console.log(`CORS blocked origin: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
     }
   },
   credentials: true,
