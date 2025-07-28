@@ -14,6 +14,7 @@ import coachRoutes from './routes/coaches';
 import contactRoutes from './routes/contacts';
 import adminRoutes from './routes/adminRoutes';
 import achievementsRoutes from './routes/achievements';
+import checkDbRoutes from './routes/checkDb';
 
 // Import middleware
 import { enforceHTTPS } from './middleware/auth';
@@ -88,6 +89,7 @@ const corsOptions = {
       process.env.FRONTEND_URL || 'http://localhost:3000',
       'http://localhost:3000',
       'http://localhost:3001',
+      'http://localhost:3002', // Added for admin-app
       'http://localhost:8080',
       'http://127.0.0.1:8080',
       'https://cricket-academy.com', // Add your production domain
@@ -158,6 +160,7 @@ app.use('/api/coaches', coachRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/achievements', achievementsRoutes);
+app.use('/api/check-db', checkDbRoutes);
 
 // API documentation endpoint
 app.get('/api', (req, res) => {

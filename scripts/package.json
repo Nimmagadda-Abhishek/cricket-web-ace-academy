@@ -1,7 +1,0 @@
-{
-  "name": "cricket-academy-scripts",
-  "version": "1.0.0",
-  "description": "Scripts for Cricket Academy application",
-  "type": "module",
-  "private": true
-}

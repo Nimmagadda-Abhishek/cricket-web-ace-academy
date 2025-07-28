@@ -1,9 +1,7 @@
 // API service for making requests to the backend
-import supabaseService from './supabase';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-const USE_SUPABASE = import.meta.env.VITE_USE_SUPABASE === 'true' || true;
-const IS_DEV = import.meta.env.DEV || process.env.NODE_ENV === 'development';
+const API_URL = (import.meta.env as any).VITE_API_URL || 'http://localhost:5000/api';
+const IS_DEV = (import.meta.env as any).DEV || (import.meta.env as any).NODE_ENV === 'development';
 
 // Generic fetch function with error handling
 async function fetchData(endpoint: string, options: RequestInit = {}) {
@@ -33,11 +31,6 @@ export const programsApi = {
   // Get all public programs
   getPrograms: async () => {
     try {
-      // Use Supabase if enabled
-      if (USE_SUPABASE) {
-        return await supabaseService.programs.getPrograms();
-      }
-      
       // Try to use Hostinger database if not in dev mode
       if (!IS_DEV) {
         try {
@@ -74,11 +67,6 @@ export const programsApi = {
   // Get program details by ID
   getProgramById: async (id: string) => {
     try {
-      // Use Supabase if enabled
-      if (USE_SUPABASE) {
-        return await supabaseService.programs.getProgramById(id);
-      }
-      
       // Try to use Hostinger database if not in dev mode
       if (!IS_DEV) {
         try {
@@ -121,7 +109,7 @@ export const paymentsApi = {
   // Create a new payment intent
   createPaymentIntent: (data: { amount: number; programId: string; studentInfo: any }) => {
     // For development, return mock success
-    if (IS_DEV && !USE_SUPABASE) {
+    if (IS_DEV) {
       return Promise.resolve({
         data: {
           clientSecret: 'pi_mock_client_secret',
@@ -142,12 +130,7 @@ export const paymentsApi = {
   
   // Confirm payment and create enrollment
   confirmPayment: (paymentIntentId: string) => {
-    // Use Supabase to update enrollment status if enabled
-    if (USE_SUPABASE) {
-      return supabaseService.payments.updateEnrollmentStatus(paymentIntentId, 'succeeded');
-    }
-    
-    // For development without Supabase, return mock success
+    // For development, return mock success
     if (IS_DEV) {
       return Promise.resolve({
         data: {
@@ -171,12 +154,7 @@ export const paymentsApi = {
     payment_intent_id: string;
     amount_paid: number;
   }) => {
-    // Use Supabase if enabled
-    if (USE_SUPABASE) {
-      return supabaseService.payments.createEnrollment(data);
-    }
-    
-    // For development without Supabase, return mock success
+    // For development, return mock success
     if (IS_DEV) {
       return Promise.resolve({
         data: {
@@ -201,12 +179,7 @@ export const paymentsApi = {
 export const contactsApi = {
   // Submit contact form
   submitContact: (data: { name: string; email: string; phone: string; message: string }) => {
-    // Use Supabase if enabled
-    if (USE_SUPABASE) {
-      return supabaseService.contacts.submitContact(data);
-    }
-    
-    // For development without Supabase, return mock success
+    // For development, return mock success
     if (IS_DEV) {
       return Promise.resolve({
         data: {

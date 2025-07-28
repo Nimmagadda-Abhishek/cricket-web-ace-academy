@@ -4,17 +4,12 @@
  * and also provides a unified interface for database operations
  */
 
-import supabaseService from '@/services/supabase';
 import hostingerService from '@/services/hostinger';
-
-// Determine which database service to use
-const useSupabase = import.meta.env.VITE_USE_SUPABASE === 'true';
-console.log(`Using database service: ${useSupabase ? 'Supabase' : 'Hostinger'}`);
 
 // Select the appropriate database service with error handling
 let dbService;
 try {
-  dbService = useSupabase ? supabaseService : hostingerService;
+  dbService = hostingerService;
 } catch (error) {
   console.error('Error initializing database service:', error);
   // Provide a fallback service that returns mock data
@@ -60,7 +55,7 @@ interface ApiResponse<T> {
  */
 async function apiRequest<T>(
   endpoint: string,
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' = 'GET',
   data?: any,
   customHeaders?: Record<string, string>
 ): Promise<ApiResponse<T>> {
@@ -214,7 +209,7 @@ export const api = {
         apiRequest<{ testimonial: any }>('/admin/testimonials', 'POST', testimonialData),
       
       update: (id: string, testimonialData: any) => 
-        apiRequest<{ testimonial: any }>(`/admin/testimonials/${id}`, 'PUT', testimonialData),
+        apiRequest<{ testimonial: any }>(`/admin/testimonials/${id}`, 'PATCH', testimonialData),
       
       delete: (id: string) => 
         apiRequest<null>(`/admin/testimonials/${id}`, 'DELETE'),
@@ -232,7 +227,7 @@ export const api = {
         apiRequest<{ facility: any }>('/admin/facilities', 'POST', facilityData),
       
       update: (id: string, facilityData: any) => 
-        apiRequest<{ facility: any }>(`/admin/facilities/${id}`, 'PUT', facilityData),
+        apiRequest<{ facility: any }>(`/admin/facilities/${id}`, 'PATCH', facilityData),
       
       delete: (id: string) => 
         apiRequest<null>(`/admin/facilities/${id}`, 'DELETE'),
@@ -250,7 +245,7 @@ export const api = {
         apiRequest<{ image: any }>('/admin/gallery', 'POST', imageData),
       
       update: (id: string, imageData: any) => 
-        apiRequest<{ image: any }>(`/admin/gallery/${id}`, 'PUT', imageData),
+        apiRequest<{ image: any }>(`/admin/gallery/${id}`, 'PATCH', imageData),
       
       delete: (id: string) => 
         apiRequest<null>(`/admin/gallery/${id}`, 'DELETE'),
@@ -296,7 +291,7 @@ export const api = {
       apiRequest<any>('/health', 'GET'),
   },
   
-  // Direct database operations (using either Supabase or Hostinger)
+  // Direct database operations (using Hostinger)
   db: dbService,
 };
 

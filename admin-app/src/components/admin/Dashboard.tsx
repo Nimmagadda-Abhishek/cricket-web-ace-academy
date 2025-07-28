@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 
 interface DashboardProps {
@@ -38,42 +37,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const fetchDashboardStats = async () => {
     try {
       setLoading(true);
-      
-      // Fetch programs count
-      const { count: programsCount } = await supabase
-        .from('programs')
-        .select('*', { count: 'exact', head: true });
-      
-      // Fetch contacts count
-      const { count: contactsCount } = await supabase
-        .from('contacts')
-        .select('*', { count: 'exact', head: true });
-      
-      // Fetch facilities count
-      const { count: facilitiesCount } = await supabase
-        .from('facilities')
-        .select('*', { count: 'exact', head: true });
-      
-      // Fetch testimonials count
-      const { count: testimonialsCount } = await supabase
-        .from('testimonials')
-        .select('*', { count: 'exact', head: true });
-      
-      // Fetch gallery images count
-      const { count: galleryCount } = await supabase
-        .from('gallery')
-        .select('*', { count: 'exact', head: true });
-      
-      // Set the stats
+      // TODO: Replace with actual Hostinger API calls
+      // Example mock data:
       setStats({
         students: 487, // Mock data for now
-        programs: programsCount || 0,
+        programs: 12, // Replace with actual count from Hostinger
         coaches: 24, // Mock data for now
         revenue: '₹37,73,440', // Mock data for now
-        facilities: facilitiesCount || 0,
-        testimonials: testimonialsCount || 0,
-        galleryImages: galleryCount || 0,
-        contacts: contactsCount || 0
+        facilities: 8, // Replace with actual count from Hostinger
+        testimonials: 15, // Replace with actual count from Hostinger
+        galleryImages: 30, // Replace with actual count from Hostinger
+        contacts: 50 // Replace with actual count from Hostinger
       });
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);

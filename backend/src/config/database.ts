@@ -1,91 +1,78 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import * as mysql from 'mysql2/promise';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const connectDB = async (): Promise<void> => {
+// Validate required environment variables
+const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'] as const;
+type EnvVar = typeof requiredEnvVars[number];
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    throw new Error(`Missing required environment variable: ${envVar}`);
+  }
+}
+
+// Optional SSL configuration depending on environment variable
+const sslConfig = process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined;
+
+// Create MySQL connection pool for Hostinger database
+const pool = mysql.createPool({
+  host: process.env.DB_HOST!,
+  user: process.env.DB_USER!,
+  password: process.env.DB_PASSWORD!,
+  database: process.env.DB_NAME!,
+  port: Number(process.env.DB_PORT) || 3306,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  ...(sslConfig ? { ssl: sslConfig } : {}),
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
+  connectTimeout: 10000, // 10 seconds
+  timezone: '+00:00',
+});
+
+// Database health check with detailed error reporting
+export const checkDatabaseHealth = async (): Promise<{ healthy: boolean; message: string }> => {
   try {
-    const mongoURI = process.env.MONGODB_URI;
-    
-    if (!mongoURI) {
-      throw new Error('MONGODB_URI is not defined in environment variables');
-    }
-
-    const conn = await mongoose.connect(mongoURI, {
-      // Remove deprecated options, these are now defaults in Mongoose 6+
-    });
-
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-    console.log(`📊 Database: ${conn.connection.name}`);
-    
-    // Handle connection events
-    mongoose.connection.on('error', (err) => {
-      console.error('❌ MongoDB connection error:', err);
-    });
-
-    mongoose.connection.on('disconnected', () => {
-      console.log('📴 MongoDB disconnected');
-    });
-
-    mongoose.connection.on('reconnected', () => {
-      console.log('🔄 MongoDB reconnected');
-    });
-
-    // Graceful exit
-    process.on('SIGINT', async () => {
-      try {
-        await mongoose.connection.close();
-        console.log('🔐 MongoDB connection closed through app termination');
-        process.exit(0);
-      } catch (error) {
-        console.error('❌ Error closing MongoDB connection:', error);
-        process.exit(1);
-      }
-    });
-
+    const conn = await pool.getConnection();
+    await conn.ping();
+    conn.release();
+    return { healthy: true, message: 'Database connection successful' };
   } catch (error) {
-    console.error('❌ Database connection failed:', error);
-    
-    // Log more details in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Full error details:', error);
-    }
-    
-    process.exit(1);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Database health check failed:', errorMessage);
+    return { 
+      healthy: false, 
+      message: `Database connection failed: ${errorMessage}`
+    };
   }
 };
 
-// Database health check
-export const checkDatabaseHealth = async (): Promise<boolean> => {
+// Get database statistics with error handling
+export const getDatabaseStats = async (): Promise<{ success: boolean; data?: any; error?: string }> => {
+  let connection;
   try {
-    const state = mongoose.connection.readyState;
-    return state === 1; // 1 = connected
-  } catch (error) {
-    console.error('Database health check failed:', error);
-    return false;
-  }
-};
-
-// Get database statistics
-export const getDatabaseStats = async () => {
-  try {
-    const db = mongoose.connection.db;
-    if (!db) {
-      throw new Error('Database connection not established');
-    }
-    
-    const stats = await db.stats();
+    connection = await pool.getConnection();
+    const [rows] = await connection.query('SHOW TABLE STATUS');
     return {
-      collections: stats.collections,
-      dataSize: stats.dataSize,
-      storageSize: stats.storageSize,
-      indexes: stats.indexes,
-      indexSize: stats.indexSize
+      success: true,
+      data: rows
     };
   } catch (error) {
-    console.error('Error getting database stats:', error);
-    return null;
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error getting database stats:', errorMessage);
+    return {
+      success: false,
+      error: errorMessage
+    };
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
-export default connectDB;
+// Removed unsupported pool.on('error') event listener
+
+export default pool;
