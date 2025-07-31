@@ -16,7 +16,6 @@ const Programs = () => {
       title: 'Group Training',
       category: 'group',
       description: 'Ideal for players looking to build strong fundamentals. Develops skills, teamwork, and match awareness through structured group sessions.',
-      ageGroup: 'All ages',
       level: 'Beginner to Intermediate',
       icon: '🏆',
       color: 'from-blue-400 to-blue-600',
@@ -31,10 +30,6 @@ const Programs = () => {
         days: ['Monday', 'Wednesday', 'Friday'],
         time: '4:00 PM - 6:00 PM',
         venue: 'Main Practice Ground'
-      },
-      coach: {
-        name: 'Coach Vikram',
-        experience: '10 years'
       }
     },
     {
@@ -42,7 +37,6 @@ const Programs = () => {
       title: 'Personalized Training',
       category: 'individual',
       description: 'Designed for players who want individualized guidance. Enhances technique, confidence & match performance through one-on-one attention.',
-      ageGroup: '12+ years',
       level: 'Intermediate',
       icon: '🎯',
       color: 'from-orange-400 to-orange-600',
@@ -57,10 +51,6 @@ const Programs = () => {
         days: ['Tuesday', 'Thursday', 'Saturday'],
         time: '5:00 PM - 7:00 PM',
         venue: 'Individual Training Nets'
-      },
-      coach: {
-        name: 'Coach Priya',
-        experience: '12 years'
       }
     },
     {
@@ -68,7 +58,6 @@ const Programs = () => {
       title: 'One-on-One Elite Coaching',
       category: 'elite',
       description: 'Tailored coaching to refine techniques & game awareness. Master coach guidance for advanced skill development and professional preparation.',
-      ageGroup: '14+ years',
       level: 'Advanced',
       icon: '🥇',
       color: 'from-purple-400 to-purple-600',
@@ -94,7 +83,6 @@ const Programs = () => {
       title: 'Corporate Cricket Program',
       category: 'corporate',
       description: 'Designed for corporate teams to improve cricket skills & team dynamics. Blends fitness, strategy & leadership in a fun, engaging format.',
-      ageGroup: '22+ years',
       level: 'All Levels',
       icon: '🏢',
       color: 'from-green-400 to-green-600',
@@ -225,9 +213,6 @@ const Programs = () => {
                             <Badge variant="secondary" className="bg-white/80 text-gray-700 border-white/30">
                               {program.level}
                             </Badge>
-                            <Badge variant="secondary" className="bg-white/80 text-gray-700 border-white/30">
-                              {program.ageGroup}
-                            </Badge>
                           </div>
                         </div>
                       </div>
@@ -254,16 +239,7 @@ const Programs = () => {
                           </div>
                         </div>
                       </div>
-                      {/* Coach Info */}
-                      <div className="bg-white/60 rounded-lg p-4">
-                        <h4 className="font-semibold text-gray-700 mb-3 flex items-center">
-                          <span className="mr-2">👨‍🏫</span> Coach
-                        </h4>
-                        <div className="text-sm text-gray-700">
-                          <div className="font-medium">{program.coach.name}</div>
-                          <div>{program.coach.experience} experience</div>
-                        </div>
-                      </div>
+
                       {/* Features List */}
                       <div>
                         <h4 className="font-semibold text-gray-700 mb-3 flex items-center">

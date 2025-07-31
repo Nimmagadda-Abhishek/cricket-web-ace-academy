@@ -128,14 +128,14 @@ const AboutSection = () => {
               <div className="space-y-6">
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                   <img
-                    src="https://kalyancricketacademy.in/wp-content/uploads/2025/03/Untitled-design-28-1024x576.png"
+                    src="/images/about/01.jpeg"
                     alt="Cricket Training"
                     className="w-full h-48 object-cover"
                   />
                 </div>
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                   <img
-                    src="https://kalyancricketacademy.in/wp-content/uploads/2025/03/cricket-1-1024x682-1.webp"
+                    src="/images/about/02.jpeg"
                     alt="Cricket Match"
                     className="w-full h-48 object-cover"
                   />
@@ -144,14 +144,14 @@ const AboutSection = () => {
               <div className="space-y-6">
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                   <img
-                    src="https://kalyancricketacademy.in/wp-content/uploads/2025/03/Kalyan-Cricket-Academy-%E2%80%83-1024x576.jpg"
+                    src="/images/about/03.jpg"
                     alt="Cricket Coaching"
                     className="w-full h-48 object-cover"
                   />
                 </div>
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                   <img
-                    src="https://kalyancricketacademy.in/wp-content/uploads/2025/03/Untitled-design-28-1024x576.png"
+                    src="/images/about/04.webp"
                     alt="Cricket Practice"
                     className="w-full h-48 object-cover"
                   />

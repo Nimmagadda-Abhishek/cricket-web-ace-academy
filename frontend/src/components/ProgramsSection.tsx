@@ -14,84 +14,54 @@ const ProgramsSection = () => {
       title: 'Group Training',
       description: 'Perfect for beginners and team building. Develop fundamental skills in a supportive group environment.',
       level: 'Beginner to Intermediate',
-      ageGroup: 'All Ages',
       icon: '👥',
       color: 'bg-gradient-to-br from-blue-500 to-blue-600',
-      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/Kalyan-Cricket-Academy-%E2%80%83-1024x576.jpg',
-      coach: 'Coach Vikram',
-      experience: '10+ Years',
-      schedule: 'Mon, Wed, Fri',
-      time: '4:00 PM - 6:00 PM',
+      image: '/images/programs/01.jpg',
       highlights: ['Team Building', 'Basic Skills', 'Match Practice', 'Fitness Training']
     },
     {
       title: 'Personal Training',
       description: 'One-on-one coaching for rapid skill improvement. Customized training plans for individual goals.',
       level: 'Intermediate',
-      ageGroup: '12+ Years',
       icon: '🎯',
       color: 'bg-gradient-to-br from-orange-500 to-red-500',
-      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/cricket-1-1024x682-1.webp',
-      coach: 'Coach Priya',
-      experience: '12+ Years',
-      schedule: 'Tue, Thu, Sat',
-      time: '5:00 PM - 7:00 PM',
+      image: '/images/programs/02.webp',
       highlights: ['Individual Focus', 'Video Analysis', 'Technique Refinement', 'Performance Tracking']
     },
     {
       title: 'Elite Coaching',
       description: 'Advanced training for serious players. Professional-level coaching for competitive cricket.',
       level: 'Advanced',
-      ageGroup: '14+ Years',
       icon: '🏆',
       color: 'bg-gradient-to-br from-purple-500 to-indigo-600',
-      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/Untitled-design-28-1024x576.png',
-      coach: 'Coach Rajesh',
-      experience: '15+ Years',
-      schedule: 'Mon-Fri',
-      time: '6:00 AM - 9:00 AM',
+      image: '/images/programs/03.webp',
       highlights: ['Elite Training', 'Tournament Prep', 'Mental Coaching', 'Career Guidance']
     },
     {
       title: 'Corporate Program',
       description: 'Team building through cricket. Perfect for corporate groups and office teams.',
       level: 'All Levels',
-      ageGroup: '22+ Years',
       icon: '🏢',
       color: 'bg-gradient-to-br from-green-500 to-emerald-600',
       image: '/images/corporate-cricket-program.jpg',
-      coach: 'Coach Arjun',
-      experience: '8+ Years',
-      schedule: 'Weekends',
-      time: '9:00 AM - 12:00 PM',
       highlights: ['Team Building', 'Corporate Events', 'Fitness Focus', 'Leadership Skills']
     },
     {
       title: 'Youth Development',
-      description: 'Specialized training for young players aged 6-12. Focus on fundamentals and fun.',
+      description: 'Specialized training for young players. Focus on fundamentals and fun.',
       level: 'Beginner',
-      ageGroup: '6-12 Years',
       icon: '🌟',
       color: 'bg-gradient-to-br from-yellow-400 to-orange-500',
       image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/Kalyan-Cricket-Academy-%E2%80%83-1024x576.jpg',
-      coach: 'Coach Meera',
-      experience: '8+ Years',
-      schedule: 'Sat, Sun',
-      time: '10:00 AM - 12:00 PM',
       highlights: ['Fun Learning', 'Basic Skills', 'Team Spirit', 'Confidence Building']
     },
     {
       title: 'Advanced Batting',
       description: 'Specialized batting techniques and strategies for advanced players.',
       level: 'Advanced',
-      ageGroup: '16+ Years',
       icon: '🏏',
       color: 'bg-gradient-to-br from-red-500 to-pink-600',
       image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/cricket-1-1024x682-1.webp',
-      coach: 'Coach Rahul',
-      experience: '14+ Years',
-      schedule: 'Tue, Thu',
-      time: '7:00 PM - 9:00 PM',
       highlights: ['Batting Mastery', 'Shot Selection', 'Match Strategy', 'Mental Toughness']
     }
   ];
@@ -134,7 +104,7 @@ const ProgramsSection = () => {
             Training Programs
           </h2>
           <p className="text-xl text-secondary max-w-3xl mx-auto">
-            Choose from our comprehensive range of cricket programs designed for all ages and skill levels
+            Choose from our comprehensive range of cricket programs designed for all skill levels
           </p>
         </div>
 
@@ -204,21 +174,7 @@ const ProgramsSection = () => {
                       {program.description}
                     </p>
                     
-                    {/* Program Details */}
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-sm">
-                        <span className="text-cricket-orange font-semibold mr-2">Age:</span>
-                        <span className="text-primary-body">{program.ageGroup}</span>
-                      </div>
-                      <div className="flex items-center text-sm">
-                        <span className="text-cricket-orange font-semibold mr-2">Coach:</span>
-                        <span className="text-primary-body">{program.coach} ({program.experience})</span>
-                      </div>
-                      <div className="flex items-center text-sm">
-                        <span className="text-cricket-orange font-semibold mr-2">Schedule:</span>
-                        <span className="text-primary-body">{program.schedule} • {program.time}</span>
-                      </div>
-                    </div>
+
                     
                     {/* Highlights */}
                     <div className="flex flex-wrap gap-2 mb-6">

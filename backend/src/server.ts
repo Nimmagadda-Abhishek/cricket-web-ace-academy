@@ -161,6 +161,7 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/achievements', achievementsRoutes);
 app.use('/api/check-db', checkDbRoutes);
+app.use('/api/check-db/', checkDbRoutes);
 
 // API documentation endpoint
 app.get('/api', (req, res) => {

@@ -13,7 +13,7 @@ const Facilities = () => {
     {
       title: 'High-Performance Practice Nets',
       description: 'State-of-the-art practice nets with multiple surface types to simulate real match conditions and improve adaptability.',
-      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/Kalyan-Cricket-Academy-%E2%80%83-1024x576.jpg',
+      image: '/images/facilites/01.webp',
       icon: '🏏',
       color: 'from-blue-500 to-cyan-600',
       features: [
@@ -34,7 +34,7 @@ const Facilities = () => {
     {
       title: 'Professional Turf Ground',
       description: 'Full-size cricket ground with premium turf wicket for match practice and competitive games.',
-      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/cricket-1-1024x682-1.webp',
+      image: '/images/facilites/02.jpg',
       icon: '🏟️',
       color: 'from-green-500 to-emerald-600',
       features: [
@@ -76,7 +76,7 @@ const Facilities = () => {
     {
       title: 'Indoor Training Hall',
       description: 'Climate-controlled indoor facility for year-round training regardless of weather conditions.',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      image: '/images/facilites/03.webp',
       icon: '🏢',
       color: 'from-purple-500 to-indigo-600',
       features: [

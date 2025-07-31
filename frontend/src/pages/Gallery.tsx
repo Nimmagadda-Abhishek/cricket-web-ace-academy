@@ -41,14 +41,14 @@ const Gallery = () => {
   const galleryImages = [
     {
       id: 1,
-      url: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/Kalyan-Cricket-Academy-%E2%80%83-1024x576.jpg',
+      url: '/images/facilites/01.webp',
       title: 'Practice Nets Training',
       category: 'training',
       description: 'Students practicing batting techniques in our professional nets'
     },
     {
       id: 2,
-      url: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/cricket-1-1024x682-1.webp',
+      url: '/images/facilites/02.jpg',
       title: 'Ground Practice Session',
       category: 'training',
       description: 'Team practice session on our main cricket ground'
@@ -62,14 +62,14 @@ const Gallery = () => {
     },
     {
       id: 4,
-      url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      url: '/images/galary/01.jpeg',
       title: 'Team Celebration',
       category: 'events',
       description: 'Victory celebration after winning the championship'
     },
     {
       id: 5,
-      url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      url: '/images/facilites/03.webp',
       title: 'Indoor Training Facility',
       category: 'facilities',
       description: 'State-of-the-art indoor training hall'
@@ -83,7 +83,7 @@ const Gallery = () => {
     },
     {
       id: 7,
-      url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      url: '/images/galary/02.avif',
       title: 'Awards Ceremony',
       category: 'events',
       description: 'Annual awards ceremony recognizing outstanding performers'
@@ -101,13 +101,6 @@ const Gallery = () => {
       title: 'Equipment Room',
       category: 'facilities',
       description: 'Well-organized equipment storage facility'
-    },
-    {
-      id: 10,
-      url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      title: 'Tournament Victory',
-      category: 'matches',
-      description: 'Lifting the trophy after tournament victory'
     },
     {
       id: 11,
