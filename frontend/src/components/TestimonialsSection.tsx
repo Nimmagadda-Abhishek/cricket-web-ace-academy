@@ -216,10 +216,10 @@ const TestimonialsSection = () => {
         <div className="flex items-center justify-center mb-8 space-x-4">
           <button
             onClick={() => setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)}
-            className="w-10 h-10 rounded-full bg-cricket-green/10 hover:bg-cricket-green/20 flex items-center justify-center transition-all duration-300"
+            className="w-10 h-10 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full flex items-center justify-center transition-all duration-300 hover:from-cricket-orange hover:to-cricket-purple hover:scale-105"
             aria-label="Previous testimonial"
           >
-            <span className="text-cricket-green text-xl">←</span>
+            <span className="text-white text-xl">←</span>
           </button>
           
           <div className="flex space-x-2">
@@ -237,10 +237,10 @@ const TestimonialsSection = () => {
           
           <button
             onClick={() => setCurrentIndex((prev) => (prev + 1) % testimonials.length)}
-            className="w-10 h-10 rounded-full bg-cricket-green/10 hover:bg-cricket-green/20 flex items-center justify-center transition-all duration-300"
+            className="w-10 h-10 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full flex items-center justify-center transition-all duration-300 hover:from-cricket-orange hover:to-cricket-purple hover:scale-105"
             aria-label="Next testimonial"
           >
-            <span className="text-cricket-green text-xl">→</span>
+            <span className="text-white text-xl">→</span>
           </button>
         </div>
         
@@ -391,9 +391,9 @@ const TestimonialsSection = () => {
             <div className="relative z-10">
               <h3 className="text-3xl font-bold mb-4 animate-slideDown">Join Our Success Stories!</h3>
               <p className="text-xl mb-6 animate-slideUp">Be part of our growing family of successful cricketers and create your own success story.</p>
-              <button className="bg-white text-cricket-green px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 hover:scale-105 ripple-effect animate-bounceIn">
-                🌟 Start Your Journey
-              </button>
+          <button className="bg-gradient-to-r from-cricket-green to-cricket-orange text-white px-8 py-3 rounded-lg font-semibold hover:from-cricket-orange hover:to-cricket-purple transition-all duration-300 transform hover:scale-105 ripple-effect animate-bounceIn">
+            🌟 Start Your Journey
+          </button>
             </div>
             
             {/* Floating Decorative Elements */}

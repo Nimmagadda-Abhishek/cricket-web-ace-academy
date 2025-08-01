@@ -75,7 +75,7 @@ const HeroSection = () => {
             <button 
               type="button"
               onClick={() => document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-white/80 backdrop-blur-md border border-gray-200 text-primary-headline px-8 py-4 rounded-2xl font-semibold hover:bg-white hover:shadow-lg transition-all duration-300 transform hover:scale-105 glass-button hover-lift"
+              className="w-full bg-gradient-to-r from-cricket-green to-cricket-orange text-white py-3 px-6 rounded-lg font-semibold hover:from-cricket-orange hover:to-cricket-purple transition-all duration-300 transform hover:scale-105"
             >
               📋 View Programs
             </button>
