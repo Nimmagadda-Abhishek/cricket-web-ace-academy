@@ -1,12 +1,10 @@
-
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 const ProgramsSection = () => {
   const navigate = useNavigate();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showAllCards, setShowAllCards] = useState(false);
   
   const programs = [
@@ -66,21 +64,6 @@ const ProgramsSection = () => {
     }
   ];
 
-  const handleScroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 400;
-      const currentScroll = scrollContainerRef.current.scrollLeft;
-      const newScroll = direction === 'left' 
-        ? currentScroll - scrollAmount 
-        : currentScroll + scrollAmount;
-      
-      scrollContainerRef.current.scrollTo({
-        left: newScroll,
-        behavior: 'smooth'
-      });
-    }
-  };
-
   const handleViewMore = () => {
     navigate('/programs');
   };
@@ -110,97 +93,65 @@ const ProgramsSection = () => {
 
         {/* Apple Intelligence Style Cards Container */}
         <div className="relative">
-          {/* Scroll Buttons */}
-          <button
-            onClick={() => handleScroll('left')}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-white transition-all duration-300 hover:scale-110"
-            aria-label="Scroll left"
-          >
-            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
+        {/* Responsive Grid Cards Container */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {programs.map((program, index) => (
+            <div
+              key={index}
+              className="group relative bg-white rounded-xl shadow-md p-6 hover:shadow-lg hover:scale-[1.03] transition-transform duration-300 cursor-pointer"
+              style={{ animationDelay: `${index * 0.1}s` }}
+              onClick={() => navigate('/programs')}
+            >
+              {/* Card Image */}
+              <div className="relative h-48 overflow-hidden rounded-lg">
+                <img
+                  src={program.image}
+                  alt={program.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
 
-          <button
-            onClick={() => handleScroll('right')}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-white transition-all duration-300 hover:scale-110"
-            aria-label="Scroll right"
-          >
-            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+                {/* Icon Badge */}
+                <div className={`absolute top-4 right-4 w-14 h-14 ${program.color} rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg backdrop-blur-md`}>
+                  {program.icon}
+                </div>
 
-          {/* Cards Container */}
-          <div 
-            ref={scrollContainerRef}
-            className="flex gap-6 overflow-x-auto scrollbar-hide pb-6 px-2"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {displayedPrograms.map((program, index) => (
-              <div 
-                key={index} 
-                className="min-w-[380px] max-w-[380px] flex-shrink-0"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                {/* Apple Intelligence Style Card */}
-                <div className="group relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 card-fade-in">
-                  {/* Card Header with Image */}
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={program.image}
-                      alt={program.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                    
-                    {/* Icon Badge */}
-                    <div className={`absolute top-4 right-4 w-14 h-14 ${program.color} rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg backdrop-blur-md`}>
-                      {program.icon}
-                    </div>
-                    
-                    {/* Level Badge */}
-                    <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md rounded-full px-3 py-1 text-xs font-semibold text-gray-800">
-                      {program.level}
-                    </div>
-                  </div>
-                  
-                  {/* Card Content */}
-                  <div className="p-6">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-cricket-orange transition-colors duration-300">
-                      {program.title}
-                    </h3>
-                    <p className="text-secondary mb-4 text-sm leading-relaxed">
-                      {program.description}
-                    </p>
-                    
-
-                    
-                    {/* Highlights */}
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {program.highlights.map((highlight, idx) => (
-                        <span key={idx} className="px-3 py-1 bg-gradient-to-r from-cricket-orange/10 to-cricket-purple/10 text-cricket-orange text-xs font-medium rounded-full border border-cricket-orange/20">
-                          {highlight}
-                        </span>
-                      ))}
-                    </div>
-                    
-                    {/* Action Button */}
-                    <button 
-                      type="button"
-                      onClick={() => navigate('/programs')}
-                      className="w-full bg-gradient-to-r from-cricket-green to-cricket-orange text-white py-3 px-6 rounded-2xl font-semibold hover:from-cricket-orange hover:to-cricket-purple transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                    >
-                      Get Started
-                    </button>
-                  </div>
-                  
-                  {/* Hover Glow Effect */}
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cricket-orange/0 via-cricket-orange/5 to-cricket-purple/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                {/* Level Badge */}
+                <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md rounded-full px-3 py-1 text-xs font-semibold text-gray-800">
+                  {program.level}
                 </div>
               </div>
-            ))}
-          </div>
+
+              {/* Card Content */}
+              <div className="mt-4">
+                <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-cricket-orange transition-colors duration-300 font-sf-pro">
+                  {program.title}
+                </h3>
+                <p className="text-secondary mb-4 text-sm leading-relaxed font-sf-pro">
+                  {program.description}
+                </p>
+
+                {/* Highlights */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {program.highlights.map((highlight, idx) => (
+                    <span key={idx} className="px-3 py-1 bg-gradient-to-r from-cricket-orange/10 to-cricket-purple/10 text-cricket-orange text-xs font-medium rounded-full border border-cricket-orange/20 font-sf-pro">
+                      {highlight}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Ghost Style Button */}
+                <button
+                  type="button"
+                  onClick={() => navigate('/programs')}
+                  className="w-full border border-cricket-orange text-cricket-orange py-2 px-6 rounded-full font-semibold hover:bg-cricket-orange hover:text-white transition-colors duration-300"
+                >
+                  Get Started
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
         </div>
 
         {/* View More Button */}
@@ -225,3 +176,4 @@ const ProgramsSection = () => {
 };
 
 export default ProgramsSection;
+

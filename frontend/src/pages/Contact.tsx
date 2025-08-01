@@ -33,7 +33,7 @@ const Contact = () => {
       value: '+91 9908008424',
       icon: '📞',
       color: 'from-green-500 to-emerald-600',
-      action: 'tel:+919876543210'
+      action: 'tel:+919908008424'
     },
     {
       title: 'Email',
@@ -55,6 +55,28 @@ const Contact = () => {
       icon: '📍',
       color: 'from-red-500 to-pink-600',
       action: 'https://maps.app.goo.gl/UgRgniPEa97x34Lv7'
+    },
+    {
+      title: 'Instagram',
+      value: '@kalyancricketacademy',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm0 1.5A4.25 4.25 0 003.5 7.75v8.5A4.25 4.25 0 007.75 20.5h8.5a4.25 4.25 0 004.25-4.25v-8.5A4.25 4.25 0 0016.25 3.5h-8.5zm4.25 3.25a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 1.5a3 3 0 100 6 3 3 0 000-6zm4.75-.75a1.125 1.125 0 110 2.25 1.125 1.125 0 010-2.25z" />
+        </svg>
+      ),
+      color: 'from-pink-500 to-pink-600',
+      action: 'https://www.instagram.com/kalyancricketacademy'
+    },
+    {
+      title: 'YouTube',
+      value: 'Kalyan Cricket Academy',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M10 15l5.19-3L10 9v6zm11.54-3.23c-.2-1.5-.8-2.83-2.3-3.33-2.03-.67-10.2-.67-10.2-.67s-8.17 0-10.2.67c-1.5.5-2.1 1.83-2.3 3.33-.2 1.67-.2 5.17 0 6.83.2 1.5.8 2.83 2.3 3.33 2.03.67 10.2.67 10.2.67s8.17 0 10.2-.67c1.5-.5 2.1-1.83 2.3-3.33.2-1.67.2-5.17 0-6.83z" />
+        </svg>
+      ),
+      color: 'from-red-600 to-red-700',
+      action: 'https://www.youtube.com/@KALYANCRICKETACADEMY'
     }
   ];
 
@@ -124,7 +146,7 @@ const Contact = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="flex flex-wrap justify-center gap-6">
               {contactInfo.map((contact, index) => (
                 <Card 
                   key={index}
@@ -351,6 +373,8 @@ const Contact = () => {
             </div>
           </div>
         </section>
+
+        
       </div>
       <Footer />
     </div>

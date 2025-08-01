@@ -111,13 +111,12 @@ const AboutSection = () => {
         <div className="absolute bottom-1/3 right-1/4 w-20 h-20 bg-gradient-to-br from-cricket-green/8 to-cricket-orange/8 rounded-full parallax-bg-element-2"></div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-16">
+      <div className="text-center mb-16"> {/* Changed from text-left back to text-center */}
           <h2 className="text-5xl font-bold font-poppins gradient-text-about mb-6">
             About Kalyan Cricket Academy
           </h2>
-          <p className="text-xl text-secondary max-w-3xl mx-auto">
+          <p className="text-xl text-secondary max-w-3xl mx-auto"> {/* Added mx-auto back */}
             KCA is more than just a coaching center; it fosters a community of students, coaches, and parents working together to develop skilled cricketers. 
-      
             including state, national, and international competitions.
           </p>
         </div>
@@ -193,28 +192,52 @@ const AboutSection = () => {
           </div>
         </div>
 
-        <div ref={statsRef} className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2" style={{ animationDelay: `${index * 0.1}s` }}>
-              <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${stat.color} text-white text-2xl mb-4`}>
-                {stat.icon}
+        <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
+          {/* Why Choose Us Section */}
+          <div className="animate-slideInLeft">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-cricket-orange to-cricket-gold rounded-2xl rotate-3 animate-pulse-slow"></div>
+              <div className="relative card-glass rounded-2xl p-8 hover-shadow-lg">
+                <h3 className="text-3xl font-bold font-poppins heading-gradient mb-6 animate-slideDown">
+                  Why Choose Us?
+                </h3>
+                <ul className="space-y-4">
+                  {[
+                    "Professional coaches with international experience",
+                    "State-of-the-art training facilities",
+                    "Flexible training schedules",
+                    "Regular performance assessments",
+                    "Individual skill development plans",
+                    "Tournament participation opportunities"
+                  ].map((item, index) => (
+                    <li key={index} className={`flex items-center animate-slideUp stagger-${index + 1}`}>
+                      <span className="text-cricket-orange mr-3 text-xl animate-heartbeat">✓</span>
+                      <span className="text-gray-700 hover:text-cricket-green transition-colors duration-300">{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              
-              <div className="text-4xl font-bold text-cricket-green mb-2">
-                {isVisible ? (
-                  <span className="inline-block" style={{ minWidth: '3ch' }}>
-                    {counts[index]}{stat.suffix}
-                  </span>
-                ) : (
-                  <span className="inline-block" style={{ minWidth: '3ch' }}>
-                    0{stat.suffix}
-                  </span>
-                )}
-              </div>
-              
-              <div className="text-secondary">{stat.label}</div>
             </div>
-          ))}
+          </div>
+
+          {/* Compact Stats Grid */}
+          <div ref={statsRef} className="grid grid-cols-2 gap-6">
+            {stats.map((stat, index) => (
+              <div key={index} className="bg-white rounded-xl shadow-lg p-4 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${stat.color} text-white text-xl mb-2`}>
+                  {stat.icon}
+                </div>
+                <div className="text-2xl font-bold text-cricket-green mb-1">
+                  {isVisible ? (
+                    <span>{counts[index]}{stat.suffix}</span>
+                  ) : (
+                    <span>0{stat.suffix}</span>
+                  )}
+                </div>
+                <div className="text-secondary text-sm">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
