@@ -202,7 +202,7 @@ const Facilities = () => {
               {facilities.map((facility, index) => (
                 <Card 
                   key={index}
-                  className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 bg-white"
+                  className="group overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 bg-white border border-gray-200"
                 >
                   {/* Facility Image */}
                   <div className="relative h-64 overflow-hidden">

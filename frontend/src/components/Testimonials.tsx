@@ -133,7 +133,7 @@ const Testimonials = () => {
                 {featuredTestimonials.map((testimonial, index) => (
                   <div key={testimonial.id} className="w-full flex-shrink-0 px-4">
                     <div className="max-w-4xl mx-auto">
-                      <Card className="bg-white shadow-lg border-0 overflow-visible">
+                      <Card className="bg-white shadow-lg overflow-visible border border-gray-200">
                         <CardContent className="p-0">
                           <div className="relative p-8 md:p-12">
                             <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg">

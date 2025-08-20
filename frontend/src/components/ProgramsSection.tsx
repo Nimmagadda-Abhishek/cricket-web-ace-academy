@@ -46,23 +46,19 @@ const ProgramsSection = () => {
       highlights: ['Team Building', 'Corporate Events', 'Fitness Focus', 'Leadership Skills']
     },
     {
-      title: 'Youth Development',
-      description: 'Specialized training for young players. Focus on fundamentals and fun.',
-      level: 'Beginner',
-      icon: '🌟',
-      color: 'bg-gradient-to-br from-yellow-400 to-orange-500',
-      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/Kalyan-Cricket-Academy-%E2%80%83-1024x576.jpg',
-      highlights: ['Fun Learning', 'Basic Skills', 'Team Spirit', 'Confidence Building']
+      title: 'NRI Excellence Program',
+      description: 'Intensive short-term program for overseas players with high-intensity drills, match simulations, and adaptation to Indian conditions.',
+      level: 'Intermediate to Advanced',
+      icon: '🌍',
+      color: 'bg-gradient-to-br from-teal-500 to-sky-600',
+      image: 'https://content.jdmagicbox.com/comp/def_content/cricket-coaching-classes/shutterstock-647586433-cricket-coaching-classes-9-qtn7q.jpg',
+      highlights: [
+        'High-intensity drills',
+        'Match sims: turf & matting',
+        'Adapt to Indian conditions',
+        'Specialist coaching & machines'
+      ]
     },
-    {
-      title: 'Advanced Batting',
-      description: 'Specialized batting techniques and strategies for advanced players.',
-      level: 'Advanced',
-      icon: '🏏',
-      color: 'bg-gradient-to-br from-red-500 to-pink-600',
-      image: 'https://kalyancricketacademy.in/wp-content/uploads/2025/03/cricket-1-1024x682-1.webp',
-      highlights: ['Batting Mastery', 'Shot Selection', 'Match Strategy', 'Mental Toughness']
-    }
   ];
 
   const handleViewMore = () => {
@@ -94,12 +90,43 @@ const ProgramsSection = () => {
 
         {/* Apple Intelligence Style Cards Container */}
         <div className="relative">
+          {/* Scroll Buttons */}
+          <button
+            onClick={() => {
+              const container = document.getElementById('programs-scroll');
+              if (container) {
+                container.scrollBy({ left: -400, behavior: 'smooth' });
+              }
+            }}
+            className="w-12 h-12 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all duration-300 hover:from-cricket-orange hover:to-cricket-purple hover:scale-110 absolute left-0 top-1/2 transform -translate-y-1/2 z-20"
+            aria-label="Scroll left"
+          >
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <button
+            onClick={() => {
+              const container = document.getElementById('programs-scroll');
+              if (container) {
+                container.scrollBy({ left: 400, behavior: 'smooth' });
+              }
+            }}
+            className="w-12 h-12 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all duration-300 hover:from-cricket-orange hover:to-cricket-purple hover:scale-110 absolute right-0 top-1/2 transform -translate-y-1/2 z-20"
+            aria-label="Scroll right"
+          >
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
           {/* Cards Container */}
           <div 
             id="programs-scroll"
-            className="flex justify-center gap-6 pb-6 px-2"
+            className="flex gap-6 overflow-x-auto scrollbar-hide pb-6 px-2 smooth-scroll"
           >
-            {displayedPrograms.map((program, index) => (
+            {programs.map((program, index) => (
               <div 
                 key={index} 
                 className="min-w-[380px] max-w-[380px] flex-shrink-0"

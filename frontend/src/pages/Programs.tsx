@@ -102,6 +102,31 @@ const Programs = () => {
         name: 'Coach Arjun',
         experience: '8 years'
       }
+    },
+    {
+      id: '5',
+      title: 'NRI Excellence Program',
+      category: 'nri',
+      description: 'Intensive short-term program for overseas players to rapidly sharpen skills with high-intensity drills, match simulations, and adaptation to Indian conditions.',
+      level: 'Intermediate to Advanced',
+      icon: '🌍',
+      color: 'from-teal-400 to-sky-600',
+      image: 'https://images.unsplash.com/photo-1521417531039-99bfe3a28d4a?auto=format&fit=crop&w=1200&q=80',
+      features: [
+        'High-intensity batting, bowling, and fielding drills',
+        'Match simulations on turf & matting wickets',
+        'Adaptation to Indian pitch and weather conditions',
+        'Bowling machines, throwdowns, and specialist coaching',
+        'Fitness, nutrition, and mental conditioning sessions',
+        'Accommodation & local transport assistance',
+        'Short-term intensive progress',
+        'Cultural & cricketing exposure in India'
+      ],
+      schedule: {
+        days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        time: 'Flexible (Mon–Fri)',
+        venue: 'Academy Facilities'
+      }
     }
   ];
 
@@ -110,7 +135,8 @@ const Programs = () => {
     { id: 'group', name: 'Group Training', icon: '👥' },
     { id: 'individual', name: 'Individual', icon: '🎯' },
     { id: 'elite', name: 'Elite', icon: '🥇' },
-    { id: 'corporate', name: 'Corporate', icon: '🏢' }
+    { id: 'corporate', name: 'Corporate', icon: '🏢' },
+    { id: 'nri', name: 'NRI Excellence', icon: '🌍' }
   ];
 
   const filteredPrograms = selectedCategory === 'all' 
@@ -177,9 +203,9 @@ const Programs = () => {
                 <Card 
                   key={program.id} 
                   className={
-                    `group relative overflow-hidden ai-card ai-rounded ai-shadow border-0 transition-all duration-400 ai-fade-in` +
+                    `group relative overflow-hidden ai-card ai-rounded ai-shadow transition-all duration-400 ai-fade-in` +
                     (index % 2 === 0 ? ' ai-slide-up' : ' ai-scale-in') +
-                    ' hover:scale-[1.02] hover:shadow-2xl'
+                    ' hover:scale-[1.02] hover:shadow-2xl' 
                   }
                   style={{ background: 'var(--ai-surface)', color: 'var(--ai-heading)' }}
                 >

@@ -265,7 +265,7 @@ const TestimonialsSection = () => {
               className="w-full flex-shrink-0 px-4"
             >
               <Card 
-                className="card-hover gradient-card border-0 shadow-xl overflow-hidden relative group h-full"
+                className="card-hover gradient-card shadow-xl overflow-hidden relative group h-full border border-gray-200"
               >
                 {/* Decorative Background Elements */}
                 <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cricket-orange/10 to-cricket-gold/10 rounded-full -translate-y-4 translate-x-4 animate-pulse-slow"></div>
@@ -347,7 +347,7 @@ const TestimonialsSection = () => {
           {galleryImages.map((image, index) => (
             <Link to="/gallery" key={index}>
               <Card 
-                className={`card-hover border-0 shadow-xl overflow-hidden cursor-pointer group gradient-border animate-bounceIn stagger-${index + 1}`}
+                className={`card-hover shadow-xl overflow-hidden cursor-pointer group gradient-border animate-bounceIn stagger-${index + 1} border border-gray-200`}
               >
                 <CardContent className="p-0 relative">
                   <div className="aspect-square bg-cover bg-center relative overflow-hidden image-overlay">

@@ -237,7 +237,7 @@ const Gallery = () => {
                 {filteredImages.map((image, index) => (
                   <Card 
                     key={image.id}
-                    className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer bg-white animate-fadeInUp"
+                    className="group overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer bg-white animate-fadeInUp border border-gray-200"
                     style={{ animationDelay: `${index * 0.1}s` }}
                     onClick={() => openLightbox(image.url)}
                   >

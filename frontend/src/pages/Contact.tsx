@@ -150,7 +150,7 @@ const Contact = () => {
               {contactInfo.map((contact, index) => (
                 <Card 
                   key={index}
-                  className="group card-hover border-0 shadow-xl overflow-hidden bg-white relative cursor-pointer transform transition-all duration-300 hover:scale-105"
+                  className="group card-hover shadow-xl overflow-hidden bg-white relative cursor-pointer transform transition-all duration-300 hover:scale-105 border border-gray-200"
                   onClick={() => {
                     if (contact.action.startsWith('http')) {
                       window.open(contact.action, '_blank');
@@ -188,7 +188,7 @@ const Contact = () => {
               </p>
             </div>
 
-            <Card className="shadow-2xl border-0 overflow-hidden">
+            <Card className="shadow-2xl overflow-hidden border border-gray-200">
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Personal Information */}
