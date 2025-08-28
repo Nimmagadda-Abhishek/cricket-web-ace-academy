@@ -56,10 +56,10 @@ npm run dev
 
 ## 📍 Access URLs
 
-- **Frontend Website**: http://localhost:5173
+- **Frontend Website**: https://kalyancricketacademy.in/
 - **Admin Dashboard**: http://localhost:4173  
-- **Backend API**: http://localhost:5000
-- **API Documentation**: http://localhost:5000/
+- **Backend API**: https://cricket-web-ace-academy.onrender.com/api
+- **API Documentation**: https://cricket-web-ace-academy.onrender.com/
 
 ## 🔑 Default Admin Login
 
@@ -232,13 +232,13 @@ Use tools like Postman or curl to test endpoints:
 
 ```bash
 # Health check
-curl http://localhost:5000/health
+curl https://cricket-web-ace-academy.onrender.com/health
 
 # Get programs
-curl http://localhost:5000/api/programs
+curl https://cricket-web-ace-academy.onrender.com/api/programs
 
 # Admin login
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST https://cricket-web-ace-academy.onrender.com/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"password"}'
 ```

@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://cricket-web-ace-academy.onrender.com/api';
 let authToken = '';
 
 interface APIResponse {
@@ -283,7 +283,7 @@ class APITester {
   // Test server health
   async testHealth() {
     try {
-      const response = await fetch('http://localhost:5000/health');
+      const response = await fetch('https://cricket-web-ace-academy.onrender.com/health');
       const result = await response.json();
       return result.success;
     } catch (error) {

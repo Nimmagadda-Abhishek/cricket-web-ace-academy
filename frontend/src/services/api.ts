@@ -1,7 +1,7 @@
 // API service for making requests to the backend
 
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = 'https://cricket-web-ace-academy.onrender.com/api';
 const IS_DEV = import.meta.env.DEV || process.env.NODE_ENV === 'development';
 
 // Generic fetch function with error handling

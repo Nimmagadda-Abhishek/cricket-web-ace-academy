@@ -7,7 +7,7 @@
 cd backend
 npm run dev
 ```
-Server will run on: http://localhost:5000
+Server will run on: https://cricket-web-ace-academy.onrender.com
 
 ### 2. Access Admin Dashboard
 Open `backend/admin-dashboard.html` in your browser
@@ -23,12 +23,12 @@ Open `backend/admin-dashboard.html` in your browser
 #### Using PowerShell/API:
 ```powershell
 # Get Programs (Public)
-$response = Invoke-WebRequest -Uri "http://localhost:5000/api/programs"
+$response = Invoke-WebRequest -Uri "https://cricket-web-ace-academy.onrender.com/api/programs"
 $data = $response.Content | ConvertFrom-Json
 
 # Get Students (Requires Admin Token)
 $headers = @{ "Authorization" = "Bearer YOUR_TOKEN_HERE" }
-$response = Invoke-WebRequest -Uri "http://localhost:5000/api/students" -Headers $headers
+$response = Invoke-WebRequest -Uri "https://cricket-web-ace-academy.onrender.com/api/students" -Headers $headers
 ```
 
 #### Using Command Line Scripts:
@@ -55,7 +55,7 @@ $studentData = @{
     address = "123 Main St"
 } | ConvertTo-Json
 
-$response = Invoke-WebRequest -Uri "http://localhost:5000/api/students" -Method POST -Body $studentData -Headers @{"Content-Type"="application/json"}
+$response = Invoke-WebRequest -Uri "https://cricket-web-ace-academy.onrender.com/api/students" -Method POST -Body $studentData -Headers @{"Content-Type"="application/json"}
 ```
 
 #### Method 2: Bulk Upload via Admin Dashboard
@@ -162,7 +162,7 @@ npm run api-test upload-students src/scripts/sample-students.json
 
 ### Getting Admin Token:
 ```javascript
-const response = await fetch('http://localhost:5000/api/auth/login', {
+const response = await fetch('https://cricket-web-ace-academy.onrender.com/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username: 'admin', password: 'admin' })

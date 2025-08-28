@@ -33,10 +33,8 @@ try {
 
 export { dbService };
 
-// Base URL for API requests - dynamically determine based on environment
-const API_BASE_URL = import.meta.env.PROD 
-  ? '/api'  // In production, use relative path
-  : 'http://localhost:5000/api'; // In development, use localhost with port 5000
+// Base URL for API requests - use deployed backend URL
+const API_BASE_URL = 'https://cricket-web-ace-academy.onrender.com/api';
 
 console.log('Using API base URL:', API_BASE_URL);
 

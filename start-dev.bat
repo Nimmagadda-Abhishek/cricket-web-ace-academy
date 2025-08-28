@@ -18,8 +18,8 @@ echo.
 echo ✅ All services starting up!
 echo.
 echo 📍 Available URLs:
-echo   • Backend API: http://localhost:5000
-echo   • Frontend: http://localhost:5173  
+echo   • Backend API: https://cricket-web-ace-academy.onrender.com/api
+echo   • Frontend: https://kalyancricketacademy.in/
 echo   • Admin Dashboard: http://localhost:4173
 echo.
 echo 📋 Default Admin Login:
