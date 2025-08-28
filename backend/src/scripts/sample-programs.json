@@ -1,0 +1,57 @@
+[
+  {
+    "title": "Junior Cricket Foundation",
+    "description": "Perfect introduction to cricket for young children. Learn basic techniques including batting, bowling, and fielding through fun games and activities.",
+    "short_description": "Basic cricket skills for beginners ages 6-10",
+    "price": 2500.00,
+    "duration": "8 weeks",
+    "age_group": "6-10 years",
+    "skill_level": "beginner",
+    "max_participants": 20,
+    "is_active": true
+  },
+  {
+    "title": "Advanced Batting Masterclass",
+    "description": "Intensive batting coaching focusing on technique, shot selection, and match strategy. Suitable for players with some experience who want to improve their batting skills.",
+    "short_description": "Advanced batting techniques for experienced players",
+    "price": 4500.00,
+    "duration": "6 weeks",
+    "age_group": "12-18 years",
+    "skill_level": "advanced",
+    "max_participants": 15,
+    "is_active": true
+  },
+  {
+    "title": "Fast Bowling Academy",
+    "description": "Specialized coaching for fast bowlers. Learn proper run-up, action, and various bowling techniques including swing and seam bowling.",
+    "short_description": "Specialized fast bowling training program",
+    "price": 3500.00,
+    "duration": "10 weeks",
+    "age_group": "14-18 years",
+    "skill_level": "intermediate",
+    "max_participants": 12,
+    "is_active": true
+  },
+  {
+    "title": "Wicket Keeping Excellence",
+    "description": "Comprehensive wicket keeping program covering stance, glove work, collecting, and stumping techniques.",
+    "short_description": "Professional wicket keeping training",
+    "price": 3000.00,
+    "duration": "8 weeks",
+    "age_group": "10-16 years",
+    "skill_level": "intermediate",
+    "max_participants": 10,
+    "is_active": true
+  },
+  {
+    "title": "All-Rounder Development",
+    "description": "Complete cricket program for developing all-round skills including batting, bowling, fielding, and match awareness.",
+    "short_description": "Complete cricket skills development program",
+    "price": 5000.00,
+    "duration": "12 weeks",
+    "age_group": "10-18 years",
+    "skill_level": "all",
+    "max_participants": 25,
+    "is_active": true
+  }
+]

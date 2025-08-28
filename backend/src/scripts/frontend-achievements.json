@@ -1,0 +1,34 @@
+﻿[
+  {
+    "title": "State Team Selection",
+    "description": "5 of our students were selected for the state cricket team in 2023, showcasing our academy's excellence in training.",
+    "date_achieved": "2023-06-15",
+    "category": "Team Selection",
+    "image_url": "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "is_featured": true
+  },
+  {
+    "title": "IPL Selection",
+    "description": "Two of our academy graduates were picked in the IPL auction, marking a significant milestone in their professional careers.",
+    "date_achieved": "2022-12-20",
+    "category": "Professional",
+    "image_url": "https://images.unsplash.com/photo-1624880357913-a8539238245b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "is_featured": true
+  },
+  {
+    "title": "Under-18 National Team",
+    "description": "Three students selected for the Under-18 National Cricket Team, representing our academy at the highest youth level.",
+    "date_achieved": "2023-08-10",
+    "category": "Youth",
+    "image_url": "https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "is_featured": true
+  },
+  {
+    "title": "Best Cricket Academy",
+    "description": "Awarded as the Best Cricket Academy in the region for 2023, recognizing our commitment to excellence in cricket training.",
+    "date_achieved": "2023-01-15",
+    "category": "Academy",
+    "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "is_featured": true
+  }
+]

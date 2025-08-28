@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
+import { facilitiesApi } from '@/services/api';
 import Facilities from './Facilities';
 
 const FacilitiesSection = () => {
@@ -9,6 +10,7 @@ const FacilitiesSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [useDynamicFacilities, setUseDynamicFacilities] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
   
   // State for typing animation
   const [descriptionText, setDescriptionText] = useState("");
@@ -18,14 +20,14 @@ const FacilitiesSection = () => {
   useEffect(() => {
     const checkFacilities = async () => {
       try {
-        const response = await fetch('/api/facilities/count');
-        if (!response.ok) {
-          throw new Error('Failed to check facilities count');
-        }
-        const data = await response.json();
-        const count = data.count;
+        const response = await facilitiesApi.getFacilities();
         
-        setUseDynamicFacilities(count !== null && count > 0);
+        if (response.success && response.data && response.data.facilities) {
+          const count = response.data.facilities.length;
+          setUseDynamicFacilities(count > 0);
+        } else {
+          setUseDynamicFacilities(false);
+        }
       } catch (error) {
         console.error('Error checking facilities:', error);
         setUseDynamicFacilities(false);
@@ -157,6 +159,19 @@ const FacilitiesSection = () => {
     return () => clearTimeout(timer);
   }, [isVisible, facilities.length]);
 
+  // Handle scroll navigation
+  const handleScrollLeft = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (currentIndex < facilities.length - 4) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
   return (
     <>
       {useDynamicFacilities ? (
@@ -186,13 +201,9 @@ const FacilitiesSection = () => {
             <div className="relative">
               {/* Scroll Buttons */}
               <button
-                onClick={() => {
-                  const container = document.getElementById('facilities-scroll');
-                  if (container) {
-                    container.scrollBy({ left: -400, behavior: 'smooth' });
-                  }
-                }}
-                className="w-12 h-12 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all duration-300 hover:from-cricket-orange hover:to-cricket-purple hover:scale-110 absolute left-0 top-1/2 transform -translate-y-1/2 z-20"
+                onClick={handleScrollLeft}
+                disabled={currentIndex === 0}
+                className="w-12 h-12 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all duration-300 hover:from-cricket-orange hover:to-cricket-purple hover:scale-110 absolute left-0 top-1/2 transform -translate-y-1/2 z-20 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Scroll left"
               >
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,13 +212,9 @@ const FacilitiesSection = () => {
               </button>
 
               <button
-                onClick={() => {
-                  const container = document.getElementById('facilities-scroll');
-                  if (container) {
-                    container.scrollBy({ left: 400, behavior: 'smooth' });
-                  }
-                }}
-                className="w-12 h-12 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all duration-300 hover:from-cricket-orange hover:to-cricket-purple hover:scale-110 absolute right-0 top-1/2 transform -translate-y-1/2 z-20"
+                onClick={handleScrollRight}
+                disabled={currentIndex >= facilities.length - 4}
+                className="w-12 h-12 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all duration-300 hover:from-cricket-orange hover:to-cricket-purple hover:scale-110 absolute right-0 top-1/2 transform -translate-y-1/2 z-20 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Scroll right"
               >
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,46 +223,62 @@ const FacilitiesSection = () => {
               </button>
 
               {/* Cards Container */}
-              <div 
-                id="facilities-scroll"
-                className="flex gap-6 overflow-x-auto scrollbar-hide pb-6 px-2 smooth-scroll"
-              >
-                {facilities.map((facility, index) => (
+              <div className="overflow-hidden mx-auto" style={{ width: 'calc(4 * (280px + 16px))' }}>
+                <div 
+                  className="flex gap-4 pb-6 px-2 transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${currentIndex * (280 + 16)}px)` }}
+                >
+                  {facilities.map((facility, index) => (
                   <div 
                     key={index} 
-                    className="min-w-[400px] max-w-[400px] flex-shrink-0"
+                    className="min-w-[280px] max-w-[280px] flex-shrink-0"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     {/* Apple Intelligence Style Card */}
-                    <div className="group relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-[500px] flex flex-col card-fade-in">
-                      {/* Card Header */}
-                      <div className="p-8 pb-6 flex-shrink-0">
-                        <div className="text-5xl mb-6">{facility.icon}</div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-cricket-orange transition-colors duration-300">
+                    <div className={`group relative multicolor-border-${(index % 4) + 1} shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-[360px] flex flex-col card-fade-in bg-white/95 backdrop-blur-sm`}>
+                      {/* Card Header with Icon Background */}
+                      <div className="relative p-5 pb-4 flex-shrink-0">
+                        {/* Icon with gradient background */}
+                        <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-cricket-green/20 to-cricket-orange/20 rounded-xl mb-4">
+                          <span className="text-2xl">{facility.icon}</span>
+                        </div>
+                        
+                        <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-cricket-orange transition-colors duration-300 leading-tight">
                           {facility.title}
                         </h3>
-                        <p className="text-secondary leading-relaxed">
-                          {facility.description}
+                        
+                        <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
+                          {facility.description.split('.')[0]}.
                         </p>
                       </div>
                       
-                      {/* Features List */}
-                      <div className="px-8 pb-8 flex-1 flex flex-col justify-end">
-                        <div className="space-y-3">
-                          {facility.features.map((feature, idx) => (
-                            <div key={idx} className="flex items-center space-x-3">
-                              <div className="w-2 h-2 bg-gradient-to-r from-cricket-orange to-cricket-purple rounded-full flex-shrink-0"></div>
-                              <span className="text-primary-body text-sm font-medium">{feature}</span>
-                            </div>
-                          ))}
+                      {/* Features Grid */}
+                      <div className="px-5 pb-5 flex-1 flex flex-col justify-center">
+                        <div className="bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg p-3">
+                          <div className="grid grid-cols-1 gap-2">
+                            {facility.features.slice(0, 3).map((feature, idx) => (
+                              <div key={idx} className="flex items-center space-x-2">
+                                <div className="flex-shrink-0">
+                                  <svg className="w-3 h-3 text-cricket-green" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                                <span className="text-gray-700 text-sm font-medium leading-tight">{feature}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
+                      
+                      {/* Accent bar at bottom */}
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-cricket-green via-cricket-orange to-cricket-purple opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
                       
                       {/* Hover Glow Effect */}
                       <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cricket-green/0 via-cricket-green/5 to-cricket-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                     </div>
                   </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import Testimonials from './Testimonials';
-import { dbService } from '@/lib/api';
+import { testimonialsApi } from '@/services/api';
 import { Link } from 'react-router-dom';
 
 // Custom CSS for scrollbar hiding
@@ -23,14 +23,14 @@ const TestimonialsSection = () => {
   useEffect(() => {
     const checkTestimonials = async () => {
       try {
-        const response = await dbService.testimonials.getTestimonials();
+        const response = await testimonialsApi.getTestimonials();
         
-        if (response.status === 'error' || !response.data) {
-          throw new Error(response.message || 'Failed to fetch testimonials');
+        if (response.success && response.data && response.data.testimonials) {
+          const testimonials = response.data.testimonials || [];
+          setUseDynamicTestimonials(testimonials.length > 0);
+        } else {
+          setUseDynamicTestimonials(false);
         }
-        
-        const testimonials = response.data.testimonials || [];
-        setUseDynamicTestimonials(testimonials.length > 0);
       } catch (error) {
         console.error('Error checking testimonials:', error);
         setUseDynamicTestimonials(false);

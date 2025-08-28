@@ -36,7 +36,7 @@ export { dbService };
 // Base URL for API requests - dynamically determine based on environment
 const API_BASE_URL = import.meta.env.PROD 
   ? '/api'  // In production, use relative path
-  : 'http://localhost:5002/api'; // In development, use localhost with port 5002
+  : 'http://localhost:5000/api'; // In development, use localhost with port 5000
 
 console.log('Using API base URL:', API_BASE_URL);
 
@@ -122,17 +122,14 @@ async function apiRequest<T>(
 export const api = {
   // Auth endpoints
   auth: {
-    login: (email: string, password: string) => 
-      apiRequest<{ user: any; token: string }>('/auth/login', 'POST', { email, password }),
+    login: (username: string, password: string) => 
+      apiRequest<{ user: any; accessToken: string }>('/auth/login', 'POST', { username, password }),
     
-    register: (userData: any) => 
-      apiRequest<{ user: any; token: string }>('/auth/register', 'POST', userData),
+    getProfile: () => 
+      apiRequest<{ user: any }>('/auth/profile', 'GET'),
     
-    logout: () => 
-      apiRequest<null>('/auth/logout', 'POST'),
-    
-    getCurrentUser: () => 
-      apiRequest<{ user: any }>('/auth/me', 'GET'),
+    changePassword: (currentPassword: string, newPassword: string) => 
+      apiRequest<null>('/auth/change-password', 'POST', { currentPassword, newPassword }),
   },
   
   // Achievements endpoints

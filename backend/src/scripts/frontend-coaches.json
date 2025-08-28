@@ -1,0 +1,42 @@
+﻿[
+  {
+    "name": "Coach Vikram",
+    "bio": "Experienced group training specialist with 10 years in cricket coaching. Expert in building strong fundamentals and team dynamics.",
+    "specialization": "Group Training, Team Development, Fundamentals",
+    "experience_years": 10,
+    "phone": "+91 9908008425",
+    "email": "vikram@kalyancricketacademy.com",
+    "is_active": true,
+    "image_url": "https://images.unsplash.com/photo-1566492031773-4f4e44671d66?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Coach Priya",
+    "bio": "Specialist in personalized training with 12 years of experience in technique analysis and individual skill development.",
+    "specialization": "Personalized Training, Technique Analysis, Video Analysis",
+    "experience_years": 12,
+    "phone": "+91 9908008426",
+    "email": "priya@kalyancricketacademy.com",
+    "is_active": true,
+    "image_url": "https://images.unsplash.com/photo-1494790108755-2616c95e8b73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Coach Rajesh",
+    "bio": "Elite performance coach with 15 years of experience in advanced techniques and tournament preparation. Former state-level player.",
+    "specialization": "Elite Performance, Advanced Techniques, Tournament Preparation",
+    "experience_years": 15,
+    "phone": "+91 9908008427",
+    "email": "rajesh@kalyancricketacademy.com",
+    "is_active": true,
+    "image_url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Coach Arjun",
+    "bio": "Corporate training specialist with 8 years of experience in team building and leadership development through cricket.",
+    "specialization": "Corporate Training, Team Building, Leadership Development",
+    "experience_years": 8,
+    "phone": "+91 9908008428",
+    "email": "arjun@kalyancricketacademy.com",
+    "is_active": true,
+    "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  }
+]

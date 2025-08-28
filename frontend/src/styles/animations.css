@@ -595,6 +595,29 @@
   animation: marquee 30s linear infinite;
 }
 
+/* Bounce Scroll Animation */
+@keyframes bounce-scroll {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  25% {
+    transform: translateX(-25%) scale(0.95);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.05);
+  }
+  75% {
+    transform: translateX(-75%) scale(0.95);
+  }
+  100% {
+    transform: translateX(-100%) scale(1);
+  }
+}
+
+.animate-bounce-scroll {
+  animation: bounce-scroll 25s ease-in-out infinite;
+}
+
 /* Delayed Float Animation */
 @keyframes float-delayed {
   0%, 100% {

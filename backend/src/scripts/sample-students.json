@@ -1,0 +1,67 @@
+[
+  {
+    "name": "Arjun Patel",
+    "email": "arjun.patel@email.com",
+    "phone": "9876543210",
+    "date_of_birth": "2010-05-15",
+    "parent_name": "Rajesh Patel",
+    "parent_phone": "9876543211",
+    "parent_email": "rajesh.patel@email.com",
+    "address": "123 Cricket Lane, Sports City",
+    "emergency_contact": "Priya Patel",
+    "emergency_phone": "9876543212",
+    "medical_conditions": "None"
+  },
+  {
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com",
+    "phone": "9876543213",
+    "date_of_birth": "2011-08-22",
+    "parent_name": "Vikash Sharma",
+    "parent_phone": "9876543214",
+    "parent_email": "vikash.sharma@email.com",
+    "address": "456 Bowling Street, Cricket Town",
+    "emergency_contact": "Sunita Sharma",
+    "emergency_phone": "9876543215",
+    "medical_conditions": "Asthma - requires inhaler during exercise"
+  },
+  {
+    "name": "Rohit Kumar",
+    "email": "rohit.kumar@email.com",
+    "phone": "9876543216",
+    "date_of_birth": "2009-12-10",
+    "parent_name": "Amit Kumar",
+    "parent_phone": "9876543217",
+    "parent_email": "amit.kumar@email.com",
+    "address": "789 Batting Avenue, Wicket City",
+    "emergency_contact": "Neeta Kumar",
+    "emergency_phone": "9876543218",
+    "medical_conditions": "None"
+  },
+  {
+    "name": "Ananya Singh",
+    "email": "ananya.singh@email.com",
+    "phone": "9876543219",
+    "date_of_birth": "2012-03-07",
+    "parent_name": "Rakesh Singh",
+    "parent_phone": "9876543220",
+    "parent_email": "rakesh.singh@email.com",
+    "address": "321 Fielding Road, Sports District",
+    "emergency_contact": "Meera Singh",
+    "emergency_phone": "9876543221",
+    "medical_conditions": "None"
+  },
+  {
+    "name": "Karthik Reddy",
+    "email": "karthik.reddy@email.com",
+    "phone": "9876543222",
+    "date_of_birth": "2010-11-25",
+    "parent_name": "Suresh Reddy",
+    "parent_phone": "9876543223",
+    "parent_email": "suresh.reddy@email.com",
+    "address": "654 Stadium Street, Cricket Hills",
+    "emergency_contact": "Lakshmi Reddy",
+    "emergency_phone": "9876543224",
+    "medical_conditions": "None"
+  }
+]

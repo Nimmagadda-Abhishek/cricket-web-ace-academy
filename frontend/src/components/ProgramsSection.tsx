@@ -1,71 +1,26 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { fetchPrograms } from '@/services/api';
+
+interface Program {
+  _id: string; // Change id to _id
+  title: string;
+  description: string;
+  image: string;
+  level: string;
+  highlights?: string[];
+}
 
 const ProgramsSection = () => {
   const navigate = useNavigate();
-  const [showAllCards, setShowAllCards] = useState(false);
   const sectionRef = React.useRef<HTMLElement>(null);
-  
-  const programs = [
-    {
-      title: 'Group Training',
-      description: 'Perfect for beginners and team building. Develop fundamental skills in a supportive group environment.',
-      level: 'Beginner to Intermediate',
-      icon: '👥',
-      color: 'bg-gradient-to-br from-blue-500 to-blue-600',
-      image: '/images/programs/01.jpg',
-      highlights: ['Team Building', 'Basic Skills', 'Match Practice', 'Fitness Training']
-    },
-    {
-      title: 'Personal Training',
-      description: 'One-on-one coaching for rapid skill improvement. Customized training plans for individual goals.',
-      level: 'Intermediate',
-      icon: '🎯',
-      color: 'bg-gradient-to-br from-orange-500 to-red-500',
-      image: '/images/programs/02.webp',
-      highlights: ['Individual Focus', 'Video Analysis', 'Technique Refinement', 'Performance Tracking']
-    },
-    {
-      title: 'Elite Coaching',
-      description: 'Advanced training for serious players. Professional-level coaching for competitive cricket.',
-      level: 'Advanced',
-      icon: '🏆',
-      color: 'bg-gradient-to-br from-purple-500 to-indigo-600',
-      image: '/images/programs/03.webp',
-      highlights: ['Elite Training', 'Tournament Prep', 'Mental Coaching', 'Career Guidance']
-    },
-    {
-      title: 'Corporate Program',
-      description: 'Team building through cricket. Perfect for corporate groups and office teams.',
-      level: 'All Levels',
-      icon: '🏢',
-      color: 'bg-gradient-to-br from-green-500 to-emerald-600',
-      image: '/images/corporate-cricket-program.jpg',
-      highlights: ['Team Building', 'Corporate Events', 'Fitness Focus', 'Leadership Skills']
-    },
-    {
-      title: 'NRI Excellence Program',
-      description: 'Intensive short-term program for overseas players with high-intensity drills, match simulations, and adaptation to Indian conditions.',
-      level: 'Intermediate to Advanced',
-      icon: '🌍',
-      color: 'bg-gradient-to-br from-teal-500 to-sky-600',
-      image: 'https://content.jdmagicbox.com/comp/def_content/cricket-coaching-classes/shutterstock-647586433-cricket-coaching-classes-9-qtn7q.jpg',
-      highlights: [
-        'High-intensity drills',
-        'Match sims: turf & matting',
-        'Adapt to Indian conditions',
-        'Specialist coaching & machines'
-      ]
-    },
-  ];
+
+  const { data: programs, isLoading, isError } = useQuery({ queryKey: ['programs'], queryFn: fetchPrograms });
 
   const handleViewMore = () => {
     navigate('/programs');
   };
-
-  const displayedPrograms = programs.slice(0, 3);
 
   return (
     <section id="programs" className="py-20 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden parallax-section" ref={sectionRef}>
@@ -88,8 +43,12 @@ const ProgramsSection = () => {
           </p>
         </div>
 
+        {isLoading && <div className="text-center text-xl">Loading Programs...</div>}
+        {isError && <div className="text-center text-xl text-red-500">Could not fetch programs.</div>}
+
         {/* Apple Intelligence Style Cards Container */}
-        <div className="relative">
+        {programs && programs.length > 0 && (
+          <div className="relative">
           {/* Scroll Buttons */}
           <button
             onClick={() => {
@@ -126,7 +85,7 @@ const ProgramsSection = () => {
             id="programs-scroll"
             className="flex gap-6 overflow-x-auto scrollbar-hide pb-6 px-2 smooth-scroll"
           >
-            {programs.map((program, index) => (
+            {programs.map((program: Program, index: number) => (
               <div 
                 key={index} 
                 className="min-w-[380px] max-w-[380px] flex-shrink-0"
@@ -134,7 +93,7 @@ const ProgramsSection = () => {
               >
                 {/* Apple Intelligence Style Card */}
                 <div
-                  className="group relative bg-white/30 backdrop-blur-lg rounded-[24px] shadow-lg p-6 hover:shadow-xl hover:scale-[1.05] transition-transform duration-500 cursor-pointer animate-fadeIn flex flex-col h-[520px]"
+                  className={`group relative multicolor-border-${(index % 4) + 1} shadow-lg p-6 hover:shadow-xl hover:scale-[1.05] transition-transform duration-500 cursor-pointer animate-fadeIn flex flex-col h-[520px]`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                   onClick={() => navigate('/programs')}
                 >
@@ -164,7 +123,7 @@ const ProgramsSection = () => {
 
                     {/* Highlights */}
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {program.highlights.map((highlight, idx) => (
+                      {program.highlights && program.highlights.map((highlight, idx) => (
                         <span key={idx} className="px-3 py-1 bg-gradient-to-r from-cricket-orange/10 to-cricket-purple/10 text-cricket-orange text-xs font-medium rounded-full border border-cricket-orange/20 font-sf-pro">
                           {highlight}
                         </span>
@@ -185,6 +144,7 @@ const ProgramsSection = () => {
             ))}
           </div>
         </div>
+        )}
         {/* View More Button */}
         <div className="text-center mt-12">
           <button
@@ -207,4 +167,3 @@ const ProgramsSection = () => {
 };
 
 export default ProgramsSection;
-

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '@/lib/api';
+import { achievementsApi } from '@/services/api';
 
 // Define the Achievement type
 interface Achievement {
@@ -23,12 +23,19 @@ const AchievementsSection: React.FC = () => {
     const fetchAchievements = async () => {
       setIsLoading(true);
       try {
-        // In a real implementation, this would call your API
-        // const response = await api.achievements.getAll();
-        // const data = response.data.filter(a => a.status === 'active');
-        // setAchievements(data.sort((a, b) => a.display_order - b.display_order));
+        // Try to fetch from database API first
+        const response = await achievementsApi.getAchievements();
         
-        // For now, we'll use mock data
+        if (response.success && response.data && response.data.achievements) {
+          const data = response.data.achievements.filter((a: Achievement) => a.status === 'active');
+          setAchievements(data.sort((a: Achievement, b: Achievement) => a.display_order - b.display_order));
+        } else {
+          throw new Error('No achievements data received');
+        }
+      } catch (apiError) {
+        console.warn('Failed to fetch achievements from API, falling back to mock data:', apiError);
+        
+        // Fall back to mock data
         const mockAchievements: Achievement[] = [
           {
             id: 1,
@@ -77,9 +84,6 @@ const AchievementsSection: React.FC = () => {
         ];
         
         setAchievements(mockAchievements);
-      } catch (err) {
-        console.error('Error fetching achievements:', err);
-        setError('Failed to load achievements. Please try again later.');
       } finally {
         setIsLoading(false);
       }
@@ -151,7 +155,7 @@ const AchievementsSection: React.FC = () => {
         </div>
 
         <div className="overflow-hidden mb-10">
-          <div className="flex flex-nowrap gap-6 animate-marquee">
+          <div className="flex flex-nowrap gap-6 animate-bounce-scroll">
             {displayAchievements.map((achievement, index) => (
               <div key={`${achievement.id}-${index}`} className="min-w-[300px] max-w-[300px] flex-shrink-0">
                 <div className="bg-white rounded-xl shadow-lg h-full flex flex-col hover:shadow-xl transition-all duration-300 hover:-translate-y-2" style={{height: '400px'}}>

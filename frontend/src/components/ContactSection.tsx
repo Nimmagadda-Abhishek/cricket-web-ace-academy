@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { contactsApi } from '@/services/api';
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -17,14 +18,41 @@ const ContactSection = () => {
     phone: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Message Sent Successfully!",
-      description: "We'll get back to you within 24 hours.",
-    });
-    setFormData({ firstName: '', lastName: '', email: '', phone: '', message: '' });
+    setIsSubmitting(true);
+    
+    try {
+      const submitData = {
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message
+      };
+      
+      const response = await contactsApi.submitContact(submitData);
+      
+      if (response.success) {
+        toast({
+          title: "Message Sent Successfully!",
+          description: "We'll get back to you within 24 hours.",
+        });
+        setFormData({ firstName: '', lastName: '', email: '', phone: '', message: '' });
+      } else {
+        throw new Error(response.message || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Contact form submission error:', error);
+      toast({
+        title: "Error Sending Message",
+        description: "There was a problem sending your message. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -165,9 +193,10 @@ const ContactSection = () => {
               
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-cricket-green to-cricket-orange text-white py-3 px-6 rounded-lg font-semibold hover:from-cricket-orange hover:to-cricket-purple transition-all duration-300 transform hover:scale-105"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-cricket-green to-cricket-orange text-white py-3 px-6 rounded-lg font-semibold hover:from-cricket-orange hover:to-cricket-purple transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                Send Message
+                {isSubmitting ? 'Sending...' : 'Send Message'}
               </button>
             </form>
           </div>

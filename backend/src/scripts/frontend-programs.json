@@ -1,0 +1,50 @@
+﻿[
+  {
+    "title": "Group Training",
+    "description": "Ideal for players looking to build strong fundamentals. Develops skills, teamwork, and match awareness through structured group sessions.",
+    "short_description": "Build strong fundamentals with team-focused training",
+    "price": 8000.00,
+    "duration": "1 month",
+    "age_group": "All ages",
+    "skill_level": "beginner",
+    "max_participants": 25,
+    "is_active": true,
+    "image_url": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "title": "Personalized Training",
+    "description": "Designed for players who want individualized guidance. Enhances technique, confidence & match performance through customized coaching.",
+    "short_description": "Individual coaching for technique enhancement",
+    "price": 15000.00,
+    "duration": "1 month",
+    "age_group": "12+ years",
+    "skill_level": "intermediate",
+    "max_participants": 10,
+    "is_active": true,
+    "image_url": "https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "title": "One-on-One Elite Coaching",
+    "description": "Tailored coaching to refine techniques & game awareness. Master coach guidance for advanced skill development and tournament preparation.",
+    "short_description": "Elite coaching for advanced skill development",
+    "price": 25000.00,
+    "duration": "Flexible",
+    "age_group": "14+ years",
+    "skill_level": "advanced",
+    "max_participants": 5,
+    "is_active": true,
+    "image_url": "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "title": "Corporate Cricket Program",
+    "description": "Designed for corporate teams to improve cricket skills & team dynamics. Blends fitness, strategy & leadership in a fun, engaging format.",
+    "short_description": "Corporate team building through cricket",
+    "price": 20000.00,
+    "duration": "1 month",
+    "age_group": "22+ years",
+    "skill_level": "all",
+    "max_participants": 20,
+    "is_active": true,
+    "image_url": "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  }
+]

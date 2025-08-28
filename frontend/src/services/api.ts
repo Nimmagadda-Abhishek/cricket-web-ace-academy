@@ -32,32 +32,27 @@ export const programsApi = {
   // Get all public programs
   getPrograms: async () => {
     try {
-      // Try to use Hostinger database if not in dev mode
-      if (!IS_DEV) {
-        try {
-          const result = await fetchData('/programs/public');
-          return result;
-        } catch (error) {
-          console.warn('Failed to fetch from API, falling back to mock data:', error);
-          // Fall back to mock data on error
-          return {
-            data: {
-              programs: mockPrograms,
-            },
-          };
-        }
+      // Always try to use the database API first
+      try {
+        console.log('🔄 Fetching programs from database API...');
+        const result = await fetchData('/programs');
+        console.log('✅ Programs fetched from database:', result);
+        return result;
+      } catch (error) {
+        console.warn('❌ Failed to fetch from API, falling back to mock data:', error);
+        // Fall back to mock data only if API completely fails
+        return {
+          success: true,
+          data: {
+            programs: mockPrograms,
+          },
+        };
       }
-      
-      // For development or on error, return mock data
-      return Promise.resolve({
-        data: {
-          programs: mockPrograms,
-        },
-      });
     } catch (error) {
-      console.error('Error in getPrograms:', error);
+      console.error('❌ Error in getPrograms:', error);
       // Always fall back to mock data on any error
       return {
+        success: true,
         data: {
           programs: mockPrograms,
         },
@@ -108,7 +103,7 @@ export const programsApi = {
 // Payments API (for checkout)
 export const paymentsApi = {
   // Create a new payment intent
-  createPaymentIntent: (data: { amount: number; programId: string; studentInfo: any }) => {
+  createPaymentIntent: (data: { amount: number; programId: string; studentInfo: Record<string, unknown> }) => {
     // For development, return mock success
     if (IS_DEV) {
       return Promise.resolve({
@@ -151,7 +146,7 @@ export const paymentsApi = {
   // Create enrollment record
   createEnrollment: (data: { 
     program_id: string; 
-    student_info: any; 
+    student_info: Record<string, unknown>; 
     payment_intent_id: string;
     amount_paid: number;
   }) => {
@@ -176,27 +171,120 @@ export const paymentsApi = {
   },
 };
 
+// Coaches API
+export const coachesApi = {
+  // Get all coaches
+  getCoaches: async () => {
+    try {
+      console.log('🔄 Fetching coaches from database API...');
+      const result = await fetchData('/coaches');
+      console.log('✅ Coaches fetched from database:', result);
+      return result;
+    } catch (error) {
+      console.warn('❌ Failed to fetch coaches from API:', error);
+      return {
+        success: false,
+        data: { coaches: [] },
+      };
+    }
+  },
+};
+
+// Achievements API
+export const achievementsApi = {
+  // Get all achievements
+  getAchievements: async () => {
+    try {
+      console.log('🔄 Fetching achievements from database API...');
+      const result = await fetchData('/achievements');
+      console.log('✅ Achievements fetched from database:', result);
+      return result;
+    } catch (error) {
+      console.warn('❌ Failed to fetch achievements from API:', error);
+      return {
+        success: false,
+        data: { achievements: [] },
+      };
+    }
+  },
+};
+
+// Facilities API
+export const facilitiesApi = {
+  // Get all facilities
+  getFacilities: async () => {
+    try {
+      console.log('🔄 Fetching facilities from database API...');
+      const result = await fetchData('/facilities');
+      console.log('✅ Facilities fetched from database:', result);
+      return result;
+    } catch (error) {
+      console.warn('❌ Failed to fetch facilities from API:', error);
+      return {
+        success: false,
+        data: { facilities: [] },
+      };
+    }
+  },
+};
+
+// Gallery API
+export const galleryApi = {
+  // Get all gallery images
+  getGalleryImages: async () => {
+    try {
+      console.log('🔄 Fetching gallery images from database API...');
+      const result = await fetchData('/gallery');
+      console.log('✅ Gallery images fetched from database:', result);
+      return result;
+    } catch (error) {
+      console.warn('❌ Failed to fetch gallery from API:', error);
+      return {
+        success: false,
+        data: { images: [] },
+      };
+    }
+  },
+};
+
+// Testimonials API  
+export const testimonialsApi = {
+  // Get all testimonials
+  getTestimonials: async () => {
+    try {
+      console.log('🔄 Fetching testimonials from database API...');
+      const result = await fetchData('/testimonials');
+      console.log('✅ Testimonials fetched from database:', result);
+      return result;
+    } catch (error) {
+      console.warn('❌ Failed to fetch testimonials from API:', error);
+      return {
+        success: false,
+        data: { testimonials: [] },
+      };
+    }
+  },
+};
+
 // Contacts API
 export const contactsApi = {
   // Submit contact form
   submitContact: (data: { name: string; email: string; phone: string; message: string }) => {
-    // For development, return mock success
-    if (IS_DEV) {
+    try {
+      console.log('📤 Submitting contact form to database...');
+      return fetchData('/contact', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    } catch (error) {
+      console.error('❌ Error submitting contact form:', error);
       return Promise.resolve({
-        data: {
-          message: 'Contact form submitted successfully',
-          id: 'contact_mock_123',
-        },
+        success: false,
+        message: 'Failed to submit contact form',
       });
     }
-    
-    // Fallback to REST API
-    return fetchData('/contacts', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
   },
-}; 
+};
 
 // Mock data for development
 const mockPrograms = [
@@ -255,6 +343,7 @@ const mockPrograms = [
       'Basic physical fitness',
       'Enthusiasm to learn'
     ],
+    highlights: ['Beginner Friendly', 'Team Building', 'Match Practice'],
     certificationProvided: false,
   },
   {
@@ -312,6 +401,7 @@ const mockPrograms = [
       'Some playing experience preferred',
       'Good physical fitness'
     ],
+    highlights: ['1-on-1 Focus', 'Video Analysis', 'Skill Refinement'],
     certificationProvided: true,
   },
   {
@@ -369,6 +459,7 @@ const mockPrograms = [
       'Commitment to intensive training',
       'Physical and mental readiness'
     ],
+    highlights: ['Elite Coaching', 'Tournament Prep', 'Advanced Tech'],
     certificationProvided: true,
     discount: {
       type: 'percentage',
@@ -432,9 +523,46 @@ const mockPrograms = [
       'Basic fitness level',
       'Team collaboration mindset'
     ],
+    highlights: ['Team Building', 'Corporate Focus', 'Leadership'],
     certificationProvided: true,
   },
 ];
+
+// Legacy export for backward compatibility
+export const fetchPrograms = async () => {
+  try {
+    const result = await programsApi.getPrograms();
+    const programs = result.data.programs || [];
+    
+    // Transform database fields to match frontend expectations
+    return programs.map((program: {
+      id: number;
+      title: string;
+      description: string;
+      image_url: string;
+      skill_level: string;
+      highlights?: string[];
+      age_group: string;
+      duration: string;
+      price: string | number;
+      max_participants: number;
+    }) => ({
+      _id: program.id.toString(),
+      title: program.title,
+      description: program.description,
+      image: program.image_url, // Map image_url to image
+      level: program.skill_level,
+      highlights: program.highlights || [],
+      ageGroup: program.age_group,
+      duration: program.duration,
+      price: typeof program.price === 'string' ? parseFloat(program.price) : program.price,
+      maxStudents: program.max_participants
+    }));
+  } catch (error) {
+    console.error('Error fetching programs:', error);
+    return [];
+  }
+};
 
 export default {
   programs: programsApi,

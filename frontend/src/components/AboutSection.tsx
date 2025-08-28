@@ -160,7 +160,7 @@ const AboutSection = () => {
           </div>
           
           <div>
-            <div className="card-glass rounded-2xl p-8 hover-shadow-lg gradient-border">
+            <div className="multicolor-border-main p-8 hover-shadow-lg">
               <div className="flex items-center mb-6">
                 <div className="bg-cricket-orange text-white p-3 rounded-full mr-4 animate-heartbeat">
                   <span className="text-2xl">🎯</span>
@@ -180,7 +180,7 @@ const AboutSection = () => {
                 {features.map((feature, index) => (
                   <div 
                     key={index} 
-                    className={`text-center p-4 bg-gradient-to-br from-white to-gray-50 rounded-lg card-hover border border-gray-100 animate-bounceIn stagger-${index + 1}`}
+                    className={`multicolor-border-${(index % 4) + 1} text-center p-4 card-hover animate-bounceIn stagger-${index + 1}`}
                   >
                     <div className="text-3xl mb-2 animate-wiggle">{feature.icon}</div>
                     <h4 className="font-semibold text-cricket-green mb-1">{feature.title}</h4>

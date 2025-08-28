@@ -832,4 +832,134 @@
   }
 }
 
+/* Multicolor Border Classes using Cricket Website Colors */
+.multicolor-border-1 {
+  position: relative;
+  background: linear-gradient(#fff, #fff) padding-box,
+              linear-gradient(45deg, #FF5E3A, #FF2D55, #BF5AF2) border-box;
+  border: 3px solid transparent;
+  border-radius: 0.75rem;
+  animation: cricketBorderRotate1 4s linear infinite;
+}
+
+.multicolor-border-2 {
+  position: relative;
+  background: linear-gradient(#fff, #fff) padding-box,
+              linear-gradient(60deg, #FF2D55, #BF5AF2, hsl(var(--cricket-gold))) border-box;
+  border: 3px solid transparent;
+  border-radius: 0.75rem;
+  animation: cricketBorderRotate2 5s linear infinite;
+}
+
+.multicolor-border-3 {
+  position: relative;
+  background: linear-gradient(#fff, #fff) padding-box,
+              linear-gradient(90deg, #BF5AF2, hsl(var(--cricket-gold)), hsl(var(--cricket-green))) border-box;
+  border: 3px solid transparent;
+  border-radius: 0.75rem;
+  animation: cricketBorderRotate3 6s linear infinite;
+}
+
+.multicolor-border-4 {
+  position: relative;
+  background: linear-gradient(#fff, #fff) padding-box,
+              linear-gradient(120deg, hsl(var(--cricket-gold)), hsl(var(--cricket-green)), #FF5E3A) border-box;
+  border: 3px solid transparent;
+  border-radius: 0.75rem;
+  animation: cricketBorderRotate4 4.5s linear infinite;
+}
+
+.multicolor-border-main {
+  position: relative;
+  background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
+              linear-gradient(45deg, #FF5E3A, #FF2D55, #BF5AF2, hsl(var(--cricket-gold))) border-box;
+  border: 4px solid transparent;
+  border-radius: 1rem;
+  animation: cricketBorderRotateMain 8s linear infinite;
+}
+
+/* Keyframes for different border rotations */
+@keyframes cricketBorderRotate1 {
+  from {
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(0deg, #FF5E3A, #FF2D55, #BF5AF2) border-box;
+  }
+  to {
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(360deg, #FF5E3A, #FF2D55, #BF5AF2) border-box;
+  }
+}
+
+@keyframes cricketBorderRotate2 {
+  from {
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(0deg, #FF2D55, #BF5AF2, hsl(var(--cricket-gold))) border-box;
+  }
+  to {
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(360deg, #FF2D55, #BF5AF2, hsl(var(--cricket-gold))) border-box;
+  }
+}
+
+@keyframes cricketBorderRotate3 {
+  from {
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(0deg, #BF5AF2, hsl(var(--cricket-gold)), hsl(var(--cricket-green))) border-box;
+  }
+  to {
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(360deg, #BF5AF2, hsl(var(--cricket-gold)), hsl(var(--cricket-green))) border-box;
+  }
+}
+
+@keyframes cricketBorderRotate4 {
+  from {
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(0deg, hsl(var(--cricket-gold)), hsl(var(--cricket-green)), #FF5E3A) border-box;
+  }
+  to {
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(360deg, hsl(var(--cricket-gold)), hsl(var(--cricket-green)), #FF5E3A) border-box;
+  }
+}
+
+@keyframes cricketBorderRotateMain {
+  0% {
+    background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
+                linear-gradient(0deg, #FF5E3A, #FF2D55, #BF5AF2, hsl(var(--cricket-gold))) border-box;
+  }
+  25% {
+    background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
+                linear-gradient(90deg, #FF5E3A, #FF2D55, #BF5AF2, hsl(var(--cricket-gold))) border-box;
+  }
+  50% {
+    background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
+                linear-gradient(180deg, #FF5E3A, #FF2D55, #BF5AF2, hsl(var(--cricket-gold))) border-box;
+  }
+  75% {
+    background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
+                linear-gradient(270deg, #FF5E3A, #FF2D55, #BF5AF2, hsl(var(--cricket-gold))) border-box;
+  }
+  100% {
+    background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
+                linear-gradient(360deg, #FF5E3A, #FF2D55, #BF5AF2, hsl(var(--cricket-gold))) border-box;
+  }
+}
+
+/* Hover effects for multicolor borders */
+.multicolor-border-1:hover,
+.multicolor-border-2:hover,
+.multicolor-border-3:hover,
+.multicolor-border-4:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(255, 94, 58, 0.2);
+  transition: all 0.3s ease;
+}
+
+.multicolor-border-main:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(255, 94, 58, 0.25);
+  transition: all 0.3s ease;
+}
+
 

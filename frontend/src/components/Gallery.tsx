@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { galleryApi } from '@/services/api';
 
 interface GalleryImage {
   id: string;
@@ -37,14 +38,14 @@ const Gallery = () => {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/gallery');
-      if (!response.ok) {
-        throw new Error('Failed to fetch gallery images');
+      const response = await galleryApi.getGalleryImages();
+      
+      if (response.success && response.data && response.data.images) {
+        setImages(response.data.images || []);
+        setFilteredImages(response.data.images || []);
+      } else {
+        throw new Error('No gallery data received');
       }
-      const data = await response.json();
-
-      setImages(data || []);
-      setFilteredImages(data || []);
     } catch (error) {
       console.error('Error fetching gallery images:', error);
       setError('Failed to load gallery images. Please try again later.');
@@ -121,10 +122,10 @@ const Gallery = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {filteredImages.map((image) => (
+                {filteredImages.map((image, index) => (
                   <Card 
                     key={image.id} 
-                    className="overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
+                    className={`multicolor-border-${(index % 4) + 1} overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer group`}
                     onClick={() => openLightbox(image)}
                   >
                     <div className="aspect-square relative">
