@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchPrograms } from '@/services/api';
 
 interface Program {
-  _id: string; // Change id to _id
+  _id: string;
   title: string;
   description: string;
   image: string;
@@ -12,11 +12,72 @@ interface Program {
   highlights?: string[];
 }
 
+const fallbackPrograms = [
+  {
+    _id: '1',
+    title: 'Group Training',
+    description: 'Perfect for beginners and team building. Develop fundamental skills in a supportive group environment.',
+    level: 'Beginner to Intermediate',
+    icon: '👥',
+    color: 'bg-gradient-to-br from-blue-500 to-blue-600',
+    image: '/images/programs/01.jpg',
+    highlights: ['Team Building', 'Basic Skills', 'Match Practice', 'Fitness Training']
+  },
+  {
+    _id: '2',
+    title: 'Personal Training',
+    description: 'One-on-one coaching for rapid skill improvement. Customized training plans for individual goals.',
+    level: 'Intermediate',
+    icon: '🎯',
+    color: 'bg-gradient-to-br from-orange-500 to-red-500',
+    image: '/images/programs/02.webp',
+    highlights: ['Individual Focus', 'Video Analysis', 'Technique Refinement', 'Performance Tracking']
+  },
+  {
+    _id: '3',
+    title: 'Elite Coaching',
+    description: 'Advanced training for serious players. Professional-level coaching for competitive cricket.',
+    level: 'Advanced',
+    icon: '🏆',
+    color: 'bg-gradient-to-br from-purple-500 to-indigo-600',
+    image: '/images/programs/03.webp',
+    highlights: ['Elite Training', 'Tournament Prep', 'Mental Coaching', 'Career Guidance']
+  },
+  {
+    _id: '4',
+    title: 'Corporate Program',
+    description: 'Team building through cricket. Perfect for corporate groups and office teams.',
+    level: 'All Levels',
+    icon: '🏢',
+    color: 'bg-gradient-to-br from-green-500 to-emerald-600',
+    image: '/images/corporate-cricket-program.jpg',
+    highlights: ['Team Building', 'Corporate Events', 'Fitness Focus', 'Leadership Skills']
+  },
+  {
+    _id: '5',
+    title: 'NRI Excellence Program',
+    description: 'Intensive short-term program for overseas players with high-intensity drills, match simulations, and adaptation to Indian conditions.',
+    level: 'Intermediate to Advanced',
+    icon: '🌍',
+    color: 'bg-gradient-to-br from-teal-500 to-sky-600',
+    image: 'https://content.jdmagicbox.com/comp/def_content/cricket-coaching-classes/shutterstock-647586433-cricket-coaching-classes-9-qtn7q.jpg',
+    highlights: [
+      'High-intensity drills',
+      'Match sims: turf & matting',
+      'Adapt to Indian conditions',
+      'Specialist coaching & machines'
+    ]
+  },
+];
+
+
 const ProgramsSection = () => {
   const navigate = useNavigate();
   const sectionRef = React.useRef<HTMLElement>(null);
 
-  const { data: programs, isLoading, isError } = useQuery({ queryKey: ['programs'], queryFn: fetchPrograms });
+  const { data: programsFromApi, isLoading, isError } = useQuery({ queryKey: ['programs'], queryFn: fetchPrograms });
+
+  const programs = isError ? fallbackPrograms : programsFromApi;
 
   const handleViewMore = () => {
     navigate('/programs');
@@ -44,7 +105,7 @@ const ProgramsSection = () => {
         </div>
 
         {isLoading && <div className="text-center text-xl">Loading Programs...</div>}
-        {isError && <div className="text-center text-xl text-red-500">Could not fetch programs.</div>}
+        {isError && <div className="text-center text-xl text-yellow-500">Could not fetch programs. Displaying sample data.</div>}
 
         {/* Apple Intelligence Style Cards Container */}
         {programs && programs.length > 0 && (
@@ -87,7 +148,7 @@ const ProgramsSection = () => {
           >
             {programs.map((program: Program, index: number) => (
               <div 
-                key={index} 
+                key={program._id} 
                 className="min-w-[380px] max-w-[380px] flex-shrink-0"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
