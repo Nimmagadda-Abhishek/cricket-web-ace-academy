@@ -39,7 +39,8 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
   'http://localhost:4173',
   'http://localhost:8080',
   'http://localhost:8081',
-  'http://localhost:8082'
+  'http://localhost:8082',
+  'https://kalyancricketacademy.in/'
 ];
 
 app.use(cors({
