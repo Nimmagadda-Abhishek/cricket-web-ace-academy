@@ -32,28 +32,9 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// CORS configuration
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
-  'http://localhost:3000',
-  'http://localhost:5173',
-  'http://localhost:4173',
-  'http://localhost:8080',
-  'http://localhost:8081',
-  'http://localhost:8082',
-  'https://kalyancricketacademy.in'
-];
-
+// CORS configuration - Allow all origins
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'), false);
-    }
-  },
+  origin: true, // Allow all origins
   credentials: true
 }));
 

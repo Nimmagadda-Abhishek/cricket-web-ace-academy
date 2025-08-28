@@ -6,96 +6,76 @@ import adminService from './admin-client';
 export const programsService = {
   // Get all public programs
   getPrograms: async () => {
-    try {
-      const programs = await db.query(
-        'SELECT * FROM programs WHERE status = ? ORDER BY price',
-        ['active']
-      );
-      
-      return {
-        data: {
-          programs: programs.map(transformProgramFromDb),
-        },
-      };
-    } catch (error) {
-      console.error('Error fetching programs:', error);
-      throw error;
-    }
+    const programs = await db.query(
+      'SELECT * FROM programs WHERE status = ? ORDER BY price',
+      ['active']
+    );
+    
+    return {
+      data: {
+        programs: programs.map(transformProgramFromDb),
+      },
+    };
   },
   
   // Get program details by ID
   getProgramById: async (id: string) => {
-    try {
-      const program = await db.queryOne(
-        'SELECT * FROM programs WHERE id = ?',
-        [id]
-      );
-      
-      if (!program) {
-        throw new Error(`Program with ID ${id} not found`);
-      }
-      
-      return {
-        data: {
-          program: transformProgramFromDb(program),
-        },
-      };
-    } catch (error) {
-      console.error(`Error fetching program with ID ${id}:`, error);
-      throw error;
+    const program = await db.queryOne(
+      'SELECT * FROM programs WHERE id = ?',
+      [id]
+    );
+    
+    if (!program) {
+      throw new Error(`Program with ID ${id} not found`);
     }
+    
+    return {
+      data: {
+        program: transformProgramFromDb(program),
+      },
+    };
   },
 
   // Create a new program (admin only)
   createProgram: async (program: any) => {
-    try {
-      const now = new Date().toISOString();
-      const dbProgram = {
-        ...transformProgramToDb(program),
-        current_students: program.current_students || 0,
-        status: program.status || 'active',
-        created_at: now,
-        updated_at: now,
-      };
-      
-      const id = await db.insert('programs', dbProgram);
-      const newProgram = await db.queryOne('SELECT * FROM programs WHERE id = ?', [id]);
-      
-      return {
-        data: {
-          program: transformProgramFromDb(newProgram),
-        },
-      };
-    } catch (error) {
-      console.error('Error creating program:', error);
-      throw error;
-    }
+    const now = new Date().toISOString();
+    const dbProgram = {
+      ...transformProgramToDb(program),
+      current_students: program.current_students || 0,
+      status: program.status || 'active',
+      created_at: now,
+      updated_at: now,
+    };
+    
+    const id = await db.insert('programs', dbProgram);
+    const newProgram = await db.queryOne('SELECT * FROM programs WHERE id = ?', [id]);
+    
+    return {
+      data: {
+        program: transformProgramFromDb(newProgram),
+      },
+    };
   },
 
   // Update an existing program (admin only)
   updateProgram: async (id: string, updates: any) => {
-    try {
-      const dbUpdates = {
-        ...transformProgramToDb(updates),
-        updated_at: new Date().toISOString(),
-      };
-      
-      await db.update('programs', dbUpdates, 'id = ?', [id]);
-      const updatedProgram = await db.queryOne('SELECT * FROM programs WHERE id = ?', [id]);
-      
-      if (!updatedProgram) {
-        throw new Error(`Program with ID ${id} not found after update`);
-      }
-      
-      return {
-        data: {
-          program: transformProgramFromDb(updatedProgram),
-        },
-      };
-    } catch (error) {
-      console.error(`Error updating program with ID ${id}:`, error);
-      throw error;
+    const dbUpdates = {
+      ...transformProgramToDb(updates),
+      updated_at: new Date().toISOString(),
+    };
+    
+    await db.update('programs', dbUpdates, 'id = ?', [id]);
+    const updatedProgram = await db.queryOne('SELECT * FROM programs WHERE id = ?', [id]);
+    
+    if (!updatedProgram) {
+      throw new Error(`Program with ID ${id} not found after update`);
     }
+    
+    return {
+      data: {
+        program: transformProgramFromDb(updatedProgram),
+      },
+    };
   },
 };
 
@@ -103,25 +83,20 @@ export const programsService = {
 export const contactsService = {
   // Submit contact form
   submitContact: async (contactData: { name: string; email: string; phone: string; message: string }) => {
-    try {
-      const dbContact = {
-        ...contactData,
-        status: 'new',
-        created_at: new Date().toISOString(),
-      };
-      
-      const id = await db.insert('contacts', dbContact);
-      
-      return {
-        data: {
-          message: 'Contact form submitted successfully',
-          id: id,
-        },
-      };
-    } catch (error) {
-      console.error('Error submitting contact form:', error);
-      throw error;
-    }
+    const dbContact = {
+      ...contactData,
+      status: 'new',
+      created_at: new Date().toISOString(),
+    };
+    
+    const id = await db.insert('contacts', dbContact);
+    
+    return {
+      data: {
+        message: 'Contact form submitted successfully',
+        id: id,
+      },
+    };
   },
 };
 
@@ -135,64 +110,54 @@ export const paymentsService = {
     amount_paid: number;
     payment_status?: string;
   }) => {
-    try {
-      const now = new Date().toISOString();
-      const dbEnrollment = {
-        ...enrollmentData,
-        student_info: JSON.stringify(enrollmentData.student_info),
-        payment_status: enrollmentData.payment_status || 'pending',
-        created_at: now,
-        updated_at: now,
-      };
-      
-      const id = await db.insert('enrollments', dbEnrollment);
-      const enrollment = await db.queryOne('SELECT * FROM enrollments WHERE id = ?', [id]);
-      
-      if (enrollment) {
-        // Parse the JSON string back to an object
-        (enrollment as any).student_info = JSON.parse((enrollment as any).student_info);
-      }
-      
-      return {
-        data: {
-          enrollment: enrollment,
-        },
-      };
-    } catch (error) {
-      console.error('Error creating enrollment:', error);
-      throw error;
+    const now = new Date().toISOString();
+    const dbEnrollment = {
+      ...enrollmentData,
+      student_info: JSON.stringify(enrollmentData.student_info),
+      payment_status: enrollmentData.payment_status || 'pending',
+      created_at: now,
+      updated_at: now,
+    };
+    
+    const id = await db.insert('enrollments', dbEnrollment);
+    const enrollment = await db.queryOne('SELECT * FROM enrollments WHERE id = ?', [id]);
+    
+    if (enrollment) {
+      // Parse the JSON string back to an object
+      (enrollment as any).student_info = JSON.parse((enrollment as any).student_info);
     }
+    
+    return {
+      data: {
+        enrollment: enrollment,
+      },
+    };
   },
 
   // Update enrollment payment status
   updateEnrollmentStatus: async (paymentIntentId: string, status: string) => {
-    try {
-      await db.update(
-        'enrollments',
-        {
-          payment_status: status,
-          updated_at: new Date().toISOString(),
-        },
-        'payment_intent_id = ?',
-        [paymentIntentId]
-      );
-      
-      const enrollment = await db.queryOne('SELECT * FROM enrollments WHERE payment_intent_id = ?', [paymentIntentId]);
-      
-      if (!enrollment) {
-        throw new Error(`Enrollment with payment intent ID ${paymentIntentId} not found`);
-      }
-      
-      return {
-        data: {
-          status: (enrollment as any).payment_status,
-          enrollmentId: (enrollment as any).id,
-        },
-      };
-    } catch (error) {
-      console.error(`Error updating enrollment with payment intent ID ${paymentIntentId}:`, error);
-      throw error;
+    await db.update(
+      'enrollments',
+      {
+        payment_status: status,
+        updated_at: new Date().toISOString(),
+      },
+      'payment_intent_id = ?',
+      [paymentIntentId]
+    );
+    
+    const enrollment = await db.queryOne('SELECT * FROM enrollments WHERE payment_intent_id = ?', [paymentIntentId]);
+    
+    if (!enrollment) {
+      throw new Error(`Enrollment with payment intent ID ${paymentIntentId} not found`);
     }
+    
+    return {
+      data: {
+        status: (enrollment as any).payment_status,
+        enrollmentId: (enrollment as any).id,
+      },
+    };
   },
 };
 

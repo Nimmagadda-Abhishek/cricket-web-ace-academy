@@ -9,27 +9,8 @@ import hostingerService from '@/services/hostinger';
 // Use Hostinger database service exclusively
 console.log('Using database service: Hostinger');
 
-// Select the Hostinger database service with error handling
-let dbService;
-try {
-  dbService = hostingerService;
-} catch (error) {
-  console.error('Error initializing Hostinger database service:', error);
-  // Provide a fallback service that returns mock data
-  dbService = {
-    programs: {
-      getPrograms: () => Promise.resolve({ data: { programs: [] } }),
-      getProgramById: (id: string) => Promise.resolve({ data: { program: null } }),
-    },
-    contacts: {
-      submitContact: () => Promise.resolve({ data: { message: 'Contact form submitted (mock)' } }),
-    },
-    payments: {
-      createEnrollment: () => Promise.resolve({ data: { enrollment: {} } }),
-      updateEnrollmentStatus: () => Promise.resolve({ data: { status: 'succeeded' } }),
-    },
-  };
-}
+// Select the Hostinger database service
+const dbService = hostingerService;
 
 export { dbService };
 
@@ -60,7 +41,6 @@ async function apiRequest<T>(
   data?: any,
   customHeaders?: Record<string, string>
 ): Promise<ApiResponse<T>> {
-  try {
     const url = `${API_BASE_URL}${endpoint}`;
     
     // Get token from localStorage if available
@@ -97,21 +77,10 @@ async function apiRequest<T>(
     
     // Check if response is successful
     if (!response.ok) {
-      return {
-        status: responseData.status || 'error',
-        message: responseData.message || 'An error occurred',
-        errors: responseData.errors,
-      };
+      throw new Error(responseData.message || 'An error occurred');
     }
     
     return responseData as ApiResponse<T>;
-  } catch (error) {
-    console.error('API request failed:', error);
-    return {
-      status: 'error',
-      message: error instanceof Error ? error.message : 'An unknown error occurred',
-    };
-  }
 }
 
 /**
@@ -253,33 +222,28 @@ export const api = {
   // File upload endpoint
   upload: {
     uploadImage: async (file: File, folder: string = 'uploads'): Promise<string> => {
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('folder', folder);
-        
-        const response = await fetch(`${API_BASE_URL.replace('/api', '')}/api/upload`, {
-          method: 'POST',
-          body: formData,
-          // Don't set Content-Type header for FormData
-          headers: {
-            // Include authorization if available
-            ...(localStorage.getItem('token') ? {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            } : {})
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to upload image');
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', folder);
+      
+      const response = await fetch(`${API_BASE_URL.replace('/api', '')}/api/upload`, {
+        method: 'POST',
+        body: formData,
+        // Don't set Content-Type header for FormData
+        headers: {
+          // Include authorization if available
+          ...(localStorage.getItem('token') ? {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          } : {})
         }
-        
-        const data = await response.json();
-        return data.url;
-      } catch (error) {
-        console.error('Error uploading image:', error);
-        throw error;
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
       }
+      
+      const data = await response.json();
+      return data.url;
     }
   },
   
@@ -298,7 +262,6 @@ export const api = {
  * This can be used to verify the connection between frontend and backend
  */
 export const checkApiConnection = async (): Promise<boolean> => {
-  try {
     // Try the health endpoint first
     try {
       const response = await fetch(`${API_BASE_URL.replace('/api', '')}/health`, {
@@ -326,15 +289,10 @@ export const checkApiConnection = async (): Promise<boolean> => {
     
     // Even a 401 response means the API is available
     return loginResponse.status !== 0;
-  } catch (error) {
-    console.error('API connection check failed:', error);
-    return false;
-  }
 };
 
 // Check database connection through the server API
 export const checkDatabaseConnection = async (): Promise<{connected: boolean, message: string}> => {
-  try {
     // First try the dedicated check-db endpoint
     try {
       const response = await fetch(`${API_BASE_URL}/check-db`, {
@@ -353,34 +311,22 @@ export const checkDatabaseConnection = async (): Promise<{connected: boolean, me
     }
     
     // If that fails, try the auth debug endpoint
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/debug`, {
-        method: 'GET',
-        headers: DEFAULT_HEADERS,
-        signal: AbortSignal.timeout(3000)
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok && data.status === 'success') {
-        return { connected: true, message: 'Connected to database successfully via auth debug' };
-      } else {
-        return { 
-          connected: false, 
-          message: data.message || 'Failed to connect to database' 
-        };
-      }
-    } catch (e) {
-      console.log('Auth debug endpoint failed too');
-      throw e;
+    const response = await fetch(`${API_BASE_URL}/auth/debug`, {
+      method: 'GET',
+      headers: DEFAULT_HEADERS,
+      signal: AbortSignal.timeout(3000)
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok && data.status === 'success') {
+      return { connected: true, message: 'Connected to database successfully via auth debug' };
+    } else {
+      return { 
+        connected: false, 
+        message: data.message || 'Failed to connect to database' 
+      };
     }
-  } catch (error) {
-    console.error('Database connection check failed:', error);
-    return { 
-      connected: false, 
-      message: error instanceof Error ? error.message : 'Unknown error checking database connection' 
-    };
-  }
 };
 
 export default api;
