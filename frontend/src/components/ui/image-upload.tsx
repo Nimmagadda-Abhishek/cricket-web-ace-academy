@@ -55,7 +55,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       formData.append('folder', folder);
 
       // Upload the file
-      const response = await fetch('http://localhost:5000/api/upload', {
+      const response = await fetch('https://cricket-web-ace-academy.onrender.com/api/upload', {
         method: 'POST',
         body: formData,
       });
@@ -96,7 +96,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         {previewUrl && (
           <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden">
             <img 
-              src={previewUrl.startsWith('blob:') || previewUrl.startsWith('http') ? previewUrl : `http://localhost:5000${previewUrl}`} 
+              src={previewUrl.startsWith('blob:') || previewUrl.startsWith('http') ? previewUrl : `https://cricket-web-ace-academy.onrender.com${previewUrl}`} 
               alt="Preview" 
               className="w-full h-full object-cover"
             />

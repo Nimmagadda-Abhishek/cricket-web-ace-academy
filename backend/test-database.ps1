@@ -44,7 +44,7 @@ try {
     } | ConvertTo-Json
     
     try {
-        $loginResponse = Invoke-WebRequest -Uri "http://localhost:5000/api/auth/login" -Method POST -Body $loginData -Headers $headers
+        $loginResponse = Invoke-WebRequest -Uri "https://cricket-web-ace-academy.onrender.com/api/auth/login" -Method POST -Body $loginData -Headers $headers
         $loginResult = $loginResponse.Content | ConvertFrom-Json
         
         if ($loginResult.success) {

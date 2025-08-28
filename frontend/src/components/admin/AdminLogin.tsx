@@ -135,7 +135,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, error, isLoading: exte
                     // Use a dynamic API URL based on environment
                     const apiUrl = import.meta.env.PROD 
                       ? '/api/auth/login'  // In production, use relative path
-                      : 'http://localhost:5000/api/auth/login'; // In development, use localhost
+                      : 'https://cricket-web-ace-academy.onrender.com/api/auth/login'; // In development, use deployed backend
                     
                     console.log('Attempting direct login to:', apiUrl);
                     
@@ -193,7 +193,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, error, isLoading: exte
                       // Use a dynamic API URL based on environment
                       const apiUrl = import.meta.env.PROD 
                         ? '/api/auth/debug'  // In production, use relative path
-                        : 'http://localhost:5000/api/auth/debug'; // In development, use localhost
+                        : 'https://cricket-web-ace-academy.onrender.com/api/auth/debug'; // In development, use deployed backend
                       
                       console.log('Testing API connection to:', apiUrl);
                       

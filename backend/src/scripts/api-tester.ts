@@ -284,7 +284,7 @@ class APITester {
   async testHealth() {
     try {
       const response = await fetch('https://cricket-web-ace-academy.onrender.com/health');
-      const result = await response.json();
+      const result = await response.json() as APIResponse;
       return result.success;
     } catch (error) {
       return false;

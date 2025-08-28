@@ -77,7 +77,7 @@ const AdminPanel = () => {
       
       try {
         // First try direct fetch for debugging
-        const directResponse = await fetch('http://localhost:5000/api/auth/login', {
+          const directResponse = await fetch('https://cricket-web-ace-academy.onrender.com/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
