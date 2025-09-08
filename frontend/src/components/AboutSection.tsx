@@ -177,16 +177,16 @@ const AboutSection = () => {
               </p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {features.map((feature, index) => (
-                  <div 
-                    key={index} 
-                    className={`multicolor-border-${(index % 4) + 1} text-center p-4 card-hover animate-bounceIn stagger-${index + 1}`}
-                  >
-                    <div className="text-3xl mb-2 animate-wiggle">{feature.icon}</div>
-                    <h4 className="font-semibold text-cricket-green mb-1">{feature.title}</h4>
-                    <p className="text-sm text-gray-600">{feature.description}</p>
-                  </div>
-                ))}
+{features.map((feature, index) => (
+  <div 
+    key={index} 
+    className={`text-center p-4 card-hover animate-bounceIn stagger-${index + 1}`}
+  >
+    <div className="text-3xl mb-2 animate-wiggle">{feature.icon}</div>
+    <h4 className="font-semibold text-cricket-green mb-1">{feature.title}</h4>
+    <p className="text-sm text-gray-600">{feature.description}</p>
+  </div>
+))}
               </div>
             </div>
           </div>
