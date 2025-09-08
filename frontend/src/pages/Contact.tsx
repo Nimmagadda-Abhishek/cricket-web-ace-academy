@@ -365,7 +365,7 @@ const Contact = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-2 border-white text-white hover:bg-white hover:text-cricket-green px-8 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
+                className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-cricket-green px-8 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
                 onClick={() => window.open('https://wa.me/919550858524', '_blank')}
               >
                 💬 WhatsApp

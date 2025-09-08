@@ -8,9 +8,9 @@ const AboutSection = () => {
   const [finishedCounts, setFinishedCounts] = useState([false, false, false, false]);
   
   const stats = [
-    { number: '500+', value: 500, label: 'Students Trained', icon: '👨‍🎓', color: 'bg-blue-500', suffix: '+' },
+    { number: '30000+', value: 30000, label: 'Students Trained', icon: '👨‍🎓', color: 'bg-blue-500', suffix: '+' },
     { number: '15+', value: 15, label: 'Years Experience', icon: '🏏', color: 'bg-cricket-orange', suffix: '+' },
-    { number: '50+', value: 50, label: 'Professional Players', icon: '🏆', color: 'bg-cricket-gold', suffix: '+' },
+    { number: '50+', value: 50, label: 'State Players', icon: '🏆', color: 'bg-cricket-gold', suffix: '+' },
     { number: '98%', value: 98, label: 'Success Rate', icon: '📈', color: 'bg-green-500', suffix: '%' },
   ];
   
@@ -77,6 +77,12 @@ const AboutSection = () => {
           if (frame <= totalFrames) {
             requestAnimationFrame(countUp);
           } else {
+            // Set the final count to the target value to ensure it's accurate
+            setCounts(prevCounts => {
+              const newCounts = [...prevCounts];
+              newCounts[index] = stat.value;
+              return newCounts;
+            });
             // Mark this count as finished to trigger the finish animation
             setFinishedCounts(prev => {
               const newFinished = [...prev];
