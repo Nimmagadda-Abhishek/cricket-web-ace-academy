@@ -37,6 +37,10 @@ const FacilitiesSection = () => {
     checkFacilities();
   }, []);
   
+  const bgClasses = [
+    'bg-white'
+  ];
+
   const facilities = [
     {
       title: 'High-Performance Practice Nets',
@@ -235,7 +239,7 @@ const FacilitiesSection = () => {
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     {/* Apple Intelligence Style Card */}
-                    <div className={`group relative multicolor-border-${(index % 4) + 1} shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-[360px] flex flex-col card-fade-in bg-white/95 backdrop-blur-sm`}>
+                    <div className={`group relative shadow-2xl shadow-blue-500/20 overflow-hidden hover:shadow-3xl hover:shadow-blue-500/30 transition-all duration-500 hover:-translate-y-2 h-[360px] flex flex-col card-fade-in rounded-3xl ${bgClasses[index % bgClasses.length]}`}>
                       {/* Card Header with Icon Background */}
                       <div className="relative p-5 pb-4 flex-shrink-0">
                         {/* Icon with gradient background */}

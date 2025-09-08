@@ -160,7 +160,7 @@ class APITester {
       address: 'Test Address'
     };
     
-    const createResult = await this.post('/students', newStudent);
+    const createResult = await this.post('/students', newStudent, true);
     if (createResult.success) {
       console.log('✅ Student created successfully, ID:', createResult.data?.student?.id);
       
@@ -168,18 +168,20 @@ class APITester {
       const studentId = createResult.data.student.id;
       console.log('\\n✏️ Updating student...');
       const updateData = { phone: '9876543210' };
-      const updateResult = await this.put(`/students/${studentId}`, updateData);
+      const updateResult = await this.put(`/students/${studentId}`, updateData, true);
       console.log('Update result:', updateResult.success ? '✅ Success' : '❌ Failed');
       
       // Get single student
       console.log('\\n👤 Getting single student...');
       const singleStudentResult = await this.get(`/students/${studentId}`, true);
       console.log('Single student:', singleStudentResult.success ? '✅ Found' : '❌ Not found');
-      
+
       // Delete the student
       console.log('\\n🗑️ Deleting test student...');
-      const deleteResult = await this.delete(`/students/${studentId}`);
+      const deleteResult = await this.delete(`/students/${studentId}`, true);
       console.log('Delete result:', deleteResult.success ? '✅ Success' : '❌ Failed');
+    } else {
+      console.error('❌ Failed to create student:', createResult.message);
     }
   }
 
@@ -211,6 +213,97 @@ class APITester {
     console.log('\\n📋 Getting all testimonials...');
     const testimonialsResult = await this.get('/testimonials');
     console.log('Testimonials:', testimonialsResult.data?.testimonials?.length || 0, 'found');
+  }
+
+  // Test achievement operations
+  async testAchievementOperations() {
+    console.log('\\n🧪 Testing Achievement Operations...');
+    
+    // Get all achievements
+    console.log('\\n📋 Getting all achievements...');
+    const achievementsResult = await this.get('/achievements', true); // use auth to see all
+    console.log('Achievements:', achievementsResult.data?.achievements?.length || 0, 'found');
+
+    // Create a new achievement
+    console.log('\\n➕ Creating new achievement...');
+    const newAchievement = {
+      title: 'Test Achievement from Tester',
+      description: 'A great test achievement',
+      date_achieved: new Date().toISOString().split('T')[0],
+      category: 'Testing',
+      is_featured: true
+    };
+    
+    const createResult = await this.post('/achievements', newAchievement, true);
+    if (createResult.success) {
+      console.log('✅ Achievement created successfully, ID:', createResult.data?.achievement?.id);
+      
+      const achievementId = createResult.data.achievement.id;
+      
+      // Get single achievement
+      console.log('\\n👤 Getting single achievement...');
+      const singleResult = await this.get(`/achievements/${achievementId}`, true);
+      console.log('Single achievement:', singleResult.success ? '✅ Found' : '❌ Not found');
+      
+      // Update the achievement
+      console.log('\\n✏️ Updating achievement...');
+      const updateData = { description: 'Updated description' };
+      const updateResult = await this.put(`/achievements/${achievementId}`, updateData, true);
+      console.log('Update result:', updateResult.success ? '✅ Success' : '❌ Failed');
+      
+      // Delete the achievement
+      console.log('\\n🗑️ Deleting test achievement...');
+      const deleteResult = await this.delete(`/achievements/${achievementId}`, true);
+      console.log('Delete result:', deleteResult.success ? '✅ Success' : '❌ Failed');
+    } else {
+      console.error('❌ Failed to create achievement:', createResult.message);
+    }
+  }
+
+  // Test facility operations
+  async testFacilityOperations() {
+    console.log('\\n🧪 Testing Facility Operations...');
+    
+    // Get all facilities
+    console.log('\\n📋 Getting all facilities...');
+    const facilitiesResult = await this.get('/facilities', true); // use auth to see all
+    console.log('Facilities:', facilitiesResult.data?.facilities?.length || 0, 'found');
+
+    // Create a new facility
+    console.log('\\n➕ Creating new facility...');
+    const newFacility = {
+      title: 'Test Facility from Tester',
+      description: 'A great test facility',
+      short_description: 'Test short desc',
+      features: ['Feature 1', 'Feature 2'],
+      icon: '🏆',
+      display_order: 99
+    };
+    
+    const createResult = await this.post('/facilities', newFacility, true);
+    if (createResult.success) {
+      console.log('✅ Facility created successfully, ID:', createResult.data?.facility?.id);
+      
+      const facilityId = createResult.data.facility.id;
+      
+      // Get single facility
+      console.log('\\n👤 Getting single facility...');
+      const singleResult = await this.get(`/facilities/${facilityId}`, true);
+      console.log('Single facility:', singleResult.success ? '✅ Found' : '❌ Not found');
+      
+      // Update the facility
+      console.log('\\n✏️ Updating facility...');
+      const updateData = { is_active: false };
+      const updateResult = await this.put(`/facilities/${facilityId}`, updateData, true);
+      console.log('Update result:', updateResult.success ? '✅ Success' : '❌ Failed');
+      
+      // Delete the facility
+      console.log('\\n🗑️ Deleting test facility...');
+      const deleteResult = await this.delete(`/facilities/${facilityId}`, true);
+      console.log('Delete result:', deleteResult.success ? '✅ Success' : '❌ Failed');
+    } else {
+      console.error('❌ Failed to create facility:', createResult.message);
+    }
   }
 
   // Bulk upload students from JSON file
@@ -310,23 +403,32 @@ async function main() {
     switch (command) {
       case 'test':
         // Login first
-        await apiTester.login();
+        if (!await apiTester.login()) {
+          console.error('Aborting tests due to login failure.');
+          return;
+        }
         
         // Run all tests
         await apiTester.testStudentOperations();
         await apiTester.testProgramOperations();
         await apiTester.testCoachOperations();
         await apiTester.testTestimonialOperations();
+        await apiTester.testAchievementOperations();
+        await apiTester.testFacilityOperations();
         break;
         
       case 'upload-students':
-        await apiTester.login();
+        if (!await apiTester.login()) {
+          return;
+        }
         const filePath = process.argv[3] || './src/scripts/sample-students.json';
         await apiTester.bulkUploadStudents(filePath);
         break;
         
       case 'export':
-        await apiTester.login();
+        if (!await apiTester.login()) {
+          return;
+        }
         const endpoint = process.argv[3];
         const filename = process.argv[4];
         if (!endpoint || !filename) {

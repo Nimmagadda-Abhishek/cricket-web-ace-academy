@@ -9,22 +9,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
-import { dbService } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
-
-interface Facility {
-  id: string;
-  name: string;
-  description: string;
-  image_url: string;
-  features: string[];
-  status: 'available' | 'maintenance' | 'upcoming';
-  created_at: string;
-  updated_at: string;
-}
+import { facilities as initialFacilities, Facility } from '@/data/facilities';
 
 const FacilitiesAdmin = () => {
-  const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [facilities, setFacilities] = useState<Facility[]>(initialFacilities);
   const [filteredFacilities, setFilteredFacilities] = useState<Facility[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeStatus, setActiveStatus] = useState('all');
@@ -61,15 +50,12 @@ const FacilitiesAdmin = () => {
       setLoading(true);
       setError(null);
       
-      const response = await dbService.facilities.getFacilities();
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      if (response && response.data && response.data.facilities) {
-        setFacilities(response.data.facilities);
-        setFilteredFacilities(response.data.facilities);
-      } else {
-        setFacilities([]);
-        setFilteredFacilities([]);
-      }
+      setFacilities(initialFacilities);
+      setFilteredFacilities(initialFacilities);
+
     } catch (error) {
       console.error('Error fetching facilities:', error);
       setError('Failed to load facilities. Please try again later.');
@@ -139,54 +125,23 @@ const FacilitiesAdmin = () => {
       return newFacility.image_url; // Return existing URL if no new file
     }
 
-    try {
-      setUploadProgress(0);
-      
-      // Create a FormData object to upload the file
-      const formData = new FormData();
-      formData.append('file', newFacility.file);
-      formData.append('folder', 'facilities');
-      
-      // Simulate upload progress
-      const uploadInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(uploadInterval);
-            return prev;
-          }
-          return prev + 10;
-        });
-      }, 300);
-      
-      // Upload the file to your server
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      clearInterval(uploadInterval);
-      setUploadProgress(100);
-      
-      if (!response.ok) {
-        throw new Error('Failed to upload image');
-      }
-      
-      const data = await response.json();
-      
-      // For development/testing, if the upload endpoint is not available,
-      // we'll use a placeholder image URL
-      if (data && data.url) {
-        return data.url;
-      } else {
-        // Use a placeholder image for testing
-        return `https://picsum.photos/seed/${Date.now()}/600/400`;
-      }
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      
-      // For development/testing, return a placeholder image URL
-      return `https://picsum.photos/seed/${Date.now()}/600/400`;
-    }
+    return new Promise<string>((resolve) => {
+        setUploadProgress(0);
+        const uploadInterval = setInterval(() => {
+            setUploadProgress(prev => {
+                if (prev >= 100) {
+                    clearInterval(uploadInterval);
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        resolve(reader.result as string);
+                    };
+                    reader.readAsDataURL(newFacility.file as Blob);
+                    return 100;
+                }
+                return prev + 10;
+            });
+        }, 100);
+    });
   };
 
   const saveFacility = async () => {
@@ -208,7 +163,6 @@ const FacilitiesAdmin = () => {
       return;
     }
 
-    // Filter out empty features
     const filteredFeatures = newFacility.features.filter(feature => feature.trim() !== '');
     if (filteredFeatures.length === 0) {
       toast({
@@ -222,23 +176,23 @@ const FacilitiesAdmin = () => {
     try {
       setIsUploading(true);
       
-      // Upload image if there's a new file
       let imageUrl = newFacility.image_url;
       if (newFacility.file) {
         imageUrl = await uploadImage();
       }
       
       if (editMode && selectedFacility) {
-        // Update existing facility
-        const facilityData = {
+        const updatedFacility = {
+          ...selectedFacility,
           name: newFacility.name,
           description: newFacility.description,
           image_url: imageUrl,
           features: filteredFeatures,
-          status: newFacility.status
+          status: newFacility.status,
+          updated_at: new Date().toISOString()
         };
         
-        await dbService.facilities.updateFacility(selectedFacility.id, facilityData);
+        setFacilities(facilities.map(f => f.id === selectedFacility.id ? updatedFacility : f));
 
         toast({
           title: "Success",
@@ -246,16 +200,18 @@ const FacilitiesAdmin = () => {
           variant: "default"
         });
       } else {
-        // Create new facility
-        const facilityData = {
+        const newFacilityData: Facility = {
+          id: `${Date.now()}`,
           name: newFacility.name,
           description: newFacility.description,
           image_url: imageUrl,
           features: filteredFeatures,
-          status: newFacility.status
+          status: newFacility.status,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         };
         
-        await dbService.facilities.createFacility(facilityData);
+        setFacilities([newFacilityData, ...facilities]);
 
         toast({
           title: "Success",
@@ -264,9 +220,8 @@ const FacilitiesAdmin = () => {
         });
       }
       
-      // Reset form and refresh facilities
       resetForm();
-      fetchFacilities();
+      // No need to call fetchFacilities, as we are updating state directly
     } catch (error) {
       console.error('Error saving facility:', error);
       toast({
@@ -282,18 +237,17 @@ const FacilitiesAdmin = () => {
 
   const deleteFacility = async (id: string) => {
     try {
-      // Delete the facility
-      await dbService.facilities.deleteFacility(id);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
 
+      setFacilities(facilities.filter(f => f.id !== id));
+      
       toast({
         title: "Success",
         description: "Facility deleted successfully",
         variant: "default"
       });
       
-      // Update the local state to remove the deleted facility
-      setFacilities(facilities.filter(f => f.id !== id));
-      setFilteredFacilities(filteredFacilities.filter(f => f.id !== id));
     } catch (error) {
       console.error('Error deleting facility:', error);
       toast({
@@ -410,7 +364,7 @@ const FacilitiesAdmin = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="image">Facility Image*</Label>
-                    {editMode && (
+                    {editMode && newFacility.image_url && (
                       <div className="mb-2">
                         <img 
                           src={newFacility.image_url} 

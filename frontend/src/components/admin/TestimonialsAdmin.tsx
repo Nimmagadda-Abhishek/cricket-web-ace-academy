@@ -8,27 +8,14 @@ import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
-import { dbService } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
-
-interface Testimonial {
-  id: string;
-  name: string;
-  role: string;
-  content: string;
-  rating: number;
-  image_url: string;
-  is_featured: boolean;
-  created_at: string;
-  updated_at: string;
-}
+import { testimonialsData, Testimonial } from '@/data/testimonials';
 
 const TestimonialsAdmin = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
@@ -36,12 +23,9 @@ const TestimonialsAdmin = () => {
   // Form state
   const [newTestimonial, setNewTestimonial] = useState({
     name: '',
-    role: '',
     content: '',
     rating: 5,
-    image_url: '',
-    is_featured: false,
-    file: null as File | null
+    is_featured: false
   });
 
   useEffect(() => {
@@ -52,14 +36,9 @@ const TestimonialsAdmin = () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await dbService.testimonials.getTestimonials();
-      
-      if (response && response.data && response.data.testimonials) {
-        setTestimonials(response.data.testimonials);
-      } else {
-        setTestimonials([]);
-      }
+
+      // Load testimonials from local data
+      setTestimonials(testimonialsData);
     } catch (error) {
       console.error('Error fetching testimonials:', error);
       setError('Failed to load testimonials. Please try again later.');
@@ -81,21 +60,14 @@ const TestimonialsAdmin = () => {
     setNewTestimonial(prev => ({ ...prev, is_featured: checked }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setNewTestimonial(prev => ({ ...prev, file: e.target.files![0] }));
-    }
-  };
+
 
   const resetForm = () => {
     setNewTestimonial({
       name: '',
-      role: '',
       content: '',
       rating: 5,
-      image_url: '',
-      is_featured: false,
-      file: null
+      is_featured: false
     });
     setEditMode(false);
   };
@@ -103,74 +75,18 @@ const TestimonialsAdmin = () => {
   const prepareForEdit = (testimonial: Testimonial) => {
     setNewTestimonial({
       name: testimonial.name,
-      role: testimonial.role,
       content: testimonial.content,
       rating: testimonial.rating,
-      image_url: testimonial.image_url,
-      is_featured: testimonial.is_featured,
-      file: null
+      is_featured: testimonial.is_featured
     });
     setSelectedTestimonial(testimonial);
     setEditMode(true);
   };
 
-  const uploadImage = async () => {
-    if (!newTestimonial.file) {
-      return newTestimonial.image_url; // Return existing URL if no new file
-    }
 
-    try {
-      setUploadProgress(0);
-      
-      // Create a FormData object to upload the file
-      const formData = new FormData();
-      formData.append('file', newTestimonial.file);
-      formData.append('folder', 'testimonials');
-      
-      // Simulate upload progress
-      const uploadInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(uploadInterval);
-            return prev;
-          }
-          return prev + 10;
-        });
-      }, 300);
-      
-      // Upload the file to your server
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      clearInterval(uploadInterval);
-      setUploadProgress(100);
-      
-      if (!response.ok) {
-        throw new Error('Failed to upload image');
-      }
-      
-      const data = await response.json();
-      
-      // For development/testing, if the upload endpoint is not available,
-      // we'll use a placeholder image URL
-      if (data && data.url) {
-        return data.url;
-      } else {
-        // Use a placeholder image for testing
-        return `https://picsum.photos/seed/${Date.now()}/300/300`;
-      }
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      
-      // For development/testing, return a placeholder image URL
-      return `https://picsum.photos/seed/${Date.now()}/300/300`;
-    }
-  };
 
   const saveTestimonial = async () => {
-    if (!newTestimonial.name || !newTestimonial.role || !newTestimonial.content) {
+    if (!newTestimonial.name || !newTestimonial.content) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -179,36 +95,22 @@ const TestimonialsAdmin = () => {
       return;
     }
 
-    if (!newTestimonial.file && !newTestimonial.image_url && !editMode) {
-      toast({
-        title: "Error",
-        description: "Please select an image",
-        variant: "destructive"
-      });
-      return;
-    }
-
     try {
-      setIsUploading(true);
-      
-      // Upload image if there's a new file
-      let imageUrl = newTestimonial.image_url;
-      if (newTestimonial.file) {
-        imageUrl = await uploadImage();
-      }
-      
       if (editMode && selectedTestimonial) {
-        // Update existing testimonial
-        const testimonialData = {
-          name: newTestimonial.name,
-          role: newTestimonial.role,
-          content: newTestimonial.content,
-          rating: newTestimonial.rating,
-          image_url: imageUrl,
-          is_featured: newTestimonial.is_featured
-        };
-        
-        await dbService.testimonials.updateTestimonial(selectedTestimonial.id, testimonialData);
+        // Update existing testimonial in local state
+        const updatedTestimonials = testimonials.map(testimonial =>
+          testimonial.id === selectedTestimonial.id
+            ? {
+                ...testimonial,
+                name: newTestimonial.name,
+                content: newTestimonial.content,
+                rating: newTestimonial.rating,
+                is_featured: newTestimonial.is_featured,
+                updated_at: new Date().toISOString()
+              }
+            : testimonial
+        );
+        setTestimonials(updatedTestimonials);
 
         toast({
           title: "Success",
@@ -216,17 +118,18 @@ const TestimonialsAdmin = () => {
           variant: "default"
         });
       } else {
-        // Create new testimonial
-        const testimonialData = {
+        // Create new testimonial in local state
+        const newTestimonialData: Testimonial = {
+          id: (testimonials.length + 1).toString(),
           name: newTestimonial.name,
-          role: newTestimonial.role,
           content: newTestimonial.content,
           rating: newTestimonial.rating,
-          image_url: imageUrl,
-          is_featured: newTestimonial.is_featured
+          is_featured: newTestimonial.is_featured,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         };
-        
-        await dbService.testimonials.createTestimonial(testimonialData);
+
+        setTestimonials([...testimonials, newTestimonialData]);
 
         toast({
           title: "Success",
@@ -234,10 +137,9 @@ const TestimonialsAdmin = () => {
           variant: "default"
         });
       }
-      
-      // Reset form and refresh testimonials
+
+      // Reset form
       resetForm();
-      fetchTestimonials();
     } catch (error) {
       console.error('Error saving testimonial:', error);
       toast({
@@ -245,25 +147,28 @@ const TestimonialsAdmin = () => {
         description: "Failed to save testimonial. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      setIsUploading(false);
-      setUploadProgress(0);
     }
   };
 
   const toggleFeatured = async (id: string, currentStatus: boolean) => {
     try {
-      await dbService.testimonials.updateTestimonial(id, {
-        is_featured: !currentStatus
-      });
+      // Update testimonial in local state
+      const updatedTestimonials = testimonials.map(testimonial =>
+        testimonial.id === id
+          ? {
+              ...testimonial,
+              is_featured: !currentStatus,
+              updated_at: new Date().toISOString()
+            }
+          : testimonial
+      );
+      setTestimonials(updatedTestimonials);
 
       toast({
         title: "Success",
         description: `Testimonial ${!currentStatus ? 'featured' : 'unfeatured'} successfully`,
         variant: "default"
       });
-      
-      fetchTestimonials();
     } catch (error) {
       console.error('Error toggling featured status:', error);
       toast({
@@ -276,17 +181,14 @@ const TestimonialsAdmin = () => {
 
   const deleteTestimonial = async (id: string) => {
     try {
-      // Delete the testimonial
-      await dbService.testimonials.deleteTestimonial(id);
+      // Delete the testimonial from local state
+      setTestimonials(testimonials.filter(t => t.id !== id));
 
       toast({
         title: "Success",
         description: "Testimonial deleted successfully",
         variant: "default"
       });
-      
-      // Update the local state to remove the deleted testimonial
-      setTestimonials(testimonials.filter(t => t.id !== id));
     } catch (error) {
       console.error('Error deleting testimonial:', error);
       toast({
@@ -333,27 +235,15 @@ const TestimonialsAdmin = () => {
                     <DialogTitle>{editMode ? 'Edit Testimonial' : 'Add New Testimonial'}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Name*</Label>
-                        <Input 
-                          id="name" 
-                          name="name" 
-                          value={newTestimonial.name} 
-                          onChange={handleInputChange} 
-                          placeholder="Enter name" 
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="role">Role/Position*</Label>
-                        <Input 
-                          id="role" 
-                          name="role" 
-                          value={newTestimonial.role} 
-                          onChange={handleInputChange} 
-                          placeholder="e.g. Student, Parent, Coach" 
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Name*</Label>
+                      <Input
+                        id="name"
+                        name="name"
+                        value={newTestimonial.name}
+                        onChange={handleInputChange}
+                        placeholder="Enter name"
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="content">Testimonial Content*</Label>
@@ -398,52 +288,17 @@ const TestimonialsAdmin = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="image">Profile Image*</Label>
-                      {editMode && newTestimonial.image_url && (
-                        <div className="mb-2">
-                          <img 
-                            src={newTestimonial.image_url} 
-                            alt="Current profile" 
-                            className="h-20 w-20 object-cover rounded-full"
-                          />
-                          <p className="text-xs text-gray-500 mt-1">Current image</p>
-                        </div>
-                      )}
-                      <Input 
-                        id="image" 
-                        type="file" 
-                        accept="image/*" 
-                        onChange={handleFileChange} 
-                      />
-                      {newTestimonial.file && (
-                        <p className="text-sm text-gray-500">
-                          Selected: {newTestimonial.file.name} ({Math.round(newTestimonial.file.size / 1024)} KB)
-                        </p>
-                      )}
-                    </div>
-                    {isUploading && (
-                      <div className="space-y-2">
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                          <div 
-                            className="bg-cricket-green h-2.5 rounded-full" 
-                            style={{ width: `${uploadProgress}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-sm text-center">{uploadProgress}% Uploaded</p>
-                      </div>
-                    )}
+
                   </div>
                   <DialogFooter>
                     <DialogClose asChild>
                       <Button variant="outline" onClick={resetForm}>Cancel</Button>
                     </DialogClose>
-                    <Button 
-                      onClick={saveTestimonial} 
-                      disabled={isUploading}
+                    <Button
+                      onClick={saveTestimonial}
                       className="bg-cricket-green hover:bg-cricket-green/90"
                     >
-                      {isUploading ? 'Saving...' : editMode ? 'Update Testimonial' : 'Add Testimonial'}
+                      {editMode ? 'Update Testimonial' : 'Add Testimonial'}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -482,20 +337,10 @@ const TestimonialsAdmin = () => {
                   }`}
                 >
                   <CardContent className="p-6">
-                    <div className="flex items-center mb-4">
-                      <div className="w-16 h-16 rounded-full overflow-hidden mr-4 border-2 border-cricket-green">
-                        <img
-                          src={testimonial.image_url}
-                          alt={testimonial.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-lg">{testimonial.name}</h3>
-                        <p className="text-sm text-gray-600">{testimonial.role}</p>
-                        <div className="text-yellow-400 text-sm mt-1">
-                          {renderStars(testimonial.rating)}
-                        </div>
+                    <div className="mb-4">
+                      <h3 className="font-semibold text-lg">{testimonial.name}</h3>
+                      <div className="text-yellow-400 text-sm mt-1">
+                        {renderStars(testimonial.rating)}
                       </div>
                     </div>
                     <div className="mb-4">
@@ -553,20 +398,10 @@ const TestimonialsAdmin = () => {
               </DialogTitle>
             </DialogHeader>
             <div className="py-4">
-              <div className="flex items-center mb-6">
-                <div className="w-20 h-20 rounded-full overflow-hidden mr-6 border-2 border-cricket-green">
-                  <img 
-                    src={selectedTestimonial.image_url} 
-                    alt={selectedTestimonial.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold">{selectedTestimonial.name}</h3>
-                  <p className="text-gray-600">{selectedTestimonial.role}</p>
-                  <div className="text-yellow-400 text-lg mt-1">
-                    {renderStars(selectedTestimonial.rating)}
-                  </div>
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold">{selectedTestimonial.name}</h3>
+                <div className="text-yellow-400 text-lg mt-1">
+                  {renderStars(selectedTestimonial.rating)}
                 </div>
               </div>
               <div className="mb-6">

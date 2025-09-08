@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { fetchPrograms } from '@/services/api';
+import { getPrograms } from '@/data/programs';
 
 interface Program {
   _id: string;
@@ -12,72 +11,15 @@ interface Program {
   highlights?: string[];
 }
 
-const fallbackPrograms = [
-  {
-    _id: '1',
-    title: 'Group Training',
-    description: 'Perfect for beginners and team building. Develop fundamental skills in a supportive group environment.',
-    level: 'Beginner to Intermediate',
-    icon: '👥',
-    color: 'bg-gradient-to-br from-blue-500 to-blue-600',
-    image: '/images/programs/01.jpg',
-    highlights: ['Team Building', 'Basic Skills', 'Match Practice', 'Fitness Training']
-  },
-  {
-    _id: '2',
-    title: 'Personal Training',
-    description: 'One-on-one coaching for rapid skill improvement. Customized training plans for individual goals.',
-    level: 'Intermediate',
-    icon: '🎯',
-    color: 'bg-gradient-to-br from-orange-500 to-red-500',
-    image: '/images/programs/02.webp',
-    highlights: ['Individual Focus', 'Video Analysis', 'Technique Refinement', 'Performance Tracking']
-  },
-  {
-    _id: '3',
-    title: 'Elite Coaching',
-    description: 'Advanced training for serious players. Professional-level coaching for competitive cricket.',
-    level: 'Advanced',
-    icon: '🏆',
-    color: 'bg-gradient-to-br from-purple-500 to-indigo-600',
-    image: '/images/programs/03.webp',
-    highlights: ['Elite Training', 'Tournament Prep', 'Mental Coaching', 'Career Guidance']
-  },
-  {
-    _id: '4',
-    title: 'Corporate Program',
-    description: 'Team building through cricket. Perfect for corporate groups and office teams.',
-    level: 'All Levels',
-    icon: '🏢',
-    color: 'bg-gradient-to-br from-green-500 to-emerald-600',
-    image: '/images/corporate-cricket-program.jpg',
-    highlights: ['Team Building', 'Corporate Events', 'Fitness Focus', 'Leadership Skills']
-  },
-  {
-    _id: '5',
-    title: 'NRI Excellence Program',
-    description: 'Intensive short-term program for overseas players with high-intensity drills, match simulations, and adaptation to Indian conditions.',
-    level: 'Intermediate to Advanced',
-    icon: '🌍',
-    color: 'bg-gradient-to-br from-teal-500 to-sky-600',
-    image: 'https://content.jdmagicbox.com/comp/def_content/cricket-coaching-classes/shutterstock-647586433-cricket-coaching-classes-9-qtn7q.jpg',
-    highlights: [
-      'High-intensity drills',
-      'Match sims: turf & matting',
-      'Adapt to Indian conditions',
-      'Specialist coaching & machines'
-    ]
-  },
-];
-
-
 const ProgramsSection = () => {
   const navigate = useNavigate();
   const sectionRef = React.useRef<HTMLElement>(null);
 
-  const { data: programsFromApi, isLoading, isError } = useQuery({ queryKey: ['programs'], queryFn: fetchPrograms });
+  const programs = getPrograms();
 
-  const programs = isError ? fallbackPrograms : programsFromApi;
+  const bgClasses = [
+    'bg-white'
+  ];
 
   const handleViewMore = () => {
     navigate('/programs');
@@ -104,8 +46,7 @@ const ProgramsSection = () => {
           </p>
         </div>
 
-        {isLoading && <div className="text-center text-xl">Loading Programs...</div>}
-        {isError && <div className="text-center text-xl text-yellow-500">Could not fetch programs. Displaying sample data.</div>}
+
 
         {/* Apple Intelligence Style Cards Container */}
         {programs && programs.length > 0 && (
@@ -154,7 +95,7 @@ const ProgramsSection = () => {
               >
                 {/* Apple Intelligence Style Card */}
                 <div
-                  className={`group relative multicolor-border-${(index % 4) + 1} shadow-lg p-6 hover:shadow-xl hover:scale-[1.05] transition-transform duration-500 cursor-pointer animate-fadeIn flex flex-col h-[520px]`}
+                  className={`group relative shadow-2xl shadow-blue-500/20 p-6 hover:shadow-3xl hover:shadow-blue-500/30 hover:scale-[1.05] transition-transform duration-500 cursor-pointer animate-fadeIn flex flex-col h-[520px] rounded-3xl ${bgClasses[index % bgClasses.length]}`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                   onClick={() => navigate('/programs')}
                 >

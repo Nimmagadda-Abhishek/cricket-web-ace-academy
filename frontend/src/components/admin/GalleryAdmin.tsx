@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { dbService } from '@/lib/api';
+import { api } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
 
 interface GalleryImage {
@@ -56,7 +56,7 @@ const GalleryAdmin = () => {
       setLoading(true);
       setError(null);
       
-      const response = await dbService.gallery.getGalleryImages();
+      const response = await api.admin.gallery.getAll();
       
       if (response && response.data && response.data.images) {
         setImages(response.data.images);
@@ -164,7 +164,7 @@ const GalleryAdmin = () => {
         category: newImage.category
       };
       
-      await dbService.gallery.createGalleryImage(galleryData);
+      await api.admin.gallery.create(galleryData);
 
       // Reset form and refresh images
       setNewImage({
@@ -198,7 +198,7 @@ const GalleryAdmin = () => {
   const deleteImage = async (id: string) => {
     try {
       // Delete the image from the gallery table
-      await dbService.gallery.deleteGalleryImage(id);
+      await api.admin.gallery.delete(id);
 
       toast({
         title: "Success",

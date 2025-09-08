@@ -42,67 +42,51 @@ const TestimonialsSection = () => {
   
   const testimonials = [
     {
-      name: 'Rajnikanth Reddy',
-      role: 'Parent',
-      content: 'Joined my kid in Kalyan Cricket Academy for a month while we were on vacation in India. Have to say the facility and coaching is really good. The coaches were very helpful in identifying any flaws with technique and correct them to improve his shot making, bowling and fielding. Would highly recommend it if you are looking for a cricket academy.',
+      name: 'Sathish Nani',
+      content: 'Kalyan Cricket Academy offers an exceptional experience for aspiring cricketers of all ages. With certified trainers who provide personalized coaching, you`ll refine your skills in no time. The couple packages are a fantastic option for friends or partners looking to enhance their game together. Whether you`re a beginner or looking to improve, Kalyan Cricket Academy is the perfect place to elevate your cricket journey!',
       rating: 5,
-      image: '/images/testimonials/testimonial1.jpg',
       color: 'from-green-500 to-emerald-600'
     },
     {
-      name: 'D. Sai Jayanth',
-      role: 'Student',
-      content: 'KCA is one of the best cricket academy in Hyderabad. I have visited the place, coaches are really good, they focus on each and every player and teach discipline along with the game. If you have a good talent and wants to do more in cricket, you must join Kalyan cricket academy go visit the place and see for yourself.',
+      name: 'Himavanth Reddy',
+      content: 'Good faculty and good environment.',
       rating: 5,
-      image: '/images/testimonials/testimonial2.jpg',
       color: 'from-blue-500 to-indigo-600'
     },
     {
-      name: 'Nishkala Donthireddy',
-      role: 'Student',
-      content: 'The academy boasts a team of experienced coaches who have played at the highest levels of the game. The academy\'s infrastructure is top-notch, with well-maintained pitches, practice nets, and fitness areas. The coaching experience at this Cricket Academy is exceptional, Whether am beginner the coaching here is top level.',
+      name: 'Surya',
+      content: 'Super gidency',
       rating: 5,
-      image: '/images/testimonials/testimonial3.jpg',
       color: 'from-purple-500 to-pink-600'
     },
     {
-      name: 'Academy Student',
-      role: 'Elite Program',
-      content: 'KCA is more than just a coaching center; it fosters a community of students, coaches, and parents working together to develop skilled cricketers. The academy aims to identify talented individuals passionate about cricket and offers them the necessary support and guidance to excel at various levels.',
+      name: 'indu',
+      content: 'It was nice camp',
       rating: 5,
-      image: '/images/testimonials/testimonial4.jpg',
       color: 'from-red-500 to-orange-600'
     },
     {
       name: 'Arjun Sharma',
-      role: 'Professional Player',
       content: 'I credit my professional career to the foundation I received at Kalyan Cricket Academy. The technical training and mental conditioning prepared me for the highest levels of competition. The coaches here don\'t just teach cricket, they instill a winning mindset and professional approach to the game.',
       rating: 5,
-      image: '/images/testimonials/testimonial5.jpg',
       color: 'from-yellow-500 to-amber-600'
     },
     {
       name: 'Priya Patel',
-      role: 'Parent of Junior Player',
       content: 'My daughter has transformed since joining KCA. Not only has her cricket improved dramatically, but she\'s also developed discipline, teamwork, and confidence that extends beyond the field. The coaches create a supportive environment where young players can thrive and develop their skills at their own pace.',
       rating: 5,
-      image: '/images/testimonials/testimonial6.jpg',
       color: 'from-teal-500 to-cyan-600'
     },
     {
       name: 'Vikram Mehta',
-      role: 'Corporate Program Participant',
       content: 'Our company enrolled in the corporate cricket program as a team-building activity, and it exceeded all expectations. The professional coaching combined with the fun, competitive atmosphere helped strengthen our team bonds while providing a great workout. Highly recommended for corporate groups!',
       rating: 5,
-      image: '/images/testimonials/testimonial7.jpg',
       color: 'from-indigo-500 to-violet-600'
     },
     {
       name: 'Kiran Kumar',
-      role: 'Advanced Training Student',
       content: 'The personalized coaching at KCA helped me overcome specific technical issues that had been holding back my game for years. The video analysis sessions and targeted drills made a huge difference. Within months, I saw improvements that years of casual practice couldn\'t achieve.',
       rating: 5,
-      image: '/images/testimonials/testimonial8.jpg',
       color: 'from-rose-500 to-pink-600'
     }
   ];
@@ -190,7 +174,7 @@ const TestimonialsSection = () => {
       {useDynamicTestimonials ? (
         <Testimonials />
       ) : (
-        <section className="py-20 bg-gray-50 relative overflow-hidden parallax-section">
+        <section className="py-12 bg-gray-50 relative overflow-hidden parallax-section">
           {/* Enhanced Parallax Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-cricket-orange/12 to-cricket-purple/12 rounded-full parallax-bg-element"></div>
@@ -202,12 +186,12 @@ const TestimonialsSection = () => {
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             
-            <div className="text-center mb-16 animate-fadeInUp">
-              <h2 className="text-5xl font-bold font-poppins gradient-text-testimonials mb-6 animate-slideDown">
+            <div className="text-center mb-12 animate-fadeInUp">
+              <h2 className="text-4xl font-bold font-poppins gradient-text-testimonials mb-4 animate-slideDown">
                 What Our Students Say
               </h2>
-              <div className="w-24 h-1 bg-cricket-orange mx-auto mb-6 rounded-full animate-shimmer"></div>
-              <p className="text-xl text-secondary max-w-3xl mx-auto animate-slideUp">
+              <div className="w-20 h-1 bg-cricket-orange mx-auto mb-4 rounded-full animate-shimmer"></div>
+              <p className="text-lg text-secondary max-w-3xl mx-auto animate-slideUp">
                 Hear from our students and parents about their experience at Kalyan Cricket Academy
               </p>
             </div>
@@ -271,51 +255,33 @@ const TestimonialsSection = () => {
                 <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cricket-orange/10 to-cricket-gold/10 rounded-full -translate-y-4 translate-x-4 animate-pulse-slow"></div>
                 <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-cricket-green/10 to-cricket-orange/10 rounded-full translate-y-4 -translate-x-4 animate-float"></div>
                 
-                <CardContent className="p-6 relative z-10">
-                  {/* Testimonial Image with Fallback */}
-                  <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-cricket-orange/20 shadow-lg">
-                    {testimonial.image ? (
-                      <img 
-                        src={testimonial.image} 
-                        alt={`${testimonial.name}'s testimonial`}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          // Fallback to letter avatar if image fails to load
-                          const target = e.target as HTMLImageElement;
-                          target.onerror = null;
-                          const parent = target.parentElement;
-                          if (parent) {
-                            parent.className = `w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-white/20 flex items-center justify-center bg-gradient-to-br ${testimonial.color} text-white text-3xl font-bold shadow-lg`;
-                            parent.innerHTML = testimonial.name.charAt(0);
-                          }
-                        }}
-                      />
-                    ) : (
-                      <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${testimonial.color} text-white text-3xl font-bold`}>
-                        {testimonial.name.charAt(0)}
-                      </div>
-                    )}
+                <CardContent className="p-4 relative z-10">
+                  {/* Testimonial Avatar */}
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border-3 border-cricket-orange/20 shadow-lg">
+                    <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${testimonial.color} text-white text-2xl font-bold`}>
+                      {testimonial.name.charAt(0)}
+                    </div>
                   </div>
-                  
+
                   {/* Enhanced Star Rating */}
-                  <div className="flex items-center justify-center mb-4 space-x-1">
+                  <div className="flex items-center justify-center mb-3 space-x-1">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <span 
-                        key={i} 
-                        className={`text-yellow-400 text-xl animate-zoomIn hover:animate-wiggle cursor-pointer`}
+                      <span
+                        key={i}
+                        className={`text-yellow-400 text-lg animate-zoomIn hover:animate-wiggle cursor-pointer`}
                       >
                         ⭐
                       </span>
                     ))}
                   </div>
-                  
+
                   {/* Enhanced Quote */}
-                  <div className="relative mb-6">
-                    <div className="text-6xl text-cricket-orange/20 absolute -top-4 -left-2">"</div>
-                    <p className="text-primary-body italic leading-relaxed text-center relative z-10 animate-fadeInUp max-h-32 overflow-y-auto">
+                  <div className="relative mb-4">
+                    <div className="text-4xl text-cricket-orange/20 absolute -top-2 -left-1">"</div>
+                    <p className="text-primary-body italic leading-relaxed text-center relative z-10 animate-fadeInUp text-sm max-h-24 overflow-y-auto">
                       {testimonial.content}
                     </p>
-                    <div className="text-6xl text-cricket-orange/20 absolute -bottom-8 -right-2 rotate-180">"</div>
+                    <div className="text-4xl text-cricket-orange/20 absolute -bottom-4 -right-1 rotate-180">"</div>
                   </div>
                   
                   {/* Enhanced Author Info */}
@@ -323,7 +289,6 @@ const TestimonialsSection = () => {
                     <h4 className="font-semibold text-cricket-green hover:text-cricket-orange transition-colors duration-300">
                       {testimonial.name}
                     </h4>
-                    <p className="text-sm text-cricket-orange font-medium">{testimonial.role}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -333,12 +298,12 @@ const TestimonialsSection = () => {
         </div>
 
         {/* Enhanced Gallery Section */}
-        <div className="text-center mb-16 animate-fadeInUp">
-          <h2 className="text-5xl font-bold font-poppins heading-gradient mb-6 animate-slideDown">
+        <div className="text-center mb-12 animate-fadeInUp">
+          <h2 className="text-4xl font-bold font-poppins heading-gradient mb-4 animate-slideDown">
             Academy Gallery
           </h2>
-          <div className="w-24 h-1 bg-cricket-orange mx-auto mb-6 rounded-full animate-shimmer"></div>
-                        <p className="text-xl text-secondary max-w-3xl mx-auto animate-slideUp">
+          <div className="w-20 h-1 bg-cricket-orange mx-auto mb-4 rounded-full animate-shimmer"></div>
+                        <p className="text-lg text-secondary max-w-3xl mx-auto animate-slideUp">
                 Take a look at life at Kalyan Cricket Academy - from training sessions to celebrations
               </p>
         </div>
@@ -391,9 +356,9 @@ const TestimonialsSection = () => {
             <div className="relative z-10">
               <h3 className="text-3xl font-bold mb-4 animate-slideDown">Join Our Success Stories!</h3>
               <p className="text-xl mb-6 animate-slideUp">Be part of our growing family of successful cricketers and create your own success story.</p>
-          <button className="bg-gradient-to-r from-cricket-green to-cricket-orange text-white px-8 py-3 rounded-lg font-semibold hover:from-cricket-orange hover:to-cricket-purple transition-all duration-300 transform hover:scale-105 ripple-effect animate-bounceIn">
-            🌟 Start Your Journey
-          </button>
+              <button className="bg-gradient-to-r from-cricket-green to-cricket-orange text-white px-8 py-3 rounded-lg font-semibold hover:from-cricket-orange hover:to-cricket-purple transition-all duration-300 transform hover:scale-105 ripple-effect animate-bounceIn">
+                🌟 Start Your Journey
+              </button>
             </div>
             
             {/* Floating Decorative Elements */}

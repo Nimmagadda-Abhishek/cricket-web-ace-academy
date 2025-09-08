@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import GalleryComponent from '@/components/Gallery';
-import { dbService } from '@/lib/api';
+import { api } from '@/lib/api';
 import '@/styles/animations.css';
 
 const Gallery = () => {
@@ -20,9 +20,9 @@ const Gallery = () => {
   useEffect(() => {
     const checkGalleryImages = async () => {
       try {
-        const response = await dbService.gallery.getGalleryImages();
-        
-        if (response.status === 'error' || !response.data) {
+        const response = await api.gallery.getAll();
+
+        if (!response.success || !response.data) {
           throw new Error(response.message || 'Failed to fetch gallery images');
         }
         

@@ -4,16 +4,6 @@
  * and also provides a unified interface for database operations
  */
 
-import hostingerService from '@/services/hostinger';
-
-// Use Hostinger database service exclusively
-console.log('Using database service: Hostinger');
-
-// Select the Hostinger database service
-const dbService = hostingerService;
-
-export { dbService };
-
 // Base URL for API requests - use deployed backend URL
 const API_BASE_URL = 'https://cricket-web-ace-academy.onrender.com/api';
 
@@ -26,10 +16,10 @@ const DEFAULT_HEADERS = {
 
 // Interface for API response
 interface ApiResponse<T> {
-  status: 'success' | 'fail' | 'error';
+  success: boolean;
   data?: T;
   message?: string;
-  errors?: string[];
+  error?: any;
 }
 
 /**
@@ -80,7 +70,7 @@ async function apiRequest<T>(
       throw new Error(responseData.message || 'An error occurred');
     }
     
-    return responseData as ApiResponse<T>;
+    return responseData;
 }
 
 /**
@@ -90,7 +80,7 @@ export const api = {
   // Auth endpoints
   auth: {
     login: (username: string, password: string) => 
-      apiRequest<{ user: any; accessToken: string }>('/auth/login', 'POST', { username, password }),
+      apiRequest<{ user: any; token: string }>('/auth/login', 'POST', { username, password }),
     
     getProfile: () => 
       apiRequest<{ user: any }>('/auth/profile', 'GET'),
@@ -101,8 +91,14 @@ export const api = {
   
   // Achievements endpoints
   achievements: {
-    getAll: () => 
-      apiRequest<{ achievements: any[] }>('/achievements', 'GET'),
+    getAll: (params?: { page?: number; limit?: number; featured?: boolean }) => {
+      const query = new URLSearchParams();
+      if (params?.page) query.set('page', params.page.toString());
+      if (params?.limit) query.set('limit', params.limit.toString());
+      if (params?.featured !== undefined) query.set('featured', params.featured.toString());
+      const queryString = query.toString();
+      return apiRequest<{ achievements: any[]; pagination: any }>(`/achievements${queryString ? `?${queryString}` : ''}`, 'GET');
+    },
     
     getById: (id: string) => 
       apiRequest<{ achievement: any }>(`/achievements/${id}`, 'GET'),
@@ -156,10 +152,10 @@ export const api = {
   // Contacts endpoints
   contacts: {
     create: (contactData: any) => 
-      apiRequest<{ contact: any }>('/contacts', 'POST', contactData),
+      apiRequest<{ contact: any }>('/contact', 'POST', contactData),
     
     getAll: () => 
-      apiRequest<{ contacts: any[] }>('/contacts', 'GET'),
+      apiRequest<{ contacts: any[] }>('/contact', 'GET'),
   },
   
   // Admin endpoints
@@ -167,55 +163,55 @@ export const api = {
     // Testimonials
     testimonials: {
       getAll: () => 
-        apiRequest<{ testimonials: any[] }>('/admin/testimonials', 'GET'),
+        apiRequest<{ testimonials: any[] }>('/testimonials', 'GET'),
       
       getById: (id: string) => 
-        apiRequest<{ testimonial: any }>(`/admin/testimonials/${id}`, 'GET'),
+        apiRequest<{ testimonial: any }>(`/testimonials/${id}`, 'GET'),
       
       create: (testimonialData: any) => 
-        apiRequest<{ testimonial: any }>('/admin/testimonials', 'POST', testimonialData),
+        apiRequest<{ testimonial: any }>('/testimonials', 'POST', testimonialData),
       
       update: (id: string, testimonialData: any) => 
-        apiRequest<{ testimonial: any }>(`/admin/testimonials/${id}`, 'PUT', testimonialData),
+        apiRequest<{ testimonial: any }>(`/testimonials/${id}`, 'PUT', testimonialData),
       
       delete: (id: string) => 
-        apiRequest<null>(`/admin/testimonials/${id}`, 'DELETE'),
+        apiRequest<null>(`/testimonials/${id}`, 'DELETE'),
     },
     
     // Facilities
     facilities: {
       getAll: () => 
-        apiRequest<{ facilities: any[] }>('/admin/facilities', 'GET'),
+        apiRequest<{ facilities: any[] }>('/facilities', 'GET'),
       
       getById: (id: string) => 
-        apiRequest<{ facility: any }>(`/admin/facilities/${id}`, 'GET'),
+        apiRequest<{ facility: any }>(`/facilities/${id}`, 'GET'),
       
       create: (facilityData: any) => 
-        apiRequest<{ facility: any }>('/admin/facilities', 'POST', facilityData),
+        apiRequest<{ facility: any }>('/facilities', 'POST', facilityData),
       
       update: (id: string, facilityData: any) => 
-        apiRequest<{ facility: any }>(`/admin/facilities/${id}`, 'PUT', facilityData),
+        apiRequest<{ facility: any }>(`/facilities/${id}`, 'PUT', facilityData),
       
       delete: (id: string) => 
-        apiRequest<null>(`/admin/facilities/${id}`, 'DELETE'),
+        apiRequest<null>(`/facilities/${id}`, 'DELETE'),
     },
     
     // Gallery
     gallery: {
       getAll: () => 
-        apiRequest<{ images: any[] }>('/admin/gallery', 'GET'),
+        apiRequest<{ images: any[] }>('/gallery', 'GET'),
       
       getById: (id: string) => 
-        apiRequest<{ image: any }>(`/admin/gallery/${id}`, 'GET'),
+        apiRequest<{ image: any }>(`/gallery/${id}`, 'GET'),
       
       create: (imageData: any) => 
-        apiRequest<{ image: any }>('/admin/gallery', 'POST', imageData),
+        apiRequest<{ image: any }>('/gallery', 'POST', imageData),
       
       update: (id: string, imageData: any) => 
-        apiRequest<{ image: any }>(`/admin/gallery/${id}`, 'PUT', imageData),
+        apiRequest<{ image: any }>(`/gallery/${id}`, 'PUT', imageData),
       
       delete: (id: string) => 
-        apiRequest<null>(`/admin/gallery/${id}`, 'DELETE'),
+        apiRequest<null>(`/gallery/${id}`, 'DELETE'),
     },
   },
   
@@ -247,14 +243,19 @@ export const api = {
     }
   },
   
+  // Gallery endpoints (public)
+  gallery: {
+    getAll: () =>
+      apiRequest<{ images: any[] }>('/gallery', 'GET'),
+  },
+
   // Health check
   health: {
-    check: () => 
+    check: () =>
       apiRequest<any>('/health', 'GET'),
   },
   
   // Direct database operations (using Hostinger)
-  db: dbService,
 };
 
 /**

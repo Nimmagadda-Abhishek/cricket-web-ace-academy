@@ -1,18 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { dbService } from '@/lib/api';
-
-interface Testimonial {
-  id: string;
-  name: string;
-  role: string;
-  content: string;
-  rating: number;
-  image_url: string;
-  is_featured: boolean;
-  created_at: string;
-}
+import { testimonialsData, Testimonial } from '@/data/testimonials';
 
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -47,16 +36,11 @@ const Testimonials = () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await dbService.testimonials.getTestimonials();
-      
-      if (response.status === 'error' || !response.data) {
-        throw new Error(response.message || 'Failed to fetch testimonials');
-      }
 
-      const testimonialData = response.data.testimonials || [];
+      // Load testimonials from local data
+      const testimonialData = testimonialsData;
       setTestimonials(testimonialData);
-      
+
       // Filter featured testimonials for the carousel
       const featured = testimonialData.filter(t => t.is_featured) || [];
       setFeaturedTestimonials(featured.length > 0 ? featured : testimonialData.slice(0, 3) || []);
@@ -136,13 +120,7 @@ const Testimonials = () => {
                       <Card className="bg-white shadow-lg overflow-visible border border-gray-200">
                         <CardContent className="p-0">
                           <div className="relative p-8 md:p-12">
-                            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                              <img 
-                                src={testimonial.image_url} 
-                                alt={testimonial.name} 
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
+                            {/* Removed image display */}
                             
                             <div className="text-center pt-12">
                               <div className="text-yellow-400 text-xl mb-4">
@@ -153,7 +131,7 @@ const Testimonials = () => {
                               </p>
                               <div>
                                 <h4 className="font-bold text-cricket-green text-xl">{testimonial.name}</h4>
-                                <p className="text-gray-500">{testimonial.role}</p>
+                                {/* Removed role display */}
                               </div>
                             </div>
                           </div>
@@ -207,16 +185,10 @@ const Testimonials = () => {
                   <Card key={testimonial.id} className="hover:shadow-lg transition-all duration-300">
                     <CardContent className="p-6">
                       <div className="flex items-center mb-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
-                          <img
-                            src={testimonial.image_url}
-                            alt={testimonial.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+                        {/* Removed image display */}
                         <div>
                           <h4 className="font-semibold">{testimonial.name}</h4>
-                          <p className="text-sm text-gray-600">{testimonial.role}</p>
+                          {/* Removed role display */}
                         </div>
                       </div>
                       <div className="text-yellow-400 text-sm mb-3">
