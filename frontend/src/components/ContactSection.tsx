@@ -67,7 +67,7 @@ const ContactSection = () => {
     },
     {
       title: 'Phone',
-      content: '91 9908008424',
+      content: '+91 9908008424\n+91 9550151424',
       icon: '📞'
     },
     {
@@ -223,7 +223,7 @@ const ContactSection = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-primary-headline">Phone</h4>
-                    <p className="text-secondary">+91 9908008424</p>
+                    <p className="text-secondary">+91 9908008424<br />+91 9550151424</p>
                   </div>
                 </div>
                 

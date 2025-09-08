@@ -60,7 +60,7 @@ const AchievementsSection: React.FC = () => {
             onClick={() => {
               const container = document.getElementById('achievements-scroll');
               if (container) {
-                container.scrollBy({ left: -350, behavior: 'smooth' });
+                container.scrollBy({ left: -324, behavior: 'smooth' });
               }
             }}
             className="w-12 h-12 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all duration-300 hover:from-cricket-orange hover:to-cricket-purple hover:scale-110 absolute left-0 top-1/2 transform -translate-y-1/2 z-20"
@@ -75,7 +75,7 @@ const AchievementsSection: React.FC = () => {
             onClick={() => {
               const container = document.getElementById('achievements-scroll');
               if (container) {
-                container.scrollBy({ left: 350, behavior: 'smooth' });
+                container.scrollBy({ left: 324, behavior: 'smooth' });
               }
             }}
             className="w-12 h-12 bg-gradient-to-r from-cricket-green to-cricket-orange text-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all duration-300 hover:from-cricket-orange hover:to-cricket-purple hover:scale-110 absolute right-0 top-1/2 transform -translate-y-1/2 z-20"
@@ -90,12 +90,13 @@ const AchievementsSection: React.FC = () => {
           <div
             id="achievements-scroll"
             className="flex gap-6 overflow-x-auto scrollbar-hide pb-6 px-2 smooth-scroll"
+            style={{ scrollSnapType: 'x mandatory' }}
           >
             {achievements.map((achievement, index: number) => (
               <div
                 key={achievement.id}
                 className="min-w-[300px] max-w-[300px] flex-shrink-0"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                style={{ animationDelay: `${index * 0.1}s`, scrollSnapAlign: 'start' }}
               >
                 <div className="bg-white rounded-xl shadow-lg h-full flex flex-col hover:shadow-xl transition-all duration-300 hover:-translate-y-2" style={{height: '400px'}}>
                   <div className="relative flex-shrink-0" style={{height: '70%'}}>
