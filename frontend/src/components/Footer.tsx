@@ -20,6 +20,7 @@ const Footer = () => {
     { name: 'Personalized Training', href: '#programs' },
     { name: 'One-on-One Elite Coaching', href: '#programs' },
     { name: 'Corporate Cricket Program', href: '#programs' },
+    { name: 'NRI cricket training', href: '#programs' },
   ];
 
   return (
@@ -127,7 +128,7 @@ const Footer = () => {
             <div className="space-y-3 text-gray-300">
               <div className="flex items-start space-x-2">
                 <span>📍</span>
-                <span>Kukatpally, Hyderabad, Telangana 500072</span>
+                <span>Plot No.18, beside Akshara international school, near Chittaramma Temple Road, Srikrishna Nagar, Kukatpally, Hyderabad, Telangana 500072</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span>📞</span>
@@ -140,8 +141,7 @@ const Footer = () => {
               <div className="flex items-start space-x-2">
                 <span>⏰</span>
                 <div>
-                  <div>Mon-Fri: 11AM-11PM</div>
-                  <div>Sat-Sun: 11AM-1AM</div>
+                  <div>Monday to Saturday: 5:30am to 8:30 pm</div>
                 </div>
               </div>
             </div>

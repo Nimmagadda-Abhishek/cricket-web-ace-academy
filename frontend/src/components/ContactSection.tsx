@@ -62,7 +62,7 @@ const ContactSection = () => {
   const contactInfo = [
     {
       title: 'Address',
-      content: 'Kukatpally, Hyderabad, Telangana 500072',
+      content: 'Plot No.18, beside Akshara international school, near Chittaramma Temple Road, Srikrishna Nagar, Kukatpally, Hyderabad, Telangana 500072',
       icon: '📍'
     },
     {
@@ -77,7 +77,7 @@ const ContactSection = () => {
     },
     {
       title: 'Training Hours',
-      content: 'Mon-Fri: 11AM-11PM\nSat-Sun: 11AM-1PM',
+      content: 'Monday to Saturday: 5:30am to 8:30 pm',
       icon: '⏰'
     }
   ];
@@ -213,7 +213,7 @@ const ContactSection = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Address</h4>
-                    <p className="text-secondary">123 Cricket Ground, Sports Complex, Hyderabad, Telangana 500001</p>
+                    <p className="text-secondary">Plot No.18, beside Akshara international school, near Chittaramma Temple Road, Srikrishna Nagar, Kukatpally, Hyderabad, Telangana 500072</p>
                   </div>
                 </div>
                 
@@ -245,16 +245,8 @@ const ContactSection = () => {
               </h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-secondary">Monday - Friday</span>
-                  <span className="font-semibold text-primary-headline">6:00 AM - 9:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-secondary">Saturday</span>
-                  <span className="font-semibold text-primary-headline">7:00 AM - 8:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-secondary">Sunday</span>
-                  <span className="font-semibold text-primary-headline">8:00 AM - 6:00 PM</span>
+                  <span className="text-secondary">Monday to Saturday</span>
+                  <span className="font-semibold text-primary-headline">5:30am to 8:30 pm</span>
                 </div>
               </div>
             </div>

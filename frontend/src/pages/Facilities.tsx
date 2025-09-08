@@ -97,7 +97,7 @@ const Facilities = () => {
     {
       title: 'Player Amenities',
       description: 'Complete facilities to ensure comfort and convenience for all players and visitors.',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      image: 'https://d13loartjoc1yn.cloudfront.net/upload/article/large/1738041157ashish%20nehra%20cricket%20academy.webp',
       icon: '🚿',
       color: 'from-teal-500 to-blue-600',
       features: [
@@ -118,7 +118,7 @@ const Facilities = () => {
     {
       title: 'Technology Integration',
       description: 'Advanced technology for performance analysis and skill development tracking.',
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      image: 'https://sklc-tinymce-2021.s3.amazonaws.com/comp/2022/06/image_1655389349.png',
       icon: '📱',
       color: 'from-pink-500 to-rose-600',
       features: [
@@ -134,6 +134,90 @@ const Facilities = () => {
         'Software': 'Professional',
         'Reports': 'Detailed Analytics',
         'Access': '24/7 Online'
+      }
+    },
+    {
+      title: 'HCA League Club Teams',
+      description: 'Participation in One-Day, Two-Day & Three-Day HCA League matches to build match temperament with top-level competition.',
+      image: 'https://22yards.co.in/hyderabad-cricket-association/assets/img/playCricket.png',
+      icon: '🏆',
+      color: 'from-yellow-500 to-orange-600',
+      features: [
+        'Participation in One-Day, Two-Day & Three-Day HCA League matches',
+        'Build match temperament with top-level competition',
+        'Professional league experience',
+        'Competitive match practice',
+        'Team building and strategy development',
+        'Performance evaluation and feedback'
+      ],
+      specifications: {
+        'Match Formats': 'One-Day, Two-Day & Three-Day',
+        'League': 'HCA Professional',
+        'Competition Level': 'Top-tier',
+        'Teams': 'Multiple Divisions'
+      }
+    },
+    {
+      title: 'International Exposure & Tie-Ups',
+      description: 'Global partnerships and exclusive opportunities to train and compete with international teams.',
+      image: 'https://upload.wikimedia.org/wikipedia/commons/8/89/Uppal_stadium_Rajiv_Gandhi_International_Cricket_Stadium.jpg',
+      icon: '🌍',
+      color: 'from-indigo-500 to-purple-600',
+      features: [
+        'Official collaborations with clubs in Sri Lanka & Nepal',
+        'Exclusive opportunities to train & play with international teams',
+        'Cross-cultural cricket exchanges',
+        'International tournament participation',
+        'Global networking opportunities',
+        'Cultural immersion programs'
+      ],
+      specifications: {
+        'Partner Countries': 'Sri Lanka & Nepal',
+        'International Teams': '5+ Partnerships',
+        'Exchange Programs': 'Annual',
+        'Tournament Access': 'Exclusive'
+      }
+    },
+    {
+      title: 'Nutrition & Recovery Program',
+      description: 'Comprehensive sports nutrition and recovery programs for peak performance and injury prevention.',
+      image: 'https://cdn.prod.website-files.com/60e2d1e1782f3340897bbad0/64d72c50fd2d55cc672c1c54_carbohydrate_recommendations.jpg',
+      icon: '🥗',
+      color: 'from-emerald-500 to-teal-600',
+      features: [
+        'Sports nutrition plans for peak performance & endurance',
+        'Physiotherapy and injury prevention programs',
+        'Ice baths and recovery facilities',
+        'Dietary counseling and meal planning',
+        'Hydration management systems',
+        'Performance monitoring and adjustments'
+      ],
+      specifications: {
+        'Nutrition Plans': 'Personalized',
+        'Recovery Facilities': 'Complete',
+        'Physiotherapy': 'On-site',
+        'Monitoring': '24/7'
+      }
+    },
+    {
+      title: 'Cricket Gear & Equipment Store',
+      description: 'Premium quality cricket equipment and accessories for players of all levels.',
+      image: 'https://media.istockphoto.com/id/519191424/photo/cricket-equipment.jpg?s=612x612&w=0&k=20&c=qElSS_hoyVpWWc-2MX7t_1TLh1Vmf1O7t5UuFvMF2eU=',
+      icon: '🛍️',
+      color: 'from-amber-500 to-orange-600',
+      features: [
+        'Premium quality bats, gloves, pads & accessories',
+        'Equipment for beginners to professionals',
+        'Expert fitting and customization services',
+        'Brand partnerships with leading manufacturers',
+        'Maintenance and repair services',
+        'Online ordering and delivery'
+      ],
+      specifications: {
+        'Product Range': 'Complete',
+        'Brands': 'Premium',
+        'Services': 'Full',
+        'Delivery': 'Nationwide'
       }
     }
   ];
@@ -155,16 +239,17 @@ const Facilities = () => {
           
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div>
-              <h1 className="text-5xl md:text-7xl font-bold font-poppins text-white mb-6">
+              <h1 className="text-5xl md:text-7xl font-bold font-poppins text-white mb-6 relative">
                 World-Class
                 <span className="block gradient-text-facilities">Facilities</span>
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-white to-transparent rounded-full opacity-80"></div>
               </h1>
               <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
                 Experience cricket training at its finest with our state-of-the-art facilities designed for excellence
               </p>
               <div className="flex justify-center">
                 <div className="bg-white/10 backdrop-blur-md rounded-full px-6 py-3 border border-white/20">
-                  <span className="text-white font-semibold">🏏 Where Champions Are Made</span>
+                  <span className="text-white font-semibold">Where Champions Are Made</span>
                 </div>
               </div>
             </div>
@@ -177,7 +262,6 @@ const Facilities = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
-                  <div className="text-4xl mb-2">{stat.icon}</div>
                   <div className="text-4xl font-bold text-cricket-green mb-2">{stat.number}</div>
                   <div className="text-gray-600 font-medium">{stat.label}</div>
                 </div>
@@ -213,15 +297,13 @@ const Facilities = () => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                     
-                    {/* Facility Icon */}
-                    <div className={`absolute top-4 right-4 w-12 h-12 bg-gradient-to-r ${facility.color} rounded-full flex items-center justify-center text-white text-2xl shadow-lg`}>
-                      {facility.icon}
-                    </div>
+
                   </div>
 
                   <CardContent className="p-6">
-                    <CardTitle className="text-2xl font-bold font-poppins text-cricket-green mb-3 group-hover:text-cricket-orange transition-colors duration-300">
+                    <CardTitle className="text-2xl font-bold font-poppins text-cricket-green mb-3 group-hover:text-cricket-orange transition-colors duration-300 relative">
                       {facility.title}
+                      <div className="absolute -bottom-1 left-0 w-16 h-0.5 bg-gradient-to-r from-cricket-green to-cricket-orange rounded-full opacity-80"></div>
                     </CardTitle>
                     
                     <p className="text-gray-600 mb-6 leading-relaxed">
@@ -265,7 +347,7 @@ const Facilities = () => {
                 className="bg-white text-cricket-green hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
                 onClick={() => navigate('/contact')}
               >
-                🏟️ Schedule Tour
+                Schedule Tour
               </Button>
               <Button
                 size="lg"
@@ -273,7 +355,7 @@ const Facilities = () => {
                 className="border-2 border-white text-white hover:bg-white hover:text-cricket-green px-8 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105"
                 onClick={() => navigate('/programs')}
               >
-                📋 View Programs
+                View Programs
               </Button>
             </div>
           </div>
@@ -287,17 +369,14 @@ const Facilities = () => {
             </h3>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="text-4xl mb-4">🏆</div>
                 <h4 className="text-xl font-bold text-cricket-green mb-2">Professional Standard</h4>
                 <p className="text-gray-600">All facilities meet international cricket training standards</p>
               </div>
               <div className="text-center">
-                <div className="text-4xl mb-4">🔧</div>
                 <h4 className="text-xl font-bold text-cricket-green mb-2">Regular Maintenance</h4>
                 <p className="text-gray-600">Facilities are maintained daily for optimal performance</p>
               </div>
               <div className="text-center">
-                <div className="text-4xl mb-4">🌟</div>
                 <h4 className="text-xl font-bold text-cricket-green mb-2">Latest Technology</h4>
                 <p className="text-gray-600">Equipped with modern technology for enhanced training</p>
               </div>

@@ -87,14 +87,20 @@ const FacilitiesSection = () => {
     {
       title: 'International Exposure & Tie-Ups',
       description: 'Official collaborations with clubs in State and Sri Lanka & Nepal. Exclusive opportunities to train & play with international teams.',
-      features: ['International collaborations', 'Sri Lanka & Nepal tie-ups', 'Exclusive opportunities', 'International exposure'],
+      features: ['Official collaborations with clubs in State and Sri Lanka & Nepal', 'Exclusive opportunities to train & play with international teams'],
       icon: '🌍'
     },
     {
       title: 'Nutrition & Recovery Program',
       description: 'Sports nutrition plans for peak performance & endurance. Physiotherapy, ice baths & injury prevention programs.',
-      features: ['Sports nutrition plans', 'Physiotherapy services', 'Ice bath facilities', 'Injury prevention'],
+      features: ['Sports nutrition plans for peak performance & endurance', 'Physiotherapy, ice baths & injury prevention programs'],
       icon: '🥗'
+    },
+    {
+      title: 'Cricket Gear & Equipment Store',
+      description: 'On-site shop with premium quality bats, gloves, pads & accessories. Everything a player needs – from beginners to professionals.',
+      features: ['On-site shop with premium quality bats, gloves, pads & accessories', 'Everything a player needs – from beginners to professionals'],
+      icon: '🛍️'
     }
   ];
   

@@ -157,9 +157,10 @@ const Programs = () => {
           
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div>
-              <h1 className="text-5xl md:text-7xl font-bold font-poppins text-white mb-6">
+              <h1 className="text-5xl md:text-7xl font-bold font-poppins text-white mb-6 relative">
                 Our Training
                 <span className="block gradient-text-programs">Programs</span>
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-white to-transparent rounded-full opacity-80"></div>
               </h1>
               <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto leading-relaxed">
                 Choose from our comprehensive range of cricket training programs designed to elevate your game at every level
@@ -232,8 +233,9 @@ const Programs = () => {
                       <div className="flex items-center space-x-3 mb-4">
                         <div className="text-4xl" style={{background: 'linear-gradient(90deg, #FF5E3A 0%, #FF2D55 50%, #BF5AF2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>{program.icon}</div>
                         <div>
-                          <CardTitle className="text-2xl font-bold font-poppins gradient-text mb-2">
+                          <CardTitle className="text-2xl font-bold font-poppins gradient-text mb-2 relative">
                             {program.title}
+                            <div className="absolute -bottom-1 left-0 w-16 h-0.5 bg-gradient-to-r from-cricket-green to-cricket-orange rounded-full opacity-80"></div>
                           </CardTitle>
                           <div className="flex flex-wrap gap-2">
                             <Badge variant="secondary" className="bg-white/80 text-gray-700 border-white/30">
