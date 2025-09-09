@@ -7,7 +7,7 @@
 // Base URL for API requests - use deployed backend URL
 const API_BASE_URL = 'https://cricket-web-ace-academy.onrender.com/api';
 
-console.log('Using API base URL:', API_BASE_URL);
+
 
 // Default headers for API requests
 const DEFAULT_HEADERS = {
